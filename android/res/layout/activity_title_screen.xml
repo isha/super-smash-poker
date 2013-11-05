@@ -1,0 +1,27 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LinearLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/ssp_title_bg"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    tools:context=".TitleScreen" >
+
+    <ImageView
+        android:id="@+id/spp_title_logo"
+        android:layout_width="240dp"
+        android:layout_height="240dp"
+        android:paddingTop="40dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ssp_title_logo" />
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:paddingTop="60dp"
+        android:onClick="@string/ssp_button_press"
+        android:src="@drawable/ssp_play_button" />
+
+</LinearLayout>
