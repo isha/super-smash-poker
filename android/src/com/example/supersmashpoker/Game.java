@@ -14,6 +14,7 @@ public class Game extends Activity {
 		setContentView(R.layout.activity_game);
 		// Show the Up button in the action bar.
 		setupActionBar();
+        getActionBar().hide();
 	}
 
 	/**

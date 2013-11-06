@@ -27,7 +27,8 @@
         <activity
             android:name="com.example.supersmashpoker.Game"
             android:label="@string/title_activity_game"
-            android:parentActivityName="com.example.supersmashpoker.TitleScreen" >
+            android:parentActivityName="com.example.supersmashpoker.TitleScreen"
+            android:screenOrientation="landscape">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.supersmashpoker.TitleScreen" />
