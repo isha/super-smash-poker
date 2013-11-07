@@ -24,25 +24,32 @@ public final class R {
         public static final int activity_vertical_margin=0x7f050001;
     }
     public static final class drawable {
-        public static final int ic_launcher=0x7f020000;
-        public static final int ssp_felt_bg=0x7f020001;
-        public static final int ssp_play_button=0x7f020002;
-        public static final int ssp_title_bg=0x7f020003;
-        public static final int ssp_title_logo=0x7f020004;
+        public static final int ic_action_settings=0x7f020000;
+        public static final int ic_launcher=0x7f020001;
+        public static final int ssp_felt_bg=0x7f020002;
+        public static final int ssp_play_button=0x7f020003;
+        public static final int ssp_title_bg=0x7f020004;
+        public static final int ssp_title_logo=0x7f020005;
     }
     public static final class id {
-        public static final int LinearLayout1=0x7f090000;
-        public static final int action_settings=0x7f090003;
-        public static final int imageView1=0x7f090002;
-        public static final int spp_title_logo=0x7f090001;
+        public static final int LinearLayout1=0x7f090005;
+        public static final int action_settings=0x7f090008;
+        public static final int imageView1=0x7f090007;
+        public static final int ip1=0x7f090000;
+        public static final int ip2=0x7f090001;
+        public static final int ip3=0x7f090002;
+        public static final int ip4=0x7f090003;
+        public static final int port=0x7f090004;
+        public static final int spp_title_logo=0x7f090006;
     }
     public static final class layout {
         public static final int activity_game=0x7f030000;
-        public static final int activity_title_screen=0x7f030001;
+        public static final int activity_settings=0x7f030001;
+        public static final int activity_title_screen=0x7f030002;
     }
     public static final class menu {
         public static final int game=0x7f080000;
-        public static final int test=0x7f080001;
+        public static final int settings=0x7f080001;
         public static final int title_screen=0x7f080002;
     }
     public static final class string {
@@ -50,7 +57,11 @@ public final class R {
         public static final int app_name=0x7f060000;
         public static final int hello_world=0x7f060002;
         public static final int ssp_button_press=0x7f060003;
+        public static final int ssp_settings_ip=0x7f060006;
+        public static final int ssp_settings_ip0=0x7f060008;
+        public static final int ssp_settings_port=0x7f060007;
         public static final int title_activity_game=0x7f060004;
+        public static final int title_activity_settings=0x7f060005;
     }
     public static final class style {
         /** 

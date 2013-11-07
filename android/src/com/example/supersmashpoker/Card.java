@@ -2,7 +2,7 @@ package com.example.supersmashpoker;
 
 import java.io.Serializable;
 
-public class Card implements Serializable {
+public class Card {
 
 	public int suit;
 	public int rank;
