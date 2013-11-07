@@ -4,10 +4,16 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.SeekBar;
+import android.widget.Toast;
 import android.support.v4.app.NavUtils;
 
 public class Game extends Activity {
-
+	EditText BetText;
+	SeekBar BetBar;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -15,6 +21,8 @@ public class Game extends Activity {
 		// Show the Up button in the action bar.
 		setupActionBar();
         getActionBar().hide();
+        BetText = (EditText) findViewById(R.id.editText1);
+        BetBar = (SeekBar) findViewById(R.id.seekBar1);
 	}
 
 	/**
@@ -48,6 +56,13 @@ public class Game extends Activity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	public void onSeekBarClick(View view){
+	    int seekValue = BetBar.getProgress();
+		BetText.setText(Integer.toString(seekValue));
+		Toast t = Toast.makeText(getApplicationContext(),"onSeekBar Clicked", Toast.LENGTH_LONG); 
+		t.show(); 
 	}
 
 }
