@@ -26,21 +26,80 @@ public final class R {
     public static final class drawable {
         public static final int ic_action_settings=0x7f020000;
         public static final int ic_launcher=0x7f020001;
-        public static final int ssp_felt_bg=0x7f020002;
-        public static final int ssp_play_button=0x7f020003;
-        public static final int ssp_title_bg=0x7f020004;
-        public static final int ssp_title_logo=0x7f020005;
+        public static final int ssp_club_10=0x7f020002;
+        public static final int ssp_club_2=0x7f020003;
+        public static final int ssp_club_3=0x7f020004;
+        public static final int ssp_club_4=0x7f020005;
+        public static final int ssp_club_5=0x7f020006;
+        public static final int ssp_club_6=0x7f020007;
+        public static final int ssp_club_7=0x7f020008;
+        public static final int ssp_club_8=0x7f020009;
+        public static final int ssp_club_9=0x7f02000a;
+        public static final int ssp_club_ace=0x7f02000b;
+        public static final int ssp_club_jack=0x7f02000c;
+        public static final int ssp_club_king=0x7f02000d;
+        public static final int ssp_club_queen=0x7f02000e;
+        public static final int ssp_diamond_10=0x7f02000f;
+        public static final int ssp_diamond_2=0x7f020010;
+        public static final int ssp_diamond_3=0x7f020011;
+        public static final int ssp_diamond_4=0x7f020012;
+        public static final int ssp_diamond_5=0x7f020013;
+        public static final int ssp_diamond_6=0x7f020014;
+        public static final int ssp_diamond_7=0x7f020015;
+        public static final int ssp_diamond_8=0x7f020016;
+        public static final int ssp_diamond_9=0x7f020017;
+        public static final int ssp_diamond_ace=0x7f020018;
+        public static final int ssp_diamond_jack=0x7f020019;
+        public static final int ssp_diamond_king=0x7f02001a;
+        public static final int ssp_diamond_queen=0x7f02001b;
+        public static final int ssp_felt_bg=0x7f02001c;
+        public static final int ssp_heart_10=0x7f02001d;
+        public static final int ssp_heart_2=0x7f02001e;
+        public static final int ssp_heart_3=0x7f02001f;
+        public static final int ssp_heart_4=0x7f020020;
+        public static final int ssp_heart_5=0x7f020021;
+        public static final int ssp_heart_6=0x7f020022;
+        public static final int ssp_heart_7=0x7f020023;
+        public static final int ssp_heart_8=0x7f020024;
+        public static final int ssp_heart_9=0x7f020025;
+        public static final int ssp_heart_ace=0x7f020026;
+        public static final int ssp_heart_jack=0x7f020027;
+        public static final int ssp_heart_king=0x7f020028;
+        public static final int ssp_heart_queen=0x7f020029;
+        public static final int ssp_play_button=0x7f02002a;
+        public static final int ssp_spade_10=0x7f02002b;
+        public static final int ssp_spade_2=0x7f02002c;
+        public static final int ssp_spade_3=0x7f02002d;
+        public static final int ssp_spade_4=0x7f02002e;
+        public static final int ssp_spade_5=0x7f02002f;
+        public static final int ssp_spade_6=0x7f020030;
+        public static final int ssp_spade_7=0x7f020031;
+        public static final int ssp_spade_8=0x7f020032;
+        public static final int ssp_spade_9=0x7f020033;
+        public static final int ssp_spade_ace=0x7f020034;
+        public static final int ssp_spade_club=0x7f020035;
+        public static final int ssp_spade_jack=0x7f020036;
+        public static final int ssp_spade_queen=0x7f020037;
+        public static final int ssp_title_bg=0x7f020038;
+        public static final int ssp_title_logo=0x7f020039;
     }
     public static final class id {
-        public static final int LinearLayout1=0x7f090005;
-        public static final int action_settings=0x7f090008;
-        public static final int imageView1=0x7f090007;
-        public static final int ip1=0x7f090000;
-        public static final int ip2=0x7f090001;
-        public static final int ip3=0x7f090002;
-        public static final int ip4=0x7f090003;
-        public static final int port=0x7f090004;
-        public static final int spp_title_logo=0x7f090006;
+        public static final int LinearLayout1=0x7f09000d;
+        public static final int LinearLayout2=0x7f090000;
+        public static final int action_settings=0x7f09000f;
+        public static final int button1=0x7f090005;
+        public static final int button2=0x7f090006;
+        public static final int button3=0x7f090007;
+        public static final int editText1=0x7f090004;
+        public static final int imageView1=0x7f090001;
+        public static final int imageView2=0x7f090002;
+        public static final int ip1=0x7f090008;
+        public static final int ip2=0x7f090009;
+        public static final int ip3=0x7f09000a;
+        public static final int ip4=0x7f09000b;
+        public static final int port=0x7f09000c;
+        public static final int seekBar1=0x7f090003;
+        public static final int spp_title_logo=0x7f09000e;
     }
     public static final class layout {
         public static final int activity_game=0x7f030000;
@@ -90,5 +149,6 @@ public final class R {
  All customizations that are NOT specific to a particular API-level can go here. 
          */
         public static final int AppTheme=0x7f070001;
+        public static final int NoActionBar=0x7f070002;
     }
 }
