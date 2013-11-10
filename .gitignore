@@ -23,4 +23,8 @@ de2/nios_system.html
 de2/.qsys_edit/*
 de2/nios_system/synthesis/submodules/nios_system_nios2_processor_ociram_default_contents.mif
 
+de2/software/ssp_de2_software/obj/*
+de2/software/ssp_de2_software/ssp_de2_software.elf
+de2/software/ssp_de2_software/ssp_de2_software.map
+de2/software/ssp_de2_software/ssp_de2_software.objdump
 de2/software/ssp_de2_software_bsp/*
