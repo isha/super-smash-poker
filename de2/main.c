@@ -92,6 +92,7 @@ void initialize_dealer(int number_players) {
   /* Cards on table, zero in the beginning */
   dealer->number_cards_on_table = 0;
   dealer->pot = 0;
+  dealer->current_bet = 0;
 }
 
 /* Returns a random card from the deck */
@@ -163,6 +164,11 @@ void get_bet_for_player(int pid) {
 
   if (dealer->players[pid].action == FOLD) {
     dealer->players[pid].active = false;
+
+    int i, active_players = 0;
+    for (i=0; i<dealer->number_players; i++) {
+      if (dealer->players[i].active) active_players++;
+    }
   }
   printf("\nYour total money %d and bet money %d", dealer->players[pid].total_money, dealer->players[pid].money);
 }
@@ -301,6 +307,11 @@ int main() {
 
       case GAME_OVER:
         printf("\n\nGAME OVER\n\n");
+
+        free(dealer->deck);
+        free(dealer->players);
+        free(dealer);
+
         return 0;
     }
   }
