@@ -1,0 +1,309 @@
+Info: Starting: Create block symbol file (.bsf)
+Info: ip-generate --project-directory=C:/Users/Home/Documents/GitHub/super-smash-poker/de2/ssp_hardware/ --output-directory=C:/Users/Home/Documents/GitHub/super-smash-poker/de2/ssp_hardware/nios_system/ --report-file=bsf:C:/Users/Home/Documents/GitHub/super-smash-poker/de2/ssp_hardware/nios_system.bsf --system-info=DEVICE_FAMILY="Cyclone II" --system-info=DEVICE=EP2C35F672C6 --system-info=DEVICE_SPEEDGRADE=6 --component-file=C:/Users/Home/Documents/GitHub/super-smash-poker/de2/ssp_hardware/nios_system.qsys
+Progress: Loading ssp_hardware/nios_system.qsys
+Progress: Reading input file
+Progress: Adding clk_0 [clock_source 12.0]
+Progress: Parameterizing module clk_0
+Progress: Adding nios2_processor [altera_nios2_qsys 12.0]
+Progress: Parameterizing module nios2_processor
+Progress: Adding onchip_memory [altera_avalon_onchip_memory2 12.0]
+Progress: Parameterizing module onchip_memory
+Progress: Adding switches [altera_avalon_pio 12.0]
+Progress: Parameterizing module switches
+Progress: Adding leds [altera_avalon_pio 12.0]
+Progress: Parameterizing module leds
+Progress: Adding jtag_uart [altera_avalon_jtag_uart 12.0]
+Progress: Parameterizing module jtag_uart
+Progress: Adding sdram [altera_avalon_new_sdram_controller 12.0]
+Progress: Parameterizing module sdram
+Progress: Adding clocks [altera_up_clocks 12.0]
+Progress: Parameterizing module clocks
+Progress: Adding character_lcd_0 [altera_up_avalon_character_lcd 12.0]
+Progress: Parameterizing module character_lcd_0
+Progress: Adding pixel_buffer [altera_up_avalon_sram 12.0]
+Progress: Parameterizing module pixel_buffer
+Progress: Adding pixel_buffer_dma [altera_up_avalon_video_pixel_buffer_dma 12.0]
+Progress: Parameterizing module pixel_buffer_dma
+Progress: Adding rgb_resampler [altera_up_avalon_video_rgb_resampler 12.0]
+Progress: Parameterizing module rgb_resampler
+Progress: Adding scaler [altera_up_avalon_video_scaler 12.0]
+Progress: Parameterizing module scaler
+Progress: Adding video_fifo [altera_up_avalon_video_dual_clock_buffer 12.0]
+Progress: Parameterizing module video_fifo
+Progress: Adding vga_controller [altera_up_avalon_video_vga_controller 12.0]
+Progress: Parameterizing module vga_controller
+Progress: Adding char_drawer [altera_up_avalon_video_character_buffer_with_dma 12.0]
+Progress: Parameterizing module char_drawer
+Progress: Adding alpha_blender [altera_up_avalon_video_alpha_blender 12.0]
+Progress: Parameterizing module alpha_blender
+Progress: Adding buttons [altera_up_avalon_parallel_port 12.0]
+Progress: Parameterizing module buttons
+Progress: Adding sys_clk [altera_avalon_timer 12.0]
+Progress: Parameterizing module sys_clk
+Progress: Adding timestamp_clk [altera_avalon_timer 12.0]
+Progress: Parameterizing module timestamp_clk
+Progress: Adding hw_only_clk [altera_avalon_timer 12.0]
+Progress: Parameterizing module hw_only_clk
+Progress: Adding sdcard [Altera_UP_SD_Card_Avalon_Interface 1.0]
+Progress: Parameterizing module sdcard
+Progress: Adding clk_1 [clock_source 12.0]
+Progress: Parameterizing module clk_1
+Progress: Adding audio_config [altera_up_avalon_audio_and_video_config 12.0]
+Progress: Parameterizing module audio_config
+Progress: Adding audio [altera_up_avalon_audio 12.0]
+Progress: Parameterizing module audio
+Progress: Building connections
+Progress: Parameterizing connections
+Progress: Validating
+Progress: Done reading input file
+Info: nios_system.onchip_memory: Memory will be initialized from onchip_memory.hex
+Info: nios_system.switches: PIO inputs are not hardwired in test bench. Undefined values will be read from PIO inputs during simulation.
+Info: nios_system.rgb_resampler: RGB Resampling: 16 (bits) x 1 (planes) -> 10 (bits) x 3 (planes)
+Info: nios_system.scaler: Change in Resolution: 320 x 240 -> 640 x 480
+Info: nios_system.vga_controller: Video Output Stream: Format: 640 x 480 with Color: 10 (bits) x 3 (planes)
+Info: nios_system.char_drawer: Character Resolution: 80 x 60
+Warning: nios_system.audio: Interrupt sender audio.interrupt is not connected to an interrupt receiver
+Info: ip-generate succeeded.
+Info: Finished: Create block symbol file (.bsf)
+Info: 
+Info: Starting: Create HDL design files for synthesis
+Info: ip-generate --project-directory=C:/Users/Home/Documents/GitHub/super-smash-poker/de2/ssp_hardware/ --output-directory=C:/Users/Home/Documents/GitHub/super-smash-poker/de2/ssp_hardware/nios_system/synthesis/ --file-set=QUARTUS_SYNTH --report-file=sopcinfo:C:/Users/Home/Documents/GitHub/super-smash-poker/de2/ssp_hardware/nios_system.sopcinfo --report-file=html:C:/Users/Home/Documents/GitHub/super-smash-poker/de2/ssp_hardware/nios_system.html --report-file=qip:C:/Users/Home/Documents/GitHub/super-smash-poker/de2/ssp_hardware/nios_system/synthesis/nios_system.qip --system-info=DEVICE_FAMILY="Cyclone II" --system-info=DEVICE=EP2C35F672C6 --system-info=DEVICE_SPEEDGRADE=6 --component-file=C:/Users/Home/Documents/GitHub/super-smash-poker/de2/ssp_hardware/nios_system.qsys
+Progress: Loading ssp_hardware/nios_system.qsys
+Progress: Reading input file
+Progress: Adding clk_0 [clock_source 12.0]
+Progress: Parameterizing module clk_0
+Progress: Adding nios2_processor [altera_nios2_qsys 12.0]
+Progress: Parameterizing module nios2_processor
+Progress: Adding onchip_memory [altera_avalon_onchip_memory2 12.0]
+Progress: Parameterizing module onchip_memory
+Progress: Adding switches [altera_avalon_pio 12.0]
+Progress: Parameterizing module switches
+Progress: Adding leds [altera_avalon_pio 12.0]
+Progress: Parameterizing module leds
+Progress: Adding jtag_uart [altera_avalon_jtag_uart 12.0]
+Progress: Parameterizing module jtag_uart
+Progress: Adding sdram [altera_avalon_new_sdram_controller 12.0]
+Progress: Parameterizing module sdram
+Progress: Adding clocks [altera_up_clocks 12.0]
+Progress: Parameterizing module clocks
+Progress: Adding character_lcd_0 [altera_up_avalon_character_lcd 12.0]
+Progress: Parameterizing module character_lcd_0
+Progress: Adding pixel_buffer [altera_up_avalon_sram 12.0]
+Progress: Parameterizing module pixel_buffer
+Progress: Adding pixel_buffer_dma [altera_up_avalon_video_pixel_buffer_dma 12.0]
+Progress: Parameterizing module pixel_buffer_dma
+Progress: Adding rgb_resampler [altera_up_avalon_video_rgb_resampler 12.0]
+Progress: Parameterizing module rgb_resampler
+Progress: Adding scaler [altera_up_avalon_video_scaler 12.0]
+Progress: Parameterizing module scaler
+Progress: Adding video_fifo [altera_up_avalon_video_dual_clock_buffer 12.0]
+Progress: Parameterizing module video_fifo
+Progress: Adding vga_controller [altera_up_avalon_video_vga_controller 12.0]
+Progress: Parameterizing module vga_controller
+Progress: Adding char_drawer [altera_up_avalon_video_character_buffer_with_dma 12.0]
+Progress: Parameterizing module char_drawer
+Progress: Adding alpha_blender [altera_up_avalon_video_alpha_blender 12.0]
+Progress: Parameterizing module alpha_blender
+Progress: Adding buttons [altera_up_avalon_parallel_port 12.0]
+Progress: Parameterizing module buttons
+Progress: Adding sys_clk [altera_avalon_timer 12.0]
+Progress: Parameterizing module sys_clk
+Progress: Adding timestamp_clk [altera_avalon_timer 12.0]
+Progress: Parameterizing module timestamp_clk
+Progress: Adding hw_only_clk [altera_avalon_timer 12.0]
+Progress: Parameterizing module hw_only_clk
+Progress: Adding sdcard [Altera_UP_SD_Card_Avalon_Interface 1.0]
+Progress: Parameterizing module sdcard
+Progress: Adding clk_1 [clock_source 12.0]
+Progress: Parameterizing module clk_1
+Progress: Adding audio_config [altera_up_avalon_audio_and_video_config 12.0]
+Progress: Parameterizing module audio_config
+Progress: Adding audio [altera_up_avalon_audio 12.0]
+Progress: Parameterizing module audio
+Progress: Building connections
+Progress: Parameterizing connections
+Progress: Validating
+Progress: Done reading input file
+Info: nios_system.onchip_memory: Memory will be initialized from onchip_memory.hex
+Info: nios_system.switches: PIO inputs are not hardwired in test bench. Undefined values will be read from PIO inputs during simulation.
+Info: nios_system.rgb_resampler: RGB Resampling: 16 (bits) x 1 (planes) -> 10 (bits) x 3 (planes)
+Info: nios_system.scaler: Change in Resolution: 320 x 240 -> 640 x 480
+Info: nios_system.vga_controller: Video Output Stream: Format: 640 x 480 with Color: 10 (bits) x 3 (planes)
+Info: nios_system.char_drawer: Character Resolution: 80 x 60
+Warning: nios_system.audio: Interrupt sender audio.interrupt is not connected to an interrupt receiver
+Info: nios_system: Generating nios_system "nios_system" for QUARTUS_SYNTH
+Info: pipeline_bridge_swap_transform: After transform: 25 modules, 103 connections
+Info: No custom instruction connections, skipping transform 
+Info: merlin_translator_transform: After transform: 46 modules, 185 connections
+Info: merlin_domain_transform: After transform: 87 modules, 458 connections
+Info: merlin_router_transform: After transform: 108 modules, 540 connections
+Info: merlin_traffic_limiter_transform: After transform: 110 modules, 550 connections
+Info: merlin_burst_transform: After transform: 114 modules, 566 connections
+Info: reset_adaptation_transform: After transform: 118 modules, 456 connections
+Info: merlin_network_to_switch_transform: After transform: 159 modules, 542 connections
+Info: merlin_width_transform: After transform: 169 modules, 572 connections
+Info: Inserting clock-crossing logic between cmd_xbar_demux_001.src11 and cmd_xbar_mux_011.sink0
+Info: Inserting clock-crossing logic between rsp_xbar_demux_011.src0 and rsp_xbar_mux_001.sink11
+Info: com_altera_sopcmodel_transforms_avalon_ClockCrossingTransform: After transform: 171 modules, 582 connections
+Info: limiter_update_transform: After transform: 171 modules, 584 connections
+Info: merlin_interrupt_mapper_transform: After transform: 172 modules, 587 connections
+Info: nios2_processor: Starting RTL generation for module 'nios_system_nios2_processor'
+Info: nios2_processor:   Generation command is [exec C:/altera/12.0sp2/quartus/../ip/altera/nios2_ip/altera_nios2/eperl.exe -I C:/altera/12.0sp2/quartus/common/ip/altera/common/perl/5.8.3 -I C:/altera/12.0sp2/quartus/sopc_builder/bin/europa -I C:/altera/12.0sp2/quartus/sopc_builder/bin/perl_lib -I C:/altera/12.0sp2/quartus/sopc_builder/bin -I C:/altera/12.0sp2/quartus/../ip/altera/nios2_ip/altera_nios2/cpu_lib -I C:/altera/12.0sp2/quartus/../ip/altera/nios2_ip/altera_nios2/nios_lib -I C:/altera/12.0sp2/quartus/../ip/altera/nios2_ip/altera_nios2 -I C:/altera/12.0sp2/quartus/../ip/altera/nios2_ip/altera_nios2 -- C:/altera/12.0sp2/quartus/../ip/altera/nios2_ip/altera_nios2/generate_rtl.epl --name=nios_system_nios2_processor --dir=C:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0003_nios2_processor_gen/ --quartus_dir=C:/altera/12.0sp2/quartus --verilog --config=C:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0003_nios2_processor_gen//nios_system_nios2_processor_processor_configuration.pl  --do_build_sim=0    --bogus  ]
+Info: nios2_processor: # 2013.11.10 12:41:02 (*) Starting Nios II generation
+Info: nios2_processor: # 2013.11.10 12:41:02 (*)   Checking for encrypted license (non-evaluation).
+Info: nios2_processor: # 2013.11.10 12:41:02 (*)   LM_LICENSE_FILE environment variable is empty
+Info: nios2_processor: # 2013.11.10 12:41:02 (*)   Encrypted license not found.  Defaulting to OCP evaluation license (produces a time-limited SOF)
+Info: nios2_processor: # 2013.11.10 12:41:02 (*)   Elaborating CPU configuration settings
+Info: nios2_processor: # 2013.11.10 12:41:03 (*)   Creating all objects for CPU
+Info: nios2_processor: # 2013.11.10 12:41:03 (*)     Testbench
+Info: nios2_processor: # 2013.11.10 12:41:03 (*)     Instruction decoding
+Info: nios2_processor: # 2013.11.10 12:41:03 (*)       Instruction fields
+Info: nios2_processor: # 2013.11.10 12:41:03 (*)       Instruction decodes
+Info: nios2_processor: # 2013.11.10 12:41:05 (*)       Signals for RTL simulation waveforms
+Info: nios2_processor: # 2013.11.10 12:41:05 (*)       Instruction controls
+Info: nios2_processor: # 2013.11.10 12:41:05 (*)     Pipeline frontend
+Info: nios2_processor: # 2013.11.10 12:41:05 (*)     Pipeline backend
+Info: nios2_processor: # 2013.11.10 12:41:10 (*)   Generating RTL from CPU objects
+Info: nios2_processor: # 2013.11.10 12:41:12 (*)   Creating encrypted RTL
+Info: nios2_processor: # 2013.11.10 12:41:13 (*) Done Nios II generation
+Info: nios2_processor: Done RTL generation for module 'nios_system_nios2_processor'
+Info: nios2_processor: "nios_system" instantiated altera_nios2_qsys "nios2_processor"
+Info: Starting classic module elaboration.
+Qt: Untested Windows version 6.2 detected!
+"c:/altera/12.0sp2/quartus/bin/jre/bin/java.exe" -Xmx512M -classpath "c:/altera/12.0sp2/quartus/sopc_builder/bin/sopc_builder.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/PinAssigner.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/sopc_wizard.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/jptf.jar" sopc_builder.sopc_builder  -d"c:/altera/12.0sp2/quartus/sopc_builder" -notalkback=1 -projectnameyysystem.qpf -projectpathC:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0004_sopclgen  --no_splash --refresh C:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0004_sopclgen/yysystem.v --quartus_dir="c:/altera/12.0sp2/quartus" --sopc_perl="c:/altera/12.0sp2/quartus/bin/perl" --sopc_lib_path="++c:/altera/12.0sp2/quartus/../ip/altera/sopc_builder_ip+c:/altera/12.0sp2/quartus/../ip/altera/nios2_ip"
+Info: Finished elaborating classic module.
+Executing: C:/altera/12.0sp2/quartus//sopc_builder/bin/sopc_builder --classic --generate C:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0004_sopclgen/yysystem.ptf
+Info: Running sopc_builder...
+Qt: Untested Windows version 6.2 detected!
+"c:/altera/12.0sp2/quartus/bin/jre/bin/java.exe" -Xmx512M -classpath "c:/altera/12.0sp2/quartus/sopc_builder/bin/sopc_builder.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/PinAssigner.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/sopc_wizard.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/jptf.jar" sopc_builder.sopc_builder  -d"c:/altera/12.0sp2/quartus/sopc_builder" -notalkback=1 -projectnameyysystem.qpf -projectpathC:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0004_sopclgen  --generate C:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0004_sopclgen/yysystem.v --quartus_dir="c:/altera/12.0sp2/quartus" --sopc_perl="c:/altera/12.0sp2/quartus/bin/perl" --sopc_lib_path="++c:/altera/12.0sp2/quartus/../ip/altera/sopc_builder_ip+c:/altera/12.0sp2/quartus/../ip/altera/nios2_ip"
+No .sopc_builder configuration file(!)
+.
+# 2013.11.10 12:41:36 (*) Success: sopc_builder finished.
+Info: onchip_memory: "nios_system" instantiated altera_avalon_onchip_memory2 "onchip_memory"
+Info: Starting classic module elaboration.
+Qt: Untested Windows version 6.2 detected!
+"c:/altera/12.0sp2/quartus/bin/jre/bin/java.exe" -Xmx512M -classpath "c:/altera/12.0sp2/quartus/sopc_builder/bin/sopc_builder.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/PinAssigner.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/sopc_wizard.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/jptf.jar" sopc_builder.sopc_builder  -d"c:/altera/12.0sp2/quartus/sopc_builder" -notalkback=1 -projectnameyysystem.qpf -projectpathC:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0005_sopclgen  --no_splash --refresh C:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0005_sopclgen/yysystem.v --quartus_dir="c:/altera/12.0sp2/quartus" --sopc_perl="c:/altera/12.0sp2/quartus/bin/perl" --sopc_lib_path="++c:/altera/12.0sp2/quartus/../ip/altera/sopc_builder_ip+c:/altera/12.0sp2/quartus/../ip/altera/nios2_ip"
+Info: Finished elaborating classic module.
+Executing: C:/altera/12.0sp2/quartus//sopc_builder/bin/sopc_builder --classic --generate C:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0005_sopclgen/yysystem.ptf
+Info: Running sopc_builder...
+Qt: Untested Windows version 6.2 detected!
+"c:/altera/12.0sp2/quartus/bin/jre/bin/java.exe" -Xmx512M -classpath "c:/altera/12.0sp2/quartus/sopc_builder/bin/sopc_builder.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/PinAssigner.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/sopc_wizard.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/jptf.jar" sopc_builder.sopc_builder  -d"c:/altera/12.0sp2/quartus/sopc_builder" -notalkback=1 -projectnameyysystem.qpf -projectpathC:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0005_sopclgen  --generate C:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0005_sopclgen/yysystem.v --quartus_dir="c:/altera/12.0sp2/quartus" --sopc_perl="c:/altera/12.0sp2/quartus/bin/perl" --sopc_lib_path="++c:/altera/12.0sp2/quartus/../ip/altera/sopc_builder_ip+c:/altera/12.0sp2/quartus/../ip/altera/nios2_ip"
+No .sopc_builder configuration file(!)
+.
+# 2013.11.10 12:41:59 (*) Success: sopc_builder finished.
+Info: switches: "nios_system" instantiated altera_avalon_pio "switches"
+Info: Starting classic module elaboration.
+Qt: Untested Windows version 6.2 detected!
+"c:/altera/12.0sp2/quartus/bin/jre/bin/java.exe" -Xmx512M -classpath "c:/altera/12.0sp2/quartus/sopc_builder/bin/sopc_builder.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/PinAssigner.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/sopc_wizard.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/jptf.jar" sopc_builder.sopc_builder  -d"c:/altera/12.0sp2/quartus/sopc_builder" -notalkback=1 -projectnameyysystem.qpf -projectpathC:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0006_sopclgen  --no_splash --refresh C:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0006_sopclgen/yysystem.v --quartus_dir="c:/altera/12.0sp2/quartus" --sopc_perl="c:/altera/12.0sp2/quartus/bin/perl" --sopc_lib_path="++c:/altera/12.0sp2/quartus/../ip/altera/sopc_builder_ip+c:/altera/12.0sp2/quartus/../ip/altera/nios2_ip"
+Info: Finished elaborating classic module.
+Executing: C:/altera/12.0sp2/quartus//sopc_builder/bin/sopc_builder --classic --generate C:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0006_sopclgen/yysystem.ptf
+Info: Running sopc_builder...
+Qt: Untested Windows version 6.2 detected!
+"c:/altera/12.0sp2/quartus/bin/jre/bin/java.exe" -Xmx512M -classpath "c:/altera/12.0sp2/quartus/sopc_builder/bin/sopc_builder.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/PinAssigner.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/sopc_wizard.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/jptf.jar" sopc_builder.sopc_builder  -d"c:/altera/12.0sp2/quartus/sopc_builder" -notalkback=1 -projectnameyysystem.qpf -projectpathC:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0006_sopclgen  --generate C:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0006_sopclgen/yysystem.v --quartus_dir="c:/altera/12.0sp2/quartus" --sopc_perl="c:/altera/12.0sp2/quartus/bin/perl" --sopc_lib_path="++c:/altera/12.0sp2/quartus/../ip/altera/sopc_builder_ip+c:/altera/12.0sp2/quartus/../ip/altera/nios2_ip"
+No .sopc_builder configuration file(!)
+.
+# 2013.11.10 12:42:22 (*) Success: sopc_builder finished.
+Info: leds: "nios_system" instantiated altera_avalon_pio "leds"
+Info: Starting classic module elaboration.
+Qt: Untested Windows version 6.2 detected!
+"c:/altera/12.0sp2/quartus/bin/jre/bin/java.exe" -Xmx512M -classpath "c:/altera/12.0sp2/quartus/sopc_builder/bin/sopc_builder.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/PinAssigner.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/sopc_wizard.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/jptf.jar" sopc_builder.sopc_builder  -d"c:/altera/12.0sp2/quartus/sopc_builder" -notalkback=1 -projectnameyysystem.qpf -projectpathC:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0007_sopclgen  --no_splash --refresh C:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0007_sopclgen/yysystem.v --quartus_dir="c:/altera/12.0sp2/quartus" --sopc_perl="c:/altera/12.0sp2/quartus/bin/perl" --sopc_lib_path="++c:/altera/12.0sp2/quartus/../ip/altera/sopc_builder_ip+c:/altera/12.0sp2/quartus/../ip/altera/nios2_ip"
+Info: Finished elaborating classic module.
+Executing: C:/altera/12.0sp2/quartus//sopc_builder/bin/sopc_builder --classic --generate C:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0007_sopclgen/yysystem.ptf
+Info: Running sopc_builder...
+Qt: Untested Windows version 6.2 detected!
+"c:/altera/12.0sp2/quartus/bin/jre/bin/java.exe" -Xmx512M -classpath "c:/altera/12.0sp2/quartus/sopc_builder/bin/sopc_builder.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/PinAssigner.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/sopc_wizard.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/jptf.jar" sopc_builder.sopc_builder  -d"c:/altera/12.0sp2/quartus/sopc_builder" -notalkback=1 -projectnameyysystem.qpf -projectpathC:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0007_sopclgen  --generate C:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0007_sopclgen/yysystem.v --quartus_dir="c:/altera/12.0sp2/quartus" --sopc_perl="c:/altera/12.0sp2/quartus/bin/perl" --sopc_lib_path="++c:/altera/12.0sp2/quartus/../ip/altera/sopc_builder_ip+c:/altera/12.0sp2/quartus/../ip/altera/nios2_ip"
+No .sopc_builder configuration file(!)
+.
+# 2013.11.10 12:42:47 (*) Success: sopc_builder finished.
+Info: jtag_uart: "nios_system" instantiated altera_avalon_jtag_uart "jtag_uart"
+Info: Starting classic module elaboration.
+Qt: Untested Windows version 6.2 detected!
+"c:/altera/12.0sp2/quartus/bin/jre/bin/java.exe" -Xmx512M -classpath "c:/altera/12.0sp2/quartus/sopc_builder/bin/sopc_builder.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/PinAssigner.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/sopc_wizard.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/jptf.jar" sopc_builder.sopc_builder  -d"c:/altera/12.0sp2/quartus/sopc_builder" -notalkback=1 -projectnameyysystem.qpf -projectpathC:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0008_sopclgen  --no_splash --refresh C:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0008_sopclgen/yysystem.v --quartus_dir="c:/altera/12.0sp2/quartus" --sopc_perl="c:/altera/12.0sp2/quartus/bin/perl" --sopc_lib_path="++c:/altera/12.0sp2/quartus/../ip/altera/sopc_builder_ip+c:/altera/12.0sp2/quartus/../ip/altera/nios2_ip"
+Info: Finished elaborating classic module.
+Executing: C:/altera/12.0sp2/quartus//sopc_builder/bin/sopc_builder --classic --generate C:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0008_sopclgen/yysystem.ptf
+Info: Running sopc_builder...
+Qt: Untested Windows version 6.2 detected!
+"c:/altera/12.0sp2/quartus/bin/jre/bin/java.exe" -Xmx512M -classpath "c:/altera/12.0sp2/quartus/sopc_builder/bin/sopc_builder.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/PinAssigner.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/sopc_wizard.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/jptf.jar" sopc_builder.sopc_builder  -d"c:/altera/12.0sp2/quartus/sopc_builder" -notalkback=1 -projectnameyysystem.qpf -projectpathC:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0008_sopclgen  --generate C:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0008_sopclgen/yysystem.v --quartus_dir="c:/altera/12.0sp2/quartus" --sopc_perl="c:/altera/12.0sp2/quartus/bin/perl" --sopc_lib_path="++c:/altera/12.0sp2/quartus/../ip/altera/sopc_builder_ip+c:/altera/12.0sp2/quartus/../ip/altera/nios2_ip"
+No .sopc_builder configuration file(!)
+.
+.
+# 2013.11.10 12:43:11 (*) Running Test Generator Program for nios_system_sdram
+# 2013.11.10 12:43:14 (*) Success: sopc_builder finished.
+Info: sdram: "nios_system" instantiated altera_avalon_new_sdram_controller "sdram"
+Info: clocks: Starting Generation of Required Clocks for DE-Series Boards
+Info: clocks: "nios_system" instantiated altera_up_clocks "clocks"
+Info: character_lcd_0: Starting Generation of Character LCD
+Info: character_lcd_0: "nios_system" instantiated altera_up_avalon_character_lcd "character_lcd_0"
+Info: pixel_buffer: Starting Generation of SRAM or SSRAM Controller
+Info: pixel_buffer: "nios_system" instantiated altera_up_avalon_sram "pixel_buffer"
+Info: pixel_buffer_dma: Starting Generation of VGA Pixel Buffer
+Info: pixel_buffer_dma: "nios_system" instantiated altera_up_avalon_video_pixel_buffer_dma "pixel_buffer_dma"
+Info: rgb_resampler: Starting Generation of Video RGB Resampler
+Info: rgb_resampler: "nios_system" instantiated altera_up_avalon_video_rgb_resampler "rgb_resampler"
+Info: scaler: Starting Generation of Video Scaler
+Info: scaler: "nios_system" instantiated altera_up_avalon_video_scaler "scaler"
+Info: video_fifo: Starting Generation of the Dual Clock Buffer
+Info: video_fifo: "nios_system" instantiated altera_up_avalon_video_dual_clock_buffer "video_fifo"
+Info: vga_controller: Starting Generation of VGA Controller
+Info: vga_controller: "nios_system" instantiated altera_up_avalon_video_vga_controller "vga_controller"
+Info: char_drawer: Starting Generation of Character Buffer
+Info: char_drawer: "nios_system" instantiated altera_up_avalon_video_character_buffer_with_dma "char_drawer"
+Info: alpha_blender: Starting Generation of the Alpha Blender
+Info: alpha_blender: "nios_system" instantiated altera_up_avalon_video_alpha_blender "alpha_blender"
+Info: buttons: Starting Generation of Parallel Port
+Info: buttons: "nios_system" instantiated altera_up_avalon_parallel_port "buttons"
+Info: Starting classic module elaboration.
+Qt: Untested Windows version 6.2 detected!
+"c:/altera/12.0sp2/quartus/bin/jre/bin/java.exe" -Xmx512M -classpath "c:/altera/12.0sp2/quartus/sopc_builder/bin/sopc_builder.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/PinAssigner.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/sopc_wizard.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/jptf.jar" sopc_builder.sopc_builder  -d"c:/altera/12.0sp2/quartus/sopc_builder" -notalkback=1 -projectnameyysystem.qpf -projectpathC:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0020_sopclgen  --no_splash --refresh C:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0020_sopclgen/yysystem.v --quartus_dir="c:/altera/12.0sp2/quartus" --sopc_perl="c:/altera/12.0sp2/quartus/bin/perl" --sopc_lib_path="++c:/altera/12.0sp2/quartus/../ip/altera/sopc_builder_ip+c:/altera/12.0sp2/quartus/../ip/altera/nios2_ip"
+Info: Finished elaborating classic module.
+Executing: C:/altera/12.0sp2/quartus//sopc_builder/bin/sopc_builder --classic --generate C:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0020_sopclgen/yysystem.ptf
+Info: Running sopc_builder...
+Qt: Untested Windows version 6.2 detected!
+"c:/altera/12.0sp2/quartus/bin/jre/bin/java.exe" -Xmx512M -classpath "c:/altera/12.0sp2/quartus/sopc_builder/bin/sopc_builder.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/PinAssigner.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/sopc_wizard.jar;c:/altera/12.0sp2/quartus/sopc_builder/bin/jptf.jar" sopc_builder.sopc_builder  -d"c:/altera/12.0sp2/quartus/sopc_builder" -notalkback=1 -projectnameyysystem.qpf -projectpathC:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0020_sopclgen  --generate C:/Users/Home/AppData/Local/Temp/alt6019_5218083209594117230.dir/0020_sopclgen/yysystem.v --quartus_dir="c:/altera/12.0sp2/quartus" --sopc_perl="c:/altera/12.0sp2/quartus/bin/perl" --sopc_lib_path="++c:/altera/12.0sp2/quartus/../ip/altera/sopc_builder_ip+c:/altera/12.0sp2/quartus/../ip/altera/nios2_ip"
+No .sopc_builder configuration file(!)
+.
+# 2013.11.10 12:43:39 (*) Success: sopc_builder finished.
+Info: sys_clk: "nios_system" instantiated altera_avalon_timer "sys_clk"
+Info: sdcard: "nios_system" instantiated Altera_UP_SD_Card_Avalon_Interface "sdcard"
+Info: audio_config: Starting Generation of Audio and Video Config
+Info: audio_config: "nios_system" instantiated altera_up_avalon_audio_and_video_config "audio_config"
+Info: audio: Starting Generation of Audio Controller
+Info: audio: "nios_system" instantiated altera_up_avalon_audio "audio"
+Info: nios2_processor_instruction_master_translator: "nios_system" instantiated altera_merlin_master_translator "nios2_processor_instruction_master_translator"
+Info: nios2_processor_jtag_debug_module_translator: "nios_system" instantiated altera_merlin_slave_translator "nios2_processor_jtag_debug_module_translator"
+Info: nios2_processor_instruction_master_translator_avalon_universal_master_0_agent: "nios_system" instantiated altera_merlin_master_agent "nios2_processor_instruction_master_translator_avalon_universal_master_0_agent"
+Info: nios2_processor_jtag_debug_module_translator_avalon_universal_slave_0_agent: "nios_system" instantiated altera_merlin_slave_agent "nios2_processor_jtag_debug_module_translator_avalon_universal_slave_0_agent"
+Info: nios2_processor_jtag_debug_module_translator_avalon_universal_slave_0_agent_rsp_fifo: "nios_system" instantiated altera_avalon_sc_fifo "nios2_processor_jtag_debug_module_translator_avalon_universal_slave_0_agent_rsp_fifo"
+Info: addr_router: "nios_system" instantiated altera_merlin_router "addr_router"
+Info: addr_router_001: "nios_system" instantiated altera_merlin_router "addr_router_001"
+Info: addr_router_002: "nios_system" instantiated altera_merlin_router "addr_router_002"
+Info: id_router: "nios_system" instantiated altera_merlin_router "id_router"
+Info: id_router_002: "nios_system" instantiated altera_merlin_router "id_router_002"
+Info: id_router_003: "nios_system" instantiated altera_merlin_router "id_router_003"
+Info: id_router_006: "nios_system" instantiated altera_merlin_router "id_router_006"
+Info: id_router_007: "nios_system" instantiated altera_merlin_router "id_router_007"
+Info: limiter: "nios_system" instantiated altera_merlin_traffic_limiter "limiter"
+Info: burst_adapter: "nios_system" instantiated altera_merlin_burst_adapter "burst_adapter"
+Info: rst_controller: "nios_system" instantiated altera_reset_controller "rst_controller"
+Info: cmd_xbar_demux: "nios_system" instantiated altera_merlin_demultiplexer "cmd_xbar_demux"
+Info: cmd_xbar_demux_001: "nios_system" instantiated altera_merlin_demultiplexer "cmd_xbar_demux_001"
+Info: cmd_xbar_demux_002: "nios_system" instantiated altera_merlin_demultiplexer "cmd_xbar_demux_002"
+Info: cmd_xbar_mux: "nios_system" instantiated altera_merlin_multiplexer "cmd_xbar_mux"
+Info: cmd_xbar_mux_002: "nios_system" instantiated altera_merlin_multiplexer "cmd_xbar_mux_002"
+Info: Reusing file C:/Users/Home/Documents/GitHub/super-smash-poker/de2/ssp_hardware/nios_system/synthesis/submodules/altera_merlin_arbitrator.sv
+Info: rsp_xbar_demux: "nios_system" instantiated altera_merlin_demultiplexer "rsp_xbar_demux"
+Info: rsp_xbar_demux_002: "nios_system" instantiated altera_merlin_demultiplexer "rsp_xbar_demux_002"
+Info: rsp_xbar_demux_003: "nios_system" instantiated altera_merlin_demultiplexer "rsp_xbar_demux_003"
+Info: rsp_xbar_demux_006: "nios_system" instantiated altera_merlin_demultiplexer "rsp_xbar_demux_006"
+Info: rsp_xbar_mux: "nios_system" instantiated altera_merlin_multiplexer "rsp_xbar_mux"
+Info: Reusing file C:/Users/Home/Documents/GitHub/super-smash-poker/de2/ssp_hardware/nios_system/synthesis/submodules/altera_merlin_arbitrator.sv
+Info: rsp_xbar_mux_001: "nios_system" instantiated altera_merlin_multiplexer "rsp_xbar_mux_001"
+Info: Reusing file C:/Users/Home/Documents/GitHub/super-smash-poker/de2/ssp_hardware/nios_system/synthesis/submodules/altera_merlin_arbitrator.sv
+Info: width_adapter: "nios_system" instantiated altera_merlin_width_adapter "width_adapter"
+Info: Reusing file C:/Users/Home/Documents/GitHub/super-smash-poker/de2/ssp_hardware/nios_system/synthesis/submodules/altera_merlin_burst_uncompressor.sv
+Info: crosser: "nios_system" instantiated altera_avalon_st_handshake_clock_crosser "crosser"
+Info: Reusing file C:/Users/Home/Documents/GitHub/super-smash-poker/de2/ssp_hardware/nios_system/synthesis/submodules/altera_avalon_st_pipeline_base.v
+Info: irq_mapper: "nios_system" instantiated altera_irq_mapper "irq_mapper"
+Info: nios_system: Done nios_system" with 52 modules, 256 files, 4844282 bytes
+Info: ip-generate succeeded.
+Info: Finished: Create HDL design files for synthesis
