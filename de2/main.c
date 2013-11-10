@@ -1,5 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
+
+#define ANTY 100
 
 /* Struct Definitions */
 typedef struct {
@@ -7,8 +10,22 @@ typedef struct {
   char suite;
 } Card;
 
+
+typedef enum {
+  START_BET = 0,
+  CALL = 1,
+  CHECK = 2,
+  RAISE = 3,
+  FOLD = 4
+} PlayerAction;
+
 typedef struct {
   Card hand[2];
+  int total_money;
+
+  bool active;
+  PlayerAction action;
+  int money;
 } Player;
 
 typedef struct {
@@ -19,11 +36,16 @@ typedef struct {
 
   Card cards_on_table[5];
   char number_cards_on_table;
+
+  int pot;
+  int current_bet;
 } Dealer;
 
 /* Global variables */
 Dealer * dealer;
+int dealer_chip = 0;
 
+/* Different states that a game can be in */
 typedef enum {
   SETUP,
   DEAL_HANDS,
@@ -61,9 +83,16 @@ void initialize_dealer(int number_players) {
   /* Setup players */
   dealer->number_players = number_players;
   dealer->players = malloc(sizeof(Player) * number_players);
+  for (i=0; i<number_players; i++) {
+    dealer->players[i].active = true;
+    dealer->players[i].money = 0;
+    dealer->players[i].total_money = 3000;
+  }
 
   /* Cards on table, zero in the beginning */
   dealer->number_cards_on_table = 0;
+  dealer->pot = 0;
+  dealer->current_bet = 0;
 }
 
 /* Returns a random card from the deck */
@@ -101,34 +130,102 @@ void river() {
   dealer->number_cards_on_table = 5;
 }
 
+/* Gets player bet if player still playing 
+ * TODO change in de2 env 
+ */
+void get_bet_for_player(int pid) {
+  printf("\n\n----------------------------------------");
+  printf("\nYour total money %d and bet money %d", dealer->players[pid].total_money, dealer->players[pid].money);
+  printf("\nPlayer %d\n Enter your action (0 - Bet, 1 - Call, 2 - Check, 3 - Raise, 4 - Fold): ", pid);
+  scanf("%d", &dealer->players[pid].action);
+  
+  if (dealer->players[pid].action == START_BET) {
+    int m;
+    printf("\nBetting value: ");
+    scanf("%d", &m);
+    dealer->current_bet = m;
+    dealer->players[pid].money = m;
+    dealer->players[pid].total_money -= dealer->players[pid].money;
+  }
+
+  if (dealer->players[pid].action == CALL) {
+    dealer->players[pid].total_money -= (dealer->current_bet - dealer->players[pid].money);
+    dealer->players[pid].money += (dealer->current_bet - dealer->players[pid].money);
+  }
+
+  if (dealer->players[pid].action == RAISE) {
+    int m;
+    printf("\nHow much do you want to raise by: ");
+    scanf("%d", &m);
+    dealer->current_bet += m;
+    dealer->players[pid].total_money -= (dealer->current_bet - dealer->players[pid].money);
+    dealer->players[pid].money += (dealer->current_bet - dealer->players[pid].money);
+  }
+
+  if (dealer->players[pid].action == FOLD) {
+    dealer->players[pid].active = false;
+
+    int i, active_players = 0;
+    for (i=0; i<dealer->number_players; i++) {
+      if (dealer->players[i].active) active_players++;
+    }
+  }
+  printf("\nYour total money %d and bet money %d", dealer->players[pid].total_money, dealer->players[pid].money);
+}
+
+/* Returns true if players are still in the process of betting */
+bool still_betting() {
+  int i;
+  for (i=0; i<dealer->number_players; i++) {
+    if (dealer->players[i].money < dealer->current_bet && dealer->players[i].total_money > 0)
+    return true; 
+  }
+  return false;
+}
+
+/* Returns true if player still has to put forward money */
+bool player_still_playing(int pid) {
+  if (!dealer->players[pid].active) return false;
+  else if (dealer->players[pid].money < dealer->current_bet && dealer->players[pid].total_money > 0)
+  return true;
+
+  return false;
+}
+
+
 /* Main */
 int main() {
+  srand(time(NULL)); int i; // TODO change in de2 env
   GameState state = SETUP;
   
   for (;;) {
     switch (state) {
       case SETUP:
         initialize_dealer(2);
+
+        /* Move dealer chip to the next player */
+        if (dealer_chip == dealer->number_players-1) dealer_chip = 0;
+        else dealer_chip++;
+
         state = DEAL_HANDS;
         break;
 
       case DEAL_HANDS:
         deal_hands();
 
-        printf("\n\nDealt cards for Player 1: Suite %d, Value %d & Suite %d, Value %d", 
-          dealer->players[0].hand[0].suite, dealer->players[0].hand[0].value,
-          dealer->players[0].hand[1].suite, dealer->players[0].hand[1].value);
-        printf("\nDealt cards for Player 2: Suite %d, Value %d & Suite %d, Value %d", 
-          dealer->players[1].hand[0].suite, dealer->players[1].hand[0].value,
-          dealer->players[1].hand[1].suite, dealer->players[1].hand[1].value);
+        for (i=0; i<dealer->number_players; i++) {
+          printf("\n\nDealt cards for Player %d: Suite %d, Value %d & Suite %d, Value %d", i,
+            dealer->players[i].hand[0].suite, dealer->players[i].hand[0].value,
+            dealer->players[i].hand[1].suite, dealer->players[i].hand[1].value);
+        }
 
         state = BET;
         break;
 
       case FLOP:
         flop();
-        
-        printf("\n\nFLOP (%d, %d), (%d, %d), (%d, %d)", 
+        printf("\n\n----------------------------------------");
+        printf("\nFLOP (%d, %d), (%d, %d), (%d, %d)", 
           dealer->cards_on_table[0].suite, dealer->cards_on_table[0].value,
           dealer->cards_on_table[1].suite, dealer->cards_on_table[1].value,
           dealer->cards_on_table[2].suite, dealer->cards_on_table[2].value);
@@ -138,8 +235,8 @@ int main() {
 
       case TURN:
         turn();
-
-        printf("\n\nTURN (%d, %d)", 
+        printf("\n\n----------------------------------------");
+        printf("\nTURN (%d, %d)", 
           dealer->cards_on_table[3].suite, dealer->cards_on_table[4].value);
 
         state = BET;
@@ -148,13 +245,58 @@ int main() {
       case RIVER:
         river();
 
-        printf("\n\nRIVER (%d, %d)", 
+        printf("\n\n----------------------------------------");
+        printf("\nRIVER (%d, %d)", 
           dealer->cards_on_table[4].suite, dealer->cards_on_table[4].value);
 
         state = BET;
         break;
 
       case BET:
+        /* Betting Round 1 */
+        get_bet_for_player(dealer_chip);
+        if (dealer_chip == dealer->number_players-1) {
+          for (i=0; i<dealer->number_players-1; i++) {
+            if (dealer->players[i].active) {
+              get_bet_for_player(i);
+            }
+          }
+        } else {
+          for (i=dealer_chip+1; i<dealer->number_players; i++) {
+            if (dealer->players[i].active) {
+              get_bet_for_player(i);
+            }
+          }
+          for (i=0; i<dealer_chip; i++) {
+            if (dealer->players[i].active) {
+              get_bet_for_player(i);
+            }
+          }
+        }
+
+        /* If still betting, continue that */
+        while (still_betting()) {
+          for (i=dealer_chip; i<dealer->number_players; i++) {
+            if (player_still_playing(i)) {
+              get_bet_for_player(i);
+            }
+          }
+          for (i=0; i<dealer_chip; i++) {
+            if (player_still_playing(i)) {
+              get_bet_for_player(i);
+            }
+          }
+       }
+
+        /* Put bet money into the pot */
+        for (i=0; i<dealer->number_players; i++) {
+          dealer->pot += dealer->players[i].money;
+          dealer->players[i].money = 0;
+          dealer->current_bet = 0;
+        }
+
+        printf("\nPOT %d", dealer->pot);
+        printf("\n----------------------------------------\n");
         switch (dealer->number_cards_on_table) {
           case 0: state = FLOP; break;
           case 3: state = TURN; break;
@@ -165,6 +307,11 @@ int main() {
 
       case GAME_OVER:
         printf("\n\nGAME OVER\n\n");
+
+        free(dealer->deck);
+        free(dealer->players);
+        free(dealer);
+
         return 0;
     }
   }
