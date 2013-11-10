@@ -44,18 +44,17 @@
                 android:layout_weight="0.55" >
 
                 <ImageView
-                    android:id="@+id/imageView1"
+                    android:id="@+id/card0"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:src="@drawable/ssp_club_ace" />
+                    android:layout_weight="1" />
 
                 <ImageView
-                    android:id="@+id/imageView2"
+                    android:id="@+id/card1"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:src="@drawable/ssp_spade_ace" />
+                    android:layout_weight="1" />
+
             </LinearLayout>
 
             <LinearLayout

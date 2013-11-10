@@ -12,13 +12,13 @@ public class Card {
 		this.rank = rank;
 	}
 
-	public String toString() {
-		String rank = "";
-		String suit = "";
+	public String getResourceName() {
+		String rank;
+		String suit;
 		
 		switch( this.rank ) {
 		case ACE:
-			rank = "Ace";
+			rank = "ace";
 			break;
 		case TWO:
 			rank = "2";
@@ -48,37 +48,37 @@ public class Card {
 			rank = "10";
 			break;
 		case JACK:
-			rank = "Jack";
+			rank = "jack";
 			break;
 		case QUEEN:
-			rank = "Queen";
+			rank = "queen";
 			break;
 		case KING:
-			rank = "King";
+			rank = "king";
 			break;
 		default:
-			rank = "NULL";
+			rank = "null";
 			break;
 		}
 		
 		switch( this.suit ) {
 		case SPADES:
-			suit = "Spades";
+			suit = "spade";
 			break;
 		case HEARTS:
-			suit = "Hearts";
+			suit = "heart";
 			break;
 		case CLUBS:
-			suit = "Clubs";
+			suit = "club";
 			break;
 		case DIAMONDS:
-			suit = "Diamonds";
+			suit = "diamond";
 			break;
 		default:
-			suit = "NULL";
+			suit = "null";
 		}
 		
-		return rank + " of " + suit;
+		return "ssp_" + suit + "_" + rank;
 	}
 	
 	public static final int SPADES = 4;

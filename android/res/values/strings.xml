@@ -13,5 +13,10 @@
     <string name="FoldCheck">Fold/Check</string>
     <string name="Call">Call</string>
     <string name="Raise">Raise</string>
+    <string name="ssp_socket_connect">openSocket</string>
+    <string name="ssp_socket_close">closeSocket</string>
+    <string name="ssp_socket_send">sendMessage</string>
+    <string name="ssp_settings_save_button">Save</string>
+    <string name="ssp_settings_save">onSettingsSave</string>
 
 </resources>
