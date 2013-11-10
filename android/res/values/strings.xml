@@ -10,5 +10,8 @@
     <string name="ssp_settings_ip">IP:</string>
     <string name="ssp_settings_port">Port:</string>
     <string name="ssp_settings_ip0">192</string>
+    <string name="FoldCheck">Fold/Check</string>
+    <string name="Call">Call</string>
+    <string name="Raise">Raise</string>
 
 </resources>
