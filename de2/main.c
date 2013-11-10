@@ -133,7 +133,7 @@ void river() {
 /* Gets player bet if player still playing 
  * TODO change in de2 env 
  */
-void get_bet_for_player(int pid) {
+int get_bet_for_player(int pid) {
   printf("\n\n----------------------------------------");
   printf("\nYour total money %d and bet money %d", dealer->players[pid].total_money, dealer->players[pid].money);
   printf("\nPlayer %d\n Enter your action (0 - Bet, 1 - Call, 2 - Check, 3 - Raise, 4 - Fold): ", pid);
@@ -169,8 +169,10 @@ void get_bet_for_player(int pid) {
     for (i=0; i<dealer->number_players; i++) {
       if (dealer->players[i].active) active_players++;
     }
+    if (active_players == 1) return -1;
   }
   printf("\nYour total money %d and bet money %d", dealer->players[pid].total_money, dealer->players[pid].money);
+  return 0;
 }
 
 /* Returns true if players are still in the process of betting */
@@ -258,18 +260,18 @@ int main() {
         if (dealer_chip == dealer->number_players-1) {
           for (i=0; i<dealer->number_players-1; i++) {
             if (dealer->players[i].active) {
-              get_bet_for_player(i);
+              if (get_bet_for_player(i) == -1) {state = GAME_OVER; goto HOTSTUFF;}
             }
           }
         } else {
           for (i=dealer_chip+1; i<dealer->number_players; i++) {
             if (dealer->players[i].active) {
-              get_bet_for_player(i);
+              if (get_bet_for_player(i) == -1) {state = GAME_OVER; goto HOTSTUFF;}
             }
           }
           for (i=0; i<dealer_chip; i++) {
             if (dealer->players[i].active) {
-              get_bet_for_player(i);
+              if (get_bet_for_player(i) == -1) {state = GAME_OVER; goto HOTSTUFF;}
             }
           }
         }
@@ -278,12 +280,12 @@ int main() {
         while (still_betting()) {
           for (i=dealer_chip; i<dealer->number_players; i++) {
             if (player_still_playing(i)) {
-              get_bet_for_player(i);
+              if (get_bet_for_player(i) == -1) {state = GAME_OVER; goto HOTSTUFF;}
             }
           }
           for (i=0; i<dealer_chip; i++) {
             if (player_still_playing(i)) {
-              get_bet_for_player(i);
+              if (get_bet_for_player(i) == -1) {state = GAME_OVER; goto HOTSTUFF;}
             }
           }
        }
@@ -303,7 +305,7 @@ int main() {
           case 4: state = RIVER; break;
           case 5: state = GAME_OVER; break;
         }
-        break;
+        HOTSTUFF: break;
 
       case GAME_OVER:
         printf("\n\nGAME OVER\n\n");
