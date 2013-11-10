@@ -17,11 +17,11 @@
         android:layout_gravity="center" >
 
         <TextView
-            android:id="@+id/textView1"
+            android:id="@+id/state"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:layout_gravity="center"
-            android:text="State"
+            android:text=""
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="#ff0000" />
 
@@ -116,12 +116,12 @@
                 android:text="@string/Raise" />
 
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/bank"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_weight="1.1"
-                android:text="Money:"
+                android:text=""
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="#ff0000" />
 

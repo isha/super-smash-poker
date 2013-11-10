@@ -58,7 +58,9 @@ public class Game extends Activity {
 		
 		player.dealHand(hand);
 		
-		updateCardView();
+		updateHandView();
+		updateBankView();
+		updateStateView();
 	}
 
 	private void setupActionBar() {
@@ -103,7 +105,7 @@ public class Game extends Activity {
 	    public void onStopTrackingTouch(SeekBar seekBar) {}
 	}
 	
-	public void updateCardView() {
+	public void updateHandView() {
 		ImageView card0 = (ImageView) findViewById(R.id.card0);
 		int card_resource0 = getResources().getIdentifier(this.player.hand[0].getResourceName(), "drawable", getPackageName());
 		card0.setImageResource(card_resource0);
@@ -113,6 +115,16 @@ public class Game extends Activity {
 		card1.setImageResource(card_resource1);
 	}
 	
+	public void updateStateView() {
+		TextView state = (TextView) findViewById(R.id.state);
+		state.setText(this.player.getStateMessage());
+	}
+	
+	public void updateBankView() {
+		TextView bank = (TextView) findViewById(R.id.bank);
+		bank.setText("$" + Integer.toString(this.player.bank));
+	}
+	
 	public void onSeekBarClick(View view){
 	    int seekValue = BetBar.getProgress();
 		BetText.setText(Integer.toString(seekValue));
@@ -120,14 +132,15 @@ public class Game extends Activity {
 		t.show();
 	}
 	
-	public void sendMessage(View view, byte[] data) {
+	public void sendMessage(View view) {
 		SuperSmashPoker app = (SuperSmashPoker) getApplication();
 		
-		byte buffer[] = new byte[data.length + 2];
+		String data = "Potato";
 		
-		buffer[0] = app.client_id;
-		buffer[1] = (byte) data.length; 
-		System.arraycopy(data, 0, buffer, 1, data.length);
+		byte buffer[] = new byte[data.length() + 1];
+		
+		buffer[1] = (byte) data.length(); 
+		System.arraycopy(data.getBytes(), 0, buffer, 1, data.length());
 
 		// Now send through the output stream of the socket
 		
@@ -135,7 +148,7 @@ public class Game extends Activity {
 		try {
 			out = app.socket.getOutputStream();
 			try {
-				out.write(buffer, 0, data.length + 2);
+				out.write(buffer, 0, data.length() + 1);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
