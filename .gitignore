@@ -1,3 +1,25 @@
 # Android Binaries
 android/bin/*
 android/gen/*
+
+# Quartus build related
+de2/*.rpt
+de2/*.done
+de2/*.summary
+de2/db/*
+de2/incremental_db/compiled_partitions/*
+de2/simulation/modelsim/*
+de2/nios_system.sopcinfo
+de2/nios_system/synthesis/nios_system.qip
+de2/nios_system/synthesis/nios_system.v
+de2/vga_exercise.jdi
+de2/vga_exercise.pin
+de2/vga_exercise.pof
+de2/vga_exercise.sof
+
+
+# Qsys generation related
+de2/nios_system.html
+de2/.qsys_edit/*
+de2/nios_system/synthesis/submodules/nios_system_nios2_processor_ociram_default_contents.mif
+
