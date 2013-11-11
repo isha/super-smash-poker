@@ -16,6 +16,7 @@ import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -24,8 +25,14 @@ import android.widget.Toast;
 
 public class Game extends Activity {
 	Player player;
-	SeekBar BetBar;
-	TextView BetText;
+	SeekBar betBar;
+	TextView betText;
+	Button checkFoldBut;
+	Button callBut;
+	Button raiseBut;
+	TextView bankText;
+	TextView stateText;
+	
 	int MaxBet = 1000;
 	
 	@Override
@@ -39,25 +46,30 @@ public class Game extends Activity {
 		setupActionBar();
         getActionBar().hide();
 
-        BetText = (TextView) findViewById(R.id.textView4);
-        BetBar = (SeekBar) findViewById(R.id.seekBar1);
-        BetBar.setOnSeekBarChangeListener(new SeekBarListener());
+        betText = (TextView) findViewById(R.id.textView4);
+        betBar = (SeekBar) findViewById(R.id.seekBar1);
+        checkFoldBut = (Button) findViewById(R.id.button1);
+        callBut = (Button) findViewById(R.id.button2);
+        raiseBut = (Button) findViewById(R.id.button3);
+        stateText = (TextView) findViewById(R.id.state);
+        bankText = (TextView) findViewById(R.id.bank);
+        betBar.setOnSeekBarChangeListener(new SeekBarListener());
         
         TCPReadTimerTask tcp_task = new TCPReadTimerTask();
 		Timer tcp_timer = new Timer();
 		tcp_timer.schedule(tcp_task, 3000, 500);
 		
 		player = new Player(0);
-		
+
 		Card[] hand = new Card[2];
 		hand[0] = new Card(Card.HEARTS, Card.QUEEN);
 		hand[1] = new Card(Card.SPADES, Card.KING);
 		
 		player.dealHand(hand);
-		
 		updateHandView();
-		updateBankView();
 		updateStateView();
+		updateBankView();
+		updateBetBar();
 	}
 
 	private void setupActionBar() {
@@ -85,7 +97,7 @@ public class Game extends Activity {
 	    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 	    	int textBet = 0;
 	    	try{
-		    	textBet = Integer.parseInt(BetText.getText().toString());
+		    	textBet = Integer.parseInt(betText.getText().toString());
 	    	}catch(NumberFormatException e){}
 	    	
 	    	if (textBet < 0)
@@ -94,7 +106,7 @@ public class Game extends Activity {
 	    		textBet = MaxBet;
 	    	
 	    	if (textBet != progress)
-	    		BetText.setText(""+progress);
+	    		betText.setText(""+progress);
 	    }
 
 	    public void onStartTrackingTouch(SeekBar seekBar) {}
@@ -113,18 +125,20 @@ public class Game extends Activity {
 	}
 	
 	public void updateStateView() {
-		TextView state = (TextView) findViewById(R.id.state);
-		state.setText(this.player.getStateMessage());
+		stateText.setText(this.player.getStateMessage());
 	}
 	
 	public void updateBankView() {
-		TextView bank = (TextView) findViewById(R.id.bank);
-		bank.setText("$" + Integer.toString(this.player.bank));
+		bankText.setText("$" + Integer.toString(this.player.bank));
+	}
+	
+	public void updateBetBar() {
+		betBar.setMax(this.player.bank);
 	}
 	
 	public void onSeekBarClick(View view){
-	    int seekValue = BetBar.getProgress();
-		BetText.setText(Integer.toString(seekValue));
+	    int seekValue = betBar.getProgress();
+		betText.setText(Integer.toString(seekValue));
 		Toast t = Toast.makeText(getApplicationContext(),"onSeekBar Clicked", Toast.LENGTH_LONG); 
 		t.show();
 	}
@@ -167,14 +181,15 @@ public class Game extends Activity {
 	}
 	
 	public void closeSocket(View view) {
-		SuperSmashPoker app = (SuperSmashPoker) getApplication();
-		Socket s = app.socket;
-		try {
-			s.getOutputStream().close();
-			s.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		SuperSmashPoker app = (SuperSmashPoker) getApplication();
+//		Socket s = app.socket;
+//		try {
+//			s.getOutputStream().close();
+//			s.close();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+		startState();
 	}
 	
 	public class SocketConnect extends AsyncTask<Void, Void, Socket> {
@@ -236,5 +251,35 @@ public class Game extends Activity {
 				}
 			}
 		}
+	}
+	
+	public void waitState(){
+		checkFoldBut.setEnabled(false);
+		callBut.setEnabled(false);
+		raiseBut.setEnabled(false);
+		betBar.setEnabled(false);
+		
+		stateText.setText(player.getStateMessage());
+	}
+	
+	public void betState(){
+		checkFoldBut.setEnabled(true);
+		callBut.setEnabled(true);
+		raiseBut.setEnabled(true);
+		betBar.setEnabled(true);
+		
+		updateBankView();
+		updateStateView();
+		updateBetBar();
+	}
+	
+	public void startState(){
+		Card[] hand = new Card[2];
+		hand[0] = new Card(Card.HEARTS, Card.QUEEN);
+		hand[1] = new Card(Card.SPADES, Card.KING);
+		
+		player.dealHand(hand);
+		updateHandView();
+		waitState();
 	}
 }
