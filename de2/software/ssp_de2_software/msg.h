@@ -18,6 +18,37 @@ void initialize_messaging() {
 	 uart = alt_up_rs232_open_dev("/dev/rs232_0");
 }
 
+/* Wait for some time to give android devices chance to connect.
+ * From the messages received, assign each player a client id
+ */
+void init_players() {
+	 printf("Clearing read buffer to start\n");
+	 while (alt_up_rs232_get_used_space_in_read_FIFO(uart)) {
+		 alt_up_rs232_read_data(uart, &data, &parity);
+	 }
+
+	 // wait for something to be in the buffer
+	 printf("Waiting for some data from the Middleman\n");
+	 while (alt_up_rs232_get_used_space_in_read_FIFO(uart) == 0);
+
+	 // save data in a character array
+	 alt_up_rs232_read_data(uart, &data, &parity);
+	 num_to_receive = (int)data;
+
+	 printf("About to receive %d characters:\n", num_to_receive);
+	 for (i = 0; i < num_to_receive; i++) {
+		 while (alt_up_rs232_get_used_space_in_read_FIFO(uart) == 0);
+		 alt_up_rs232_read_data(uart, &data, &parity);
+		 message[i] = data;
+	 }
+	 message[i] = '\0';
+
+	 printf("\n%s", message);
+}
+
+/* First message to the clients. Send hand information, state and money
+ * Money to be sent is the money they started with (received in a message before minus antes)
+ */
 void send_player_hands() {
 	int i;
 	for (i=0; i<dealer->number_players; i++) {
