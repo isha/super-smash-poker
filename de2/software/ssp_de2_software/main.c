@@ -165,10 +165,10 @@ int main()
 	srand(alt_timestamp()); int i; // TODO change in de2 env
 	GameState state = SETUP;
 
-	game_screen();
+	init_players();
 
 	for (;;) {
-		game_screen();
+	game_screen();
 	switch (state) {
 	  case SETUP:
 		initialize_dealer(2);
