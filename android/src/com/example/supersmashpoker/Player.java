@@ -8,7 +8,7 @@ public class Player {
 	
 	public Player(int number) {
 		this.number = number;
-		this.state = WAITING;
+		this.state = START;
 		this.bank = 1000;
 	}
 	
@@ -17,9 +17,19 @@ public class Player {
 	}
 	
 	public String getStateMessage() {
-		return "";
+		switch (this.state){
+		case START:
+			return "Welcome to Super Smash Poker!";
+		case WAITING:
+			return "Just chill, Dealer is busy!";
+		case TURN:
+			return "Your turn! Ready to up the Ante?";
+		default:
+			return "";
+		}
 	}
 	
-	public static final int WAITING = 0;
-	public static final int TURN = 0;
+	public static final int START = 0;
+	public static final int WAITING = 1;
+	public static final int TURN = 2;
 }

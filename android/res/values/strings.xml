@@ -18,5 +18,6 @@
     <string name="ssp_socket_send">sendMessage</string>
     <string name="ssp_settings_save_button">Save</string>
     <string name="ssp_settings_save">onSettingsSave</string>
+    <string name="title_activity_connect">Connect</string>
 
 </resources>

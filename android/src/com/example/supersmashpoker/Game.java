@@ -13,12 +13,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.NavUtils;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -139,7 +136,7 @@ public class Game extends Activity {
 		
 		byte buffer[] = new byte[data.length() + 1];
 		
-		buffer[1] = (byte) data.length(); 
+		buffer[0] = (byte) data.length(); 
 		System.arraycopy(data.getBytes(), 0, buffer, 1, data.length());
 
 		// Now send through the output stream of the socket
@@ -228,7 +225,7 @@ public class Game extends Activity {
 						
 						runOnUiThread(new Runnable() {
 							public void run() {
-								Toast t = Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG);
+								Toast t = Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT);
 								t.show();
 							}
 						});
