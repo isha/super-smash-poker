@@ -5,121 +5,21 @@
 #include "sdcard.h"
 #include "audio.h"
 #include "bitmap.h"
-
-#define MAX_MESSAGE_LENGTH 30
+#include "def.h"
+#include "msg.h"
 
 void init() {
 	initialize_vga();
 	initialize_sdcard();
 	alt_timestamp_start();
 	initialize_audio();
+	initialize_messaging();
 }
 
-void messaging() {
-	 int i;
-	 int num_to_receive;
-	 unsigned char data;
-	 unsigned char parity;
-	 unsigned char message[MAX_MESSAGE_LENGTH];
+/***************************************************************************/
 
-	 printf("UART Initialization\n");
-	 alt_up_rs232_dev* uart = alt_up_rs232_open_dev("/dev/rs232_0");
-
-
-	 // main loop to send back data
-	 while (1) {
-
-		 printf("Clearing read buffer to start\n");
-		 while (alt_up_rs232_get_used_space_in_read_FIFO(uart)) {
-		 alt_up_rs232_read_data(uart, &data, &parity);
-		 }
-
-		 // wait for something to be in the buffer
-		 printf("Waiting for some data from the Middleman\n");
-		 while (alt_up_rs232_get_used_space_in_read_FIFO(uart) == 0)
-			 ;
-
-		 // save data in a character array
-		 alt_up_rs232_read_data(uart, &data, &parity);
-		 num_to_receive = (int)data;
-
-		 printf("About to receive %d characters:\n", num_to_receive);
-		 for (i = 0; i < num_to_receive; i++) {
-			 while (alt_up_rs232_get_used_space_in_read_FIFO(uart) == 0)
-				 ;
-			 alt_up_rs232_read_data(uart, &data, &parity);
-			 printf("%c", data);
-			 message[i] = data;
-		 }
-		 message[i] = '\0';
-
-		 printf("\n%s", message);
-
-		 // Now send the actual message to the Middleman
-		 alt_up_rs232_write_data(uart, (unsigned char) strlen(message));
-		 for (i = 0; i < strlen(message); i++) {
-			 alt_up_rs232_write_data(uart, message[i]);
-		 }
-
-		 printf("\nMessage has been sent! Please send another message\n");
-
-	 }
-}
-
-
-#define ANTY 100
-
-/* Struct Definitions */
-typedef struct {
-  char value;
-  char suite;
-} Card;
-
-
-typedef enum {
-  START_BET = 0,
-  CALL = 1,
-  CHECK = 2,
-  RAISE = 3,
-  FOLD = 4
-} PlayerAction;
-
-typedef struct {
-  Card hand[2];
-  int total_money;
-
-  bool active;
-  PlayerAction action;
-  int money;
-} Player;
-
-typedef struct {
-  Player * players;
-  Card * deck;
-  char number_players;
-  char cards_in_deck;
-
-  Card cards_on_table[5];
-  char number_cards_on_table;
-
-  int pot;
-  int current_bet;
-} Dealer;
-
-/* Global variables */
 Dealer * dealer;
 int dealer_chip = 0;
-
-/* Different states that a game can be in */
-typedef enum {
-  SETUP,
-  DEAL_HANDS,
-  FLOP,
-  TURN,
-  RIVER,
-  BET,
-  GAME_OVER
-} GameState;
 
 /* Method definitions */
 void initialize_dealer(int number_players) {
@@ -265,7 +165,10 @@ int main()
 	srand(alt_timestamp()); int i; // TODO change in de2 env
 	GameState state = SETUP;
 
+	game_screen();
+
 	for (;;) {
+		game_screen();
 	switch (state) {
 	  case SETUP:
 		initialize_dealer(2);

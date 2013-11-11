@@ -12,6 +12,7 @@
 #include "altera_up_avalon_video_character_buffer_with_dma.h"
 #include "altera_up_avalon_video_pixel_buffer_dma.h"
 #include "io.h"
+#include "def.h"
 
 #define RESOLUTION_X 320
 #define RESOLUTION_Y 240
@@ -55,6 +56,26 @@ void draw_to_screen() {
 			}
 		}
 	}
+}
+
+void game_screen() {
+	alt_up_char_buffer_clear(char_buffer);
+
+	char str1[50], str2[30];
+
+	sprintf(str1, "P1: %d", dealer->players[0].total_money);
+	sprintf(str2, "%d of %d and %d of %d", dealer->players[0].hand[0].value, dealer->players[0].hand[0].suite,
+			dealer->players[0].hand[1].value, dealer->players[0].hand[1].suite);
+
+	alt_up_char_buffer_string(char_buffer, str1, 12, 50);
+	alt_up_char_buffer_string(char_buffer, str2, 12, 51);
+
+	sprintf(str1, "P2: %d", dealer->players[0].total_money);
+	sprintf(str2, "%d of %d and %d of %d", dealer->players[1].hand[0].value, dealer->players[1].hand[0].suite,
+			dealer->players[1].hand[1].value, dealer->players[1].hand[1].suite);
+
+	alt_up_char_buffer_string(char_buffer, str1, 49, 50);
+	alt_up_char_buffer_string(char_buffer, str2, 49, 51);
 }
 
 /* Author : Jeff Goeders
