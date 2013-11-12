@@ -28,6 +28,8 @@ public class Player {
 			return "YOU WON!";
 		case LOSE:
 			return "You lost";
+		case FOLD:
+			return "Folded like a coward";
 		default:
 			return "";
 		}
@@ -38,4 +40,5 @@ public class Player {
 	public static final int TURN = 2;
 	public static final int WIN = 3;
 	public static final int LOSE = 4;
+	public static final int FOLD = 5;
 }

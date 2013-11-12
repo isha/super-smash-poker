@@ -107,6 +107,14 @@ public class Game extends Activity {
         ImageView card1 = (ImageView) findViewById(R.id.card1);
 		int card_resource1 = getResources().getIdentifier(this.player.hand[1].getResourceName(), "drawable", getPackageName());
 		card1.setImageResource(card_resource1);
+		
+		if (player.state == Player.FOLD){
+			card0.setImageAlpha(127);
+			card1.setImageAlpha(127);
+		}else{
+			card0.setImageAlpha(255);
+			card1.setImageAlpha(255);
+		}		
 	}
 	
 	public void updateStateView() {
@@ -286,6 +294,23 @@ public class Game extends Activity {
 		updateBankView();
 		updateBetBar();
 		updateStateView();
+	}
+	
+	public void foldCheckClicked(View view){
+		player.state = Player.FOLD;
+		
+		setAllEnabled();
+		
+		updateStateView();
+		updateHandView();
+	}
+	
+	public void CallClicked(){
+		
+	}
+	
+	public void RaiseClicked(){
+		
 	}
 	
 	// Enables or disables all the user controlled widgets
