@@ -9,6 +9,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -110,6 +111,12 @@ public class Game extends Activity {
 	
 	public void updateStateView() {
 		stateText.setText(this.player.getStateMessage());
+		if (player.state == Player.WIN)
+			stateText.setTextColor(Color.parseColor("#00FF00"));
+		else if (player.state == Player.LOSE)
+			stateText.setTextColor(Color.parseColor("#FF0000"));
+		else
+			stateText.setTextColor(Color.parseColor("#FFFFFF"));
 	}
 	
 	public void updateBankView() {
@@ -266,13 +273,28 @@ public class Game extends Activity {
 		updateStateView();
 	}
 	
+	//State for when the ends and we need to declare a winner
+	public void endState(boolean win){
+		if (win)
+			player.state = Player.WIN;
+		else
+			player.state = Player.LOSE;
+		
+		setAllEnabled();
+		
+		//Update widgets and values
+		updateBankView();
+		updateBetBar();
+		updateStateView();
+	}
+	
 	// Enables or disables all the user controlled widgets
 	public void setAllEnabled(){
 		boolean widgetState;
-		if (player.state == Player.WAITING || player.state == Player.START)
-			widgetState = false;
-		else
+		if (player.state == Player.TURN)
 			widgetState = true;
+		else
+			widgetState = false;
 		checkFoldBut.setEnabled(widgetState);
 		callBut.setEnabled(widgetState);
 		raiseBut.setEnabled(widgetState);

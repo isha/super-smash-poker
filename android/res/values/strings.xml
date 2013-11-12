@@ -19,5 +19,6 @@
     <string name="ssp_settings_save_button">Save</string>
     <string name="ssp_settings_save">onSettingsSave</string>
     <string name="title_activity_connect">Connect</string>
+    <string name="wait_for_connect">Waiting for players to connect</string>
 
 </resources>

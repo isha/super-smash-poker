@@ -24,6 +24,10 @@ public class Player {
 			return "Just chill, Dealer is busy!";
 		case TURN:
 			return "Your turn! Ready to up the Ante?";
+		case WIN:
+			return "YOU WON!";
+		case LOSE:
+			return "You lost";
 		default:
 			return "";
 		}
@@ -32,4 +36,6 @@ public class Player {
 	public static final int START = 0;
 	public static final int WAITING = 1;
 	public static final int TURN = 2;
+	public static final int WIN = 3;
+	public static final int LOSE = 4;
 }
