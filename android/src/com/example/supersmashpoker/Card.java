@@ -1,7 +1,5 @@
 package com.example.supersmashpoker;
 
-import java.io.Serializable;
-
 public class Card {
 
 	public int suit;
@@ -57,8 +55,7 @@ public class Card {
 			rank = "king";
 			break;
 		default:
-			rank = "null";
-			break;
+			return "ssp_back_card";
 		}
 		
 		switch( this.suit ) {
@@ -75,7 +72,7 @@ public class Card {
 			suit = "diamond";
 			break;
 		default:
-			suit = "null";
+			return "ssp_back_card";
 		}
 		
 		return "ssp_" + suit + "_" + rank;
@@ -85,7 +82,8 @@ public class Card {
 	public static final int HEARTS = 3;
 	public static final int CLUBS = 2;
 	public static final int DIAMONDS = 1;
-	
+	public static final int BACK = 0;
+
 	public static final int ACE = 1;
 	public static final int TWO = 2;
 	public static final int THREE = 3;

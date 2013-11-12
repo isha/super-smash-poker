@@ -21,10 +21,10 @@
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:layout_gravity="center"
-            android:text="Player state"
             android:paddingBottom="10dp"
+            android:text="Player state"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#ff0000" />
+            android:textColor="#ffffff" />
 
     </LinearLayout>
 
@@ -77,8 +77,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight=".5"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="#ff0000"
-                    android:textColorHint="#ff0000" />
+                    android:textColor="#ffffff" />
 
             </LinearLayout>
         </LinearLayout>
@@ -95,7 +94,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:onClick="@string/ssp_socket_connect"
                 android:text="@string/FoldCheck" />
 
             <Button
@@ -104,7 +102,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:onClick="@string/ssp_socket_send"
                 android:text="@string/Call" />
 
             <Button
@@ -113,7 +110,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:onClick="@string/ssp_socket_close"
                 android:text="@string/Raise" />
 
             <TextView
@@ -123,7 +119,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1.1"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="#ff0000" />
+                android:textColor="#ffffff" />
 
         </LinearLayout>
 

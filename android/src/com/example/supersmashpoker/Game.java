@@ -54,9 +54,7 @@ public class Game extends Activity {
 		tcp_timer.schedule(tcp_task, 3000, 500);
 
 		player = new Player(0);
-		//This code will be handled in startState which will be called when we 
-		//get the appropriate info from the DE2
-		startState(Card.HEARTS, Card.QUEEN, Card.SPADES, Card.KING);
+		startState(Card.BACK, Card.BACK, Card.BACK, Card.BACK);
 	}
 
 	private void setWidgetIDs(){
@@ -234,14 +232,15 @@ public class Game extends Activity {
 	
 	//State for when the player needs to wait his turn
 	public void waitState(){
-		setAllEnabled(false);
-		
+		player.state = Player.WAITING;
+		setAllEnabled();
 		updateStateView();
 	}
 	
 	//State for when it is the players turn to bet
 	public void betState(){
-		setAllEnabled(true);
+		player.state = Player.TURN;
+		setAllEnabled();
 		
 		updateBankView();
 		updateBetBar();
@@ -250,13 +249,15 @@ public class Game extends Activity {
 	
 	//State for when the round first starts
 	public void startState(int suit1, int rank1, int suit2, int rank2){
+		player.state = Player.START;
+		
 		//Create cards
 		Card[] hand = new Card[2];
 		hand[0] = new Card(suit1, rank1);
 		hand[1] = new Card(suit2, rank2);
 		player.dealHand(hand);
 		
-		setAllEnabled(false);
+		setAllEnabled();
 		
 		//Update widgets and values
 		updateHandView();
@@ -266,7 +267,12 @@ public class Game extends Activity {
 	}
 	
 	// Enables or disables all the user controlled widgets
-	public void setAllEnabled(boolean widgetState){
+	public void setAllEnabled(){
+		boolean widgetState;
+		if (player.state == Player.WAITING || player.state == Player.START)
+			widgetState = false;
+		else
+			widgetState = true;
 		checkFoldBut.setEnabled(widgetState);
 		callBut.setEnabled(widgetState);
 		raiseBut.setEnabled(widgetState);
