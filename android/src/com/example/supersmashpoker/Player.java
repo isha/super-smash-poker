@@ -1,15 +1,18 @@
 package com.example.supersmashpoker;
 
 public class Player {
-	int number;
+	int id;
 	int state;
 	int bank;
 	Card[] hand;
 	
-	public Player(int number) {
-		this.number = number;
+	public Player(int id) {
+		this.id = id;
 		this.state = START;
-		this.bank = 1000;
+		this.bank = STARTING_BANKROLL;
+		this.hand = new Card[2];
+		hand[0] = new Card(Card.BACK, 0);
+		hand[1] = new Card(Card.BACK, 0);
 	}
 	
 	public void dealHand(Card[] hand) {
@@ -20,9 +23,11 @@ public class Player {
 		switch (this.state){
 		case START:
 			return "Welcome to Super Smash Poker!";
+		case DEALT:
+			return "Here are your cards!";
 		case WAITING:
 			return "Just chill, Dealer is busy!";
-		case TURN:
+		case BET:
 			return "Your turn! Ready to up the Ante?";
 		case WIN:
 			return "YOU WON!";
@@ -35,10 +40,15 @@ public class Player {
 		}
 	}
 	
-	public static final int START = 0;
-	public static final int WAITING = 1;
-	public static final int TURN = 2;
-	public static final int WIN = 3;
-	public static final int LOSE = 4;
-	public static final int FOLD = 5;
+
+	public static final int
+		START = 0,
+		DEALT = 1,
+		WAITING = 2,
+		BET = 3,
+		WIN = 4,
+		LOSE = 5,
+		FOLD = 6;
+	public static final int
+		STARTING_BANKROLL = 1000;
 }

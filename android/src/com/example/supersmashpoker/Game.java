@@ -53,12 +53,15 @@ public class Game extends Activity {
         TCPReadTimerTask tcp_task = new TCPReadTimerTask();
 		Timer tcp_timer = new Timer();
 		tcp_timer.schedule(tcp_task, 3000, 500);
-
+		
 		player = new Player(0);
-		startState(Card.BACK, Card.BACK, Card.BACK, Card.BACK);
+		
+		startState();
+		dealtState(1, 2, 3, 2);
+		openSocket();
 	}
 
-	private void setWidgetIDs(){
+	private void setWidgetIDs() {
 		betText = (TextView) findViewById(R.id.BetTextID);
         betBar = (SeekBar) findViewById(R.id.SeekBarID);
         checkFoldBut = (Button) findViewById(R.id.FoldCheckButID);
@@ -136,32 +139,10 @@ public class Game extends Activity {
     	betText.setText(""+betBar.getProgress());
 	}
 	
-	public void sendMessage(View view) {
-		SuperSmashPoker app = (SuperSmashPoker) getApplication();
-		
-		String data = "Potato";
-		
-		byte buffer[] = new byte[data.length() + 1];
-		
-		buffer[0] = (byte) data.length(); 
-		System.arraycopy(data.getBytes(), 0, buffer, 1, data.length());
-
-		// Now send through the output stream of the socket
-		
-		OutputStream out;
-		try {
-			out = app.socket.getOutputStream();
-			try {
-				out.write(buffer, 0, data.length() + 1);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
 	
-	public void openSocket(View view) {
+	//	Communication Classes and Methods
+	
+	public void openSocket() {
 		SuperSmashPoker app = (SuperSmashPoker) getApplication();
 		
 		if (app.socket != null && app.socket.isConnected() && !app.socket.isClosed()) {
@@ -173,12 +154,32 @@ public class Game extends Activity {
 		new SocketConnect().execute((Void) null);
 	}
 	
-	public void closeSocket(View view) {
+	public void closeSocket() {
 		SuperSmashPoker app = (SuperSmashPoker) getApplication();
 		Socket s = app.socket;
 		try {
 			s.getOutputStream().close();
 			s.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void sendData(byte[] data) {
+		SuperSmashPoker app = (SuperSmashPoker) getApplication();
+		
+		byte buffer[] = new byte[data.length];
+		
+		System.arraycopy(data, 0, buffer, 0, data.length);
+		
+		OutputStream out;
+		try {
+			out = app.socket.getOutputStream();
+			try {
+				out.write(buffer, 0, data.length);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -216,26 +217,16 @@ public class Game extends Activity {
 	public class TCPReadTimerTask extends TimerTask {
 		public void run() {
 			SuperSmashPoker app = (SuperSmashPoker) getApplication();
-			if (app.socket != null && app.socket.isConnected()
-					&& !app.socket.isClosed()) {
-				
+			if (app.socket != null && app.socket.isConnected() && !app.socket.isClosed()) {
 				try {
 					InputStream in = app.socket.getInputStream();
 					
 					int bytes_avail = in.available();
 					if (bytes_avail > 0) {
-						
 						byte buf[] = new byte[bytes_avail];
 						in.read(buf);
-
-						final String s = new String(buf, 0, bytes_avail, "US-ASCII");
 						
-						runOnUiThread(new Runnable() {
-							public void run() {
-								Toast t = Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT);
-								t.show();
-							}
-						});
+						
 						
 					}
 				} catch (IOException e) {
@@ -244,6 +235,8 @@ public class Game extends Activity {
 			}
 		}
 	}
+	
+	//	State Handling
 	
 	//State for when the player needs to wait his turn
 	public void waitState(){
@@ -254,7 +247,7 @@ public class Game extends Activity {
 	
 	//State for when it is the players turn to bet
 	public void betState(){
-		player.state = Player.TURN;
+		player.state = Player.BET;
 		setAllEnabled();
 		
 		updateBankView();
@@ -263,8 +256,22 @@ public class Game extends Activity {
 	}
 	
 	//State for when the round first starts
-	public void startState(int suit1, int rank1, int suit2, int rank2){
+	
+	public void startState(){
 		player.state = Player.START;
+		
+		setAllEnabled();
+		
+		//Update widgets and values
+		updateHandView();
+		updateBankView();
+		updateBetBar();
+		updateStateView();
+	}
+	
+	
+	public void dealtState(int suit1, int rank1, int suit2, int rank2){
+		player.state = Player.DEALT;
 		
 		//Create cards
 		Card[] hand = new Card[2];
@@ -305,18 +312,18 @@ public class Game extends Activity {
 		updateHandView();
 	}
 	
-	public void CallClicked(){
+	public void callClicked(){
 		
 	}
 	
-	public void RaiseClicked(){
+	public void raiseClicked(){
 		
 	}
 	
 	// Enables or disables all the user controlled widgets
 	public void setAllEnabled(){
 		boolean widgetState;
-		if (player.state == Player.TURN)
+		if (player.state == Player.BET)
 			widgetState = true;
 		else
 			widgetState = false;
