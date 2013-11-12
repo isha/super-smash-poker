@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 
 #define ANTY 100
 
@@ -194,11 +195,61 @@ bool player_still_playing(int pid) {
   return false;
 }
 
+/*********************************************************/
+void split_pot() {
+  int i;
+  for (i=0; i<dealer->number_players; i++) {
+  }
+}
+
+char * card_name(Card card) {
+  char * c = malloc(sizeof(char)*20);
+
+  switch (card.value) {
+    case 0: strcpy(c, "King"); break;
+    case 1: strcpy(c, "Ace"); break;
+    case 12: strcpy(c, "Queen"); break;
+    case 11: strcpy(c, "Jack"); break;
+    default: sprintf(c, "%d", card.value); break;
+  }
+  strcat(c, " of ");
+  switch (card.suite) {
+    case 0: strcat(c, "Clubs"); break;
+    case 1: strcat(c, "Spades"); break;
+    case 2: strcat(c, "Diamonds"); break;
+    case 3: strcat(c, "Hearts"); break;
+  }
+  strcat(c, "\0");
+  return c;
+}
+
+void test_split_pot() {
+  int i;
+  initialize_dealer(2);
+  deal_hands();
+  for (i=0; i<dealer->number_players; i++) {
+    printf("\nDealt cards for Player %d: %s and %s", i,
+      card_name(dealer->players[i].hand[0]), card_name(dealer->players[i].hand[1]));
+  }
+  flop();
+  turn();
+  river();
+  printf("\n\nCards on table %s, %s, %s, %s and %s\n", 
+    card_name(dealer->cards_on_table[0]), card_name(dealer->cards_on_table[1]),
+    card_name(dealer->cards_on_table[2]), card_name(dealer->cards_on_table[3]),
+    card_name(dealer->cards_on_table[4]) );
+  split_pot();
+}
+
+
+/*********************************************************/
 
 /* Main */
 int main() {
   srand(time(NULL)); int i; // TODO change in de2 env
   GameState state = SETUP;
+
+  test_split_pot(); return 0;
   
   for (;;) {
     switch (state) {
@@ -309,6 +360,8 @@ int main() {
 
       case GAME_OVER:
         printf("\n\nGAME OVER\n\n");
+
+        split_pot();
 
         free(dealer->deck);
         free(dealer->players);
