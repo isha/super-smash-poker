@@ -45,33 +45,30 @@ public class Game extends Activity {
 		setContentView(R.layout.activity_game);
 		setupActionBar();
         getActionBar().hide();
-
-        betText = (TextView) findViewById(R.id.textView4);
-        betBar = (SeekBar) findViewById(R.id.seekBar1);
-        checkFoldBut = (Button) findViewById(R.id.button1);
-        callBut = (Button) findViewById(R.id.button2);
-        raiseBut = (Button) findViewById(R.id.button3);
-        stateText = (TextView) findViewById(R.id.state);
-        bankText = (TextView) findViewById(R.id.bank);
+        
+        setWidgetIDs();
         betBar.setOnSeekBarChangeListener(new SeekBarListener());
         
         TCPReadTimerTask tcp_task = new TCPReadTimerTask();
 		Timer tcp_timer = new Timer();
 		tcp_timer.schedule(tcp_task, 3000, 500);
-		
-		player = new Player(0);
 
-		Card[] hand = new Card[2];
-		hand[0] = new Card(Card.HEARTS, Card.QUEEN);
-		hand[1] = new Card(Card.SPADES, Card.KING);
-		
-		player.dealHand(hand);
-		updateHandView();
-		updateStateView();
-		updateBankView();
-		updateBetBar();
+		player = new Player(0);
+		//This code will be handled in startState which will be called when we 
+		//get the appropriate info from the DE2
+		startState(Card.HEARTS, Card.QUEEN, Card.SPADES, Card.KING);
 	}
 
+	private void setWidgetIDs(){
+		betText = (TextView) findViewById(R.id.BetTextID);
+        betBar = (SeekBar) findViewById(R.id.SeekBarID);
+        checkFoldBut = (Button) findViewById(R.id.FoldCheckButID);
+        callBut = (Button) findViewById(R.id.CallButID);
+        raiseBut = (Button) findViewById(R.id.RaiseButID);
+        stateText = (TextView) findViewById(R.id.StateTextID);
+        bankText = (TextView) findViewById(R.id.BankTextID);
+	}
+	
 	private void setupActionBar() {
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
@@ -92,21 +89,10 @@ public class Game extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	//Class which will listen for the seekbar to change and update the betText view accordingly
 	private class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
-
 	    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-	    	int textBet = 0;
-	    	try{
-		    	textBet = Integer.parseInt(betText.getText().toString());
-	    	}catch(NumberFormatException e){}
-	    	
-	    	if (textBet < 0)
-	    		textBet = 0;
-	    	else if (textBet > MaxBet)
-	    		textBet = MaxBet;
-	    	
-	    	if (textBet != progress)
-	    		betText.setText(""+progress);
+	    	betText.setText(""+progress);
 	    }
 
 	    public void onStartTrackingTouch(SeekBar seekBar) {}
@@ -134,13 +120,7 @@ public class Game extends Activity {
 	
 	public void updateBetBar() {
 		betBar.setMax(this.player.bank);
-	}
-	
-	public void onSeekBarClick(View view){
-	    int seekValue = betBar.getProgress();
-		betText.setText(Integer.toString(seekValue));
-		Toast t = Toast.makeText(getApplicationContext(),"onSeekBar Clicked", Toast.LENGTH_LONG); 
-		t.show();
+    	betText.setText(""+betBar.getProgress());
 	}
 	
 	public void sendMessage(View view) {
@@ -181,15 +161,14 @@ public class Game extends Activity {
 	}
 	
 	public void closeSocket(View view) {
-//		SuperSmashPoker app = (SuperSmashPoker) getApplication();
-//		Socket s = app.socket;
-//		try {
-//			s.getOutputStream().close();
-//			s.close();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-		startState();
+		SuperSmashPoker app = (SuperSmashPoker) getApplication();
+		Socket s = app.socket;
+		try {
+			s.getOutputStream().close();
+			s.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public class SocketConnect extends AsyncTask<Void, Void, Socket> {
@@ -253,33 +232,44 @@ public class Game extends Activity {
 		}
 	}
 	
+	//State for when the player needs to wait his turn
 	public void waitState(){
-		checkFoldBut.setEnabled(false);
-		callBut.setEnabled(false);
-		raiseBut.setEnabled(false);
-		betBar.setEnabled(false);
+		setAllEnabled(false);
 		
-		stateText.setText(player.getStateMessage());
+		updateStateView();
 	}
 	
+	//State for when it is the players turn to bet
 	public void betState(){
-		checkFoldBut.setEnabled(true);
-		callBut.setEnabled(true);
-		raiseBut.setEnabled(true);
-		betBar.setEnabled(true);
+		setAllEnabled(true);
 		
 		updateBankView();
-		updateStateView();
 		updateBetBar();
+		updateStateView();
 	}
 	
-	public void startState(){
+	//State for when the round first starts
+	public void startState(int suit1, int rank1, int suit2, int rank2){
+		//Create cards
 		Card[] hand = new Card[2];
-		hand[0] = new Card(Card.HEARTS, Card.QUEEN);
-		hand[1] = new Card(Card.SPADES, Card.KING);
-		
+		hand[0] = new Card(suit1, rank1);
+		hand[1] = new Card(suit2, rank2);
 		player.dealHand(hand);
+		
+		setAllEnabled(false);
+		
+		//Update widgets and values
 		updateHandView();
-		waitState();
+		updateBankView();
+		updateBetBar();
+		updateStateView();
+	}
+	
+	// Enables or disables all the user controlled widgets
+	public void setAllEnabled(boolean widgetState){
+		checkFoldBut.setEnabled(widgetState);
+		callBut.setEnabled(widgetState);
+		raiseBut.setEnabled(widgetState);
+		betBar.setEnabled(widgetState);
 	}
 }

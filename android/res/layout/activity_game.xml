@@ -17,7 +17,7 @@
         android:layout_gravity="center" >
 
         <TextView
-            android:id="@+id/state"
+            android:id="@+id/StateTextID"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:layout_gravity="center"
@@ -64,21 +64,18 @@
                 android:layout_weight="0.44" >
 
                 <SeekBar
-                    android:id="@+id/seekBar1"
+                    android:id="@+id/SeekBarID"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:layout_weight="4"
-                    android:clickable="true"
-                    android:longClickable="true"
                     android:max="1000" />
 
                 <TextView
-                    android:id="@+id/textView4"
+                    android:id="@+id/BetTextID"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight=".5"
-                    android:hint="0"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="#ff0000"
                     android:textColorHint="#ff0000" />
@@ -93,7 +90,7 @@
             android:orientation="vertical" >
 
             <Button
-                android:id="@+id/button1"
+                android:id="@+id/FoldCheckButID"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -102,7 +99,7 @@
                 android:text="@string/FoldCheck" />
 
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/CallButID"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -111,7 +108,7 @@
                 android:text="@string/Call" />
 
             <Button
-                android:id="@+id/button3"
+                android:id="@+id/RaiseButID"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -120,12 +117,11 @@
                 android:text="@string/Raise" />
 
             <TextView
-                android:id="@+id/bank"
+                android:id="@+id/BankTextID"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_weight="1.1"
-                android:text=""
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="#ff0000" />
 
