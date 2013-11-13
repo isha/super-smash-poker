@@ -17,8 +17,8 @@
 
 /* Struct Definitions */
 typedef struct {
-  char value;
-  char suite;
+  unsigned char value;
+  unsigned char suite;
 } Card;
 
 
@@ -32,11 +32,11 @@ typedef enum {
 
 typedef struct {
   Card hand[2];
-  int total_money;
+  unsigned int total_money;
 
   bool active;
   PlayerAction action;
-  int money;
+  unsigned int money;
 } Player;
 
 typedef struct {
@@ -48,8 +48,8 @@ typedef struct {
   Card cards_on_table[5];
   char number_cards_on_table;
 
-  int pot;
-  int current_bet;
+  unsigned int pot;
+  unsigned int current_bet;
 } Dealer;
 
 /* Global variables */

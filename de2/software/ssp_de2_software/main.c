@@ -7,6 +7,11 @@
 #include "bitmap.h"
 #include "def.h"
 #include "msg.h"
+#include "sys/alt_alarm.h"
+#include "sys/alt_timestamp.h"
+#include "altera_avalon_timer_regs.h"
+#include "altera_avalon_timer.h"
+#include <time.h>
 
 void init() {
 	initialize_vga();
@@ -98,18 +103,21 @@ void river() {
 /* Gets player bet if player still playing
  * TODO change in de2 env
  */
-int get_bet_for_player(int pid) {
+unsigned int get_bet_for_player(int pid) {
+
+  unsigned int m_input;
+
   printf("\n\n----------------------------------------");
   printf("\nYour total money %d and bet money %d", dealer->players[pid].total_money, dealer->players[pid].money);
   printf("\nPlayer %d\n Enter your action (0 - Bet, 1 - Call, 2 - Check, 3 - Raise, 4 - Fold): ", pid);
-  scanf("%d", &dealer->players[pid].action);
+
+  request_action(pid);
+  m_input = read_player_action(pid);
+  set_waiting_state(pid);
 
   if (dealer->players[pid].action == START_BET) {
-    int m;
-    printf("\nBetting value: ");
-    scanf("%d", &m);
-    dealer->current_bet = m;
-    dealer->players[pid].money = m;
+    dealer->current_bet = m_input;
+    dealer->players[pid].money = m_input;
     dealer->players[pid].total_money -= dealer->players[pid].money;
   }
 
@@ -119,10 +127,7 @@ int get_bet_for_player(int pid) {
   }
 
   if (dealer->players[pid].action == RAISE) {
-    int m;
-    printf("\nHow much do you want to raise by: ");
-    scanf("%d", &m);
-    dealer->current_bet += m;
+    dealer->current_bet += m_input;
     dealer->players[pid].total_money -= (dealer->current_bet - dealer->players[pid].money);
     dealer->players[pid].money += (dealer->current_bet - dealer->players[pid].money);
   }
@@ -137,6 +142,7 @@ int get_bet_for_player(int pid) {
     if (active_players == 1) return -1;
   }
   printf("\nYour total money %d and bet money %d", dealer->players[pid].total_money, dealer->players[pid].money);
+
   return 0;
 }
 
@@ -161,17 +167,19 @@ bool player_still_playing(int pid) {
 
 int main()
 {
-	init();
-	srand(alt_timestamp()); int i; // TODO change in de2 env
-	GameState state = SETUP;
 
-	init_players();
+	init();
+ 	srand(alt_timestamp()); // TODO change in de2 env
+	int i;
+	GameState state = SETUP;
 
 	for (;;) {
 	game_screen();
 	switch (state) {
 	  case SETUP:
 		initialize_dealer(2);
+
+		joining_period();
 
 		/* Move dealer chip to the next player */
 		if (dealer_chip == dealer->number_players-1) dealer_chip = 0;
@@ -182,6 +190,7 @@ int main()
 
 	  case DEAL_HANDS:
 		deal_hands();
+		send_player_hands();
 
 		for (i=0; i<dealer->number_players; i++) {
 		  printf("\n\nDealt cards for Player %d: Suite %d, Value %d & Suite %d, Value %d", i,
