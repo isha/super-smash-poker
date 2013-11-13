@@ -60,13 +60,7 @@ public class Game extends Activity {
 		
 		player = new Player(0);
 		
-		Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/odstemplikBold.otf");
-		stateText.setTypeface(tf);
-		bankText.setTypeface(tf);
-		betText.setTypeface(tf);
-		checkFoldBut.setTypeface(tf);
-		callBut.setTypeface(tf);
-		raiseBut.setTypeface(tf);
+		setFonts();
 		
 		//This needs to be replaced with code for communication
 		enterState(Player.START);
@@ -76,6 +70,16 @@ public class Game extends Activity {
 		openSocket();
 	}
 
+	private void setFonts(){
+		Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/odstemplikBold.otf");
+		stateText.setTypeface(tf);
+		bankText.setTypeface(tf);
+		betText.setTypeface(tf);
+		checkFoldBut.setTypeface(tf);
+		callBut.setTypeface(tf);
+		raiseBut.setTypeface(tf);
+	}
+	
 	private void setWidgetIDs() {
 		betText = (TextView) findViewById(R.id.BetTextID);
         betBar = (SeekBar) findViewById(R.id.SeekBarID);
