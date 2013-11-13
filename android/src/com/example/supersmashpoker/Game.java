@@ -10,6 +10,7 @@ import java.util.TimerTask;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -58,6 +59,11 @@ public class Game extends Activity {
 		tcp_timer.schedule(tcp_task, 3000, 500);
 		
 		player = new Player(0);
+		
+		Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/odstemplikBold.otf");
+		stateText.setTypeface(tf);
+		bankText.setTypeface(tf);
+		betText.setTypeface(tf);
 		
 		//This needs to be replaced with code for communication
 		enterState(Player.START);

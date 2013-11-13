@@ -24,7 +24,9 @@
             android:paddingBottom="10dp"
             android:text="@string/wait_for_connect"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#ffffff" />
+            android:textColor="#ffffff"
+            android:textSize="30sp"
+            android:typeface="normal" />
 
     </LinearLayout>
 
@@ -78,7 +80,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight=".5"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="#ffffff" />
+                    android:textColor="#ffffff"
+                    android:textSize="30sp" />
 
             </LinearLayout>
         </LinearLayout>
@@ -123,7 +126,8 @@
                 android:layout_gravity="center"
                 android:layout_weight="1.1"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="#ffffff" />
+                android:textColor="#ffffff"
+                android:textSize="30sp" />
 
         </LinearLayout>
 
