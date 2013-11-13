@@ -33,8 +33,8 @@ public class Player {
 			return "YOU WON!";
 		case LOSE:
 			return "You lost";
-		case FOLD:
-			return "Folded like a coward";
+		case BROKE:
+			return "You're broke and we don't take I-O-U's, get lost!";
 		default:
 			return "";
 		}
@@ -48,7 +48,7 @@ public class Player {
 		BET = 3,
 		WIN = 4,
 		LOSE = 5,
-		FOLD = 6;
+		BROKE = 6;
 	public static final int
 		STARTING_BANKROLL = 1000;
 }
