@@ -24,7 +24,9 @@
             android:paddingBottom="10dp"
             android:text="@string/wait_for_connect"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#ffffff" />
+            android:textColor="#ffffff"
+            android:textSize="30sp"
+            android:typeface="normal" />
 
     </LinearLayout>
 
@@ -78,7 +80,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight=".5"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="#ffffff" />
+                    android:textColor="#ffffff"
+                    android:textSize="30sp" />
 
             </LinearLayout>
         </LinearLayout>
@@ -96,7 +99,8 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:onClick="foldCheckClicked"
-                android:text="@string/FoldCheck" />
+                android:text="@string/FoldCheck"
+                android:textSize="30sp" />
 
             <Button
                 android:id="@+id/CallButID"
@@ -104,7 +108,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="@string/Call" />
+                android:onClick="callClicked"
+                android:text="@string/Call"
+                android:textSize="30sp" />
 
             <Button
                 android:id="@+id/RaiseButID"
@@ -112,7 +118,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="@string/Raise" />
+                android:onClick="raiseClicked"
+                android:text="@string/Raise"
+                android:textSize="30sp" />
 
             <TextView
                 android:id="@+id/BankTextID"
@@ -121,7 +129,8 @@
                 android:layout_gravity="center"
                 android:layout_weight="1.1"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="#ffffff" />
+                android:textColor="#ffffff"
+                android:textSize="30sp" />
 
         </LinearLayout>
 

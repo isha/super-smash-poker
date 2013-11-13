@@ -10,6 +10,7 @@ import java.util.TimerTask;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -33,6 +34,9 @@ public class Game extends Activity {
 	Button raiseBut;
 	TextView bankText;
 	TextView stateText;
+	ImageView card0;
+	ImageView card1;
+	int toCall = 100;
 	
 	int MaxBet = 1000;
 	
@@ -56,11 +60,26 @@ public class Game extends Activity {
 		
 		player = new Player(0);
 		
-		startState();
+		setFonts();
+		
+		//This needs to be replaced with code for communication
+		enterState(Player.START);
 		dealtState(1, 2, 3, 2);
+		enterState(Player.BET);
+		
 		openSocket();
 	}
 
+	private void setFonts(){
+		Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/odstemplikBold.otf");
+		stateText.setTypeface(tf);
+		bankText.setTypeface(tf);
+		betText.setTypeface(tf);
+		checkFoldBut.setTypeface(tf);
+		callBut.setTypeface(tf);
+		raiseBut.setTypeface(tf);
+	}
+	
 	private void setWidgetIDs() {
 		betText = (TextView) findViewById(R.id.BetTextID);
         betBar = (SeekBar) findViewById(R.id.SeekBarID);
@@ -69,6 +88,8 @@ public class Game extends Activity {
         raiseBut = (Button) findViewById(R.id.RaiseButID);
         stateText = (TextView) findViewById(R.id.StateTextID);
         bankText = (TextView) findViewById(R.id.BankTextID);
+        card0 = (ImageView) findViewById(R.id.card0);
+        card1 = (ImageView) findViewById(R.id.card1);
 	}
 	
 	private void setupActionBar() {
@@ -103,21 +124,11 @@ public class Game extends Activity {
 	}
 	
 	public void updateHandView() {
-		ImageView card0 = (ImageView) findViewById(R.id.card0);
 		int card_resource0 = getResources().getIdentifier(this.player.hand[0].getResourceName(), "drawable", getPackageName());
 		card0.setImageResource(card_resource0);
 		
-        ImageView card1 = (ImageView) findViewById(R.id.card1);
 		int card_resource1 = getResources().getIdentifier(this.player.hand[1].getResourceName(), "drawable", getPackageName());
 		card1.setImageResource(card_resource1);
-		
-		if (player.state == Player.FOLD){
-			card0.setImageAlpha(127);
-			card1.setImageAlpha(127);
-		}else{
-			card0.setImageAlpha(255);
-			card1.setImageAlpha(255);
-		}		
 	}
 	
 	public void updateStateView() {
@@ -135,7 +146,7 @@ public class Game extends Activity {
 	}
 	
 	public void updateBetBar() {
-		betBar.setMax(this.player.bank);
+		betBar.setMax(this.player.bank - toCall);
     	betText.setText(""+betBar.getProgress());
 	}
 	
@@ -238,86 +249,67 @@ public class Game extends Activity {
 	
 	//	State Handling
 	
-	//State for when the player needs to wait his turn
-	public void waitState(){
-		player.state = Player.WAITING;
+	//Handles start state
+	public void enterState(int state){
+		player.state = state;
 		setAllEnabled();
-		updateStateView();
+		updateAll();
 	}
-	
-	//State for when it is the players turn to bet
-	public void betState(){
-		player.state = Player.BET;
-		setAllEnabled();
-		
-		updateBankView();
-		updateBetBar();
-		updateStateView();
-	}
-	
-	//State for when the round first starts
-	
-	public void startState(){
-		player.state = Player.START;
-		
-		setAllEnabled();
-		
-		//Update widgets and values
-		updateHandView();
-		updateBankView();
-		updateBetBar();
-		updateStateView();
-	}
-	
 	
 	public void dealtState(int suit1, int rank1, int suit2, int rank2){
-		player.state = Player.DEALT;
-		
 		//Create cards
 		Card[] hand = new Card[2];
 		hand[0] = new Card(suit1, rank1);
 		hand[1] = new Card(suit2, rank2);
 		player.dealHand(hand);
+		card0.setAlpha(255);
+		card1.setAlpha(255);
 		
-		setAllEnabled();
-		
-		//Update widgets and values
-		updateHandView();
-		updateBankView();
-		updateBetBar();
-		updateStateView();
+		enterState(Player.DEALT);
 	}
 	
 	//State for when the ends and we need to declare a winner
 	public void endState(boolean win){
 		if (win)
-			player.state = Player.WIN;
+			enterState(Player.WIN);
+		else if (player.bank <= 0)
+			enterState(Player.BROKE);
 		else
-			player.state = Player.LOSE;
-		
-		setAllEnabled();
-		
-		//Update widgets and values
-		updateBankView();
-		updateBetBar();
-		updateStateView();
+			enterState(Player.LOSE);
 	}
 	
 	public void foldCheckClicked(View view){
-		player.state = Player.FOLD;
+		player.state = Player.LOSE;
+		card0.setAlpha(127);
+		card1.setAlpha(127);
 		
 		setAllEnabled();
-		
-		updateStateView();
-		updateHandView();
+		updateAll();
+		toCall = 0;
 	}
 	
-	public void callClicked(){
+	public void callClicked(View view){
+		player.state = Player.WAITING;
+
+		if (toCall > player.bank)
+			toCall = player.bank;
+		player.bank = player.bank - toCall;
 		
+		setAllEnabled();
+		updateAll();
+		toCall = 0;
 	}
 	
-	public void raiseClicked(){
+	public void raiseClicked(View view){
+		player.state = Player.WAITING;
 		
+		if (toCall > player.bank)
+			toCall = player.bank;
+		player.bank = player.bank - toCall - betBar.getProgress();
+
+		setAllEnabled();
+		updateAll();
+		toCall = 0;
 	}
 	
 	// Enables or disables all the user controlled widgets
@@ -331,5 +323,12 @@ public class Game extends Activity {
 		callBut.setEnabled(widgetState);
 		raiseBut.setEnabled(widgetState);
 		betBar.setEnabled(widgetState);
+	}
+	
+	public void updateAll(){
+		updateStateView();
+		updateBankView();
+		updateBetBar();
+		updateHandView();
 	}
 }
