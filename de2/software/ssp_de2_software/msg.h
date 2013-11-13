@@ -253,6 +253,7 @@ void joining_period() {
  * Sends information in the following format: [client_id][size][state = WIN or LOSE]
  */
 void send_results() {
+	int i;
 	printf("Sending results of game to all players...");
 	for (i=0; i<dealer->number_players; i++) {
 		current_message[0] = player_id_mapping[i];
