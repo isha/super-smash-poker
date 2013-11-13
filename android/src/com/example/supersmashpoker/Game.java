@@ -15,6 +15,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.NavUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -53,21 +54,19 @@ public class Game extends Activity {
         
         setWidgetIDs();
         betBar.setOnSeekBarChangeListener(new SeekBarListener());
-        
-        TCPReadTimerTask tcp_task = new TCPReadTimerTask();
-		Timer tcp_timer = new Timer();
-		tcp_timer.schedule(tcp_task, 3000, 500);
 		
 		player = new Player(0);
 		
 		setFonts();
 		
-		//This needs to be replaced with code for communication
-		enterState(Player.START);
-		dealtState(1, 2, 3, 2);
-		enterState(Player.BET);
+		TCPReadTimerTask tcp_task = new TCPReadTimerTask();
+		Timer tcp_timer = new Timer();
+		tcp_timer.schedule(tcp_task, 3000, 500);
 		
+		enterState(Player.BET);
 		openSocket();
+		
+		Log.i("Game Start", "Game on!!!");
 	}
 
 	private void setFonts(){
@@ -237,7 +236,36 @@ public class Game extends Activity {
 						byte buf[] = new byte[bytes_avail];
 						in.read(buf);
 						
+						//Incomplete, committed to help testing!
 						
+						Log.i("Data", "Read Data!!! Yeaaa!");
+						
+						int next_state = (int) buf[0];
+						
+						switch(next_state) {
+						case Player.DEALT:
+							Log.i("State", "Entered Dealt State");
+							Game.this.dealtState((int) buf[2], (int) buf[1], (int) buf[4], (int) buf[3]);
+							break;
+						case Player.WAITING:
+							Log.i("State", "Entered Waiting State");
+							break;
+						case Player.BET:
+							Log.i("State", "Entered Bet State");
+							break;
+						case Player.WIN:
+							Log.i("State", "Entered Win State");
+							break;
+						case Player.LOSE:
+							Log.i("State", "Entered Lose State");
+							break;
+						case Player.BROKE:
+							Log.i("State", "Entered Broke State");
+							break;
+						default:
+							Log.i("Invalid State", "What the fuck did you just send me?!");
+							return;
+						}
 						
 					}
 				} catch (IOException e) {
@@ -262,8 +290,8 @@ public class Game extends Activity {
 		hand[0] = new Card(suit1, rank1);
 		hand[1] = new Card(suit2, rank2);
 		player.dealHand(hand);
-		card0.setAlpha(255);
-		card1.setAlpha(255);
+		card0.setImageAlpha(255);
+		card1.setImageAlpha(255);
 		
 		enterState(Player.DEALT);
 	}
@@ -280,16 +308,18 @@ public class Game extends Activity {
 	
 	public void foldCheckClicked(View view){
 		player.state = Player.LOSE;
-		card0.setAlpha(127);
-		card1.setAlpha(127);
+		card0.setImageAlpha(127);
+		card1.setImageAlpha(127);
 		
 		setAllEnabled();
 		updateAll();
 		toCall = 0;
+		
+		sendData(new byte[] {(byte) Player.FOLD});
 	}
 	
 	public void callClicked(View view){
-		player.state = Player.WAITING;
+//		player.state = Player.WAITING;
 
 		if (toCall > player.bank)
 			toCall = player.bank;
@@ -298,18 +328,26 @@ public class Game extends Activity {
 		setAllEnabled();
 		updateAll();
 		toCall = 0;
+		sendData(new byte[] {(byte) Player.CALL});
 	}
 	
-	public void raiseClicked(View view){
-		player.state = Player.WAITING;
+	public void raiseClicked(View view) {
+//		player.state = Player.WAITING;
 		
 		if (toCall > player.bank)
 			toCall = player.bank;
-		player.bank = player.bank - toCall - betBar.getProgress();
+		int betAmount = toCall + betBar.getProgress();
+		player.bank = player.bank - betAmount;
 
 		setAllEnabled();
 		updateAll();
 		toCall = 0;
+		
+		sendData(new byte[] {(byte) Player.RAISE,
+				(byte) (betAmount >> 24), 
+				(byte) ((betAmount >> 16) & 0xFF), 
+				(byte) ((betAmount >> 8) & 0xFF),
+				(byte) (betAmount & 0xFF) });
 	}
 	
 	// Enables or disables all the user controlled widgets

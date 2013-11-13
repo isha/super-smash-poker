@@ -41,6 +41,7 @@ public class Player {
 	}
 	
 
+	// Player States
 	public static final int
 		START = 0,
 		DEALT = 1,
@@ -49,6 +50,13 @@ public class Player {
 		WIN = 4,
 		LOSE = 5,
 		BROKE = 6;
+	
+	// Player Actions
+	public static final int
+		FOLD = 0,
+		CALL = 1,
+		RAISE = 2;
+	
 	public static final int
 		STARTING_BANKROLL = 1000;
 }
