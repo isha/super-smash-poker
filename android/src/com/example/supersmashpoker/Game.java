@@ -64,6 +64,9 @@ public class Game extends Activity {
 		stateText.setTypeface(tf);
 		bankText.setTypeface(tf);
 		betText.setTypeface(tf);
+		checkFoldBut.setTypeface(tf);
+		callBut.setTypeface(tf);
+		raiseBut.setTypeface(tf);
 		
 		//This needs to be replaced with code for communication
 		enterState(Player.START);
