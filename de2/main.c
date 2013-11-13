@@ -196,21 +196,36 @@ bool player_still_playing(int pid) {
 }
 
 /*********************************************************/
-void split_pot() {
-  int i;
-  for (i=0; i<dealer->number_players; i++) {
-  }
-}
+typedef enum {
+  ROYAL_FLUSH = 9,
+  STRAIGHT_FLUSH = 8,
+  FOUR_OF_A_KIND = 7,
+  FULL_HOUSE = 6,
+  FLUSH = 5,
+  STRAIGHT = 4,
+  THREE_OF_A_KIND = 3,
+  TWO_PAIR = 2,
+  PAIR = 1,
+  HIGH_CARD = 0
+} HandType;
+
+typedef struct {
+  int value;
+  HandType type;
+
+  Card hand[5];
+  Card kicker;
+} PokerHand;
 
 char * card_name(Card card) {
   char * c = malloc(sizeof(char)*20);
 
   switch (card.value) {
-    case 0: strcpy(c, "King"); break;
-    case 1: strcpy(c, "Ace"); break;
-    case 12: strcpy(c, "Queen"); break;
-    case 11: strcpy(c, "Jack"); break;
-    default: sprintf(c, "%d", card.value); break;
+    case 0: strcpy(c, "Ace"); break;
+    case 12: strcpy(c, "King"); break;
+    case 11: strcpy(c, "Queen"); break;
+    case 10: strcpy(c, "Jack"); break;
+    default: sprintf(c, "%d", card.value+1); break;
   }
   strcat(c, " of ");
   switch (card.suite) {
@@ -221,6 +236,85 @@ char * card_name(Card card) {
   }
   strcat(c, "\0");
   return c;
+}
+
+void split_pot() {
+  int i, j, k; 
+
+  for (i=0; i<dealer->number_players; i++) {
+    /* Flush check */
+    int suite_count[4]; Card by_suite[4][7];
+    for (j=0; j<4; j++) suite_count[j]=0;
+
+    by_suite[dealer->players[i].hand[0].suite][suite_count[dealer->players[i].hand[0].suite]] = dealer->players[i].hand[0];
+    suite_count[dealer->players[i].hand[0].suite]++; 
+    by_suite[dealer->players[i].hand[1].suite][suite_count[dealer->players[i].hand[1].suite]] = dealer->players[i].hand[1];
+    suite_count[dealer->players[i].hand[1].suite]++; 
+    for (j=0; j<dealer->number_cards_on_table; j++) {
+      by_suite[dealer->cards_on_table[j].suite][suite_count[dealer->cards_on_table[j].suite]] = dealer->cards_on_table[j];
+      suite_count[dealer->cards_on_table[j].suite]++;
+    }
+    for (j=0; j<4; j++) {
+      if (suite_count[j] >= 5) {
+        printf("\n Player %d: Flush with %s, %s, %s, %s and %s ", i, card_name(by_suite[j][0]), card_name(by_suite[j][1]), 
+          card_name(by_suite[j][2]), card_name(by_suite[j][3]), card_name(by_suite[j][4]) );
+      }
+    }
+
+    /* Full house, 4 of a kind, 3 of a kind, two pair, single pair */
+    int value_count[13]; Card by_value[13][4];
+    for (j=0; j<13; j++) value_count[j]=0;
+
+    by_value[dealer->players[i].hand[0].value][value_count[dealer->players[i].hand[0].value]] = dealer->players[i].hand[0];
+    value_count[dealer->players[i].hand[0].value]++; 
+    by_value[dealer->players[i].hand[1].value][value_count[dealer->players[i].hand[1].value]] = dealer->players[i].hand[1];
+    value_count[dealer->players[i].hand[1].value]++; 
+    for (j=0; j<dealer->number_cards_on_table; j++) {
+      by_value[dealer->cards_on_table[j].value][value_count[dealer->cards_on_table[j].value]] = dealer->cards_on_table[j];
+      value_count[dealer->cards_on_table[j].value]++;
+    }
+
+    for (j=0; j<13; j++) {
+      if (value_count[j] ==  4) {
+        printf("\nPlayer %d: 4 of a kind with %s, %s, %s and %s ", i, card_name(by_value[j][0]), card_name(by_value[j][1]), 
+          card_name(by_value[j][2]), card_name(by_value[j][3]) );
+      } 
+    }
+
+    for (j=0; j<13; j++) {
+      if (value_count[j] == 3) {
+        /* Check for 3 of a kind */
+        for (k=0; k<13 && k!=j; k++) {
+          if (value_count[k] == 2) {
+            printf("\nPlayer %d: Full House with %s, %s, %s, %s and %s ", i, card_name(by_value[j][0]), card_name(by_value[j][1]), 
+              card_name(by_value[j][2]), card_name(by_value[k][0]), card_name(by_value[k][1]) );
+          }
+        }
+
+        /* If not full house, is a 3 of a kind */
+        printf("\nPlayer %d: 3 of a kind with %s, %s and %s ",i, card_name(by_value[j][0]), card_name(by_value[j][1]), 
+          card_name(by_value[j][2]) );
+      }
+    }
+
+
+    for (j=0; j<13; j++) {
+      if (value_count[j] == 2) {
+        /* Check for two pair */
+        for (k=0; k<13 && k!=j; k++) {
+          if (value_count[k] == 2) {
+            printf("\nPlayer %d: Two pair with %s, %s, %s and %s ", i, card_name(by_value[j][0]), card_name(by_value[j][1]), 
+              card_name(by_value[k][0]), card_name(by_value[k][1]) );
+          }
+        }
+
+        /* If not 2 pair, is a single pair */
+        printf("\nPlayer %d: Single pair with %s and %s ", i,card_name(by_value[j][0]), card_name(by_value[j][1]) );
+      }
+    }
+    
+  }
+  printf("\n");
 }
 
 void test_split_pot() {
