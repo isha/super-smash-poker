@@ -112,9 +112,11 @@ unsigned int get_bet_for_player(int pid) {
   printf("\nYour total money %d and bet money %d", dealer->players[pid].total_money, dealer->players[pid].money);
   printf("\nPlayer %d\n Enter your action (0 - Bet, 1 - Call, 2 - Check, 3 - Raise, 4 - Fold): ", pid);
 
-  request_action(pid);
-  m_input = read_player_action(pid);
-  set_waiting_state(pid);
+  set_action_state(pid);
+  send_message();
+
+  receive_message();
+  m_input = read_player_action_and_value(pid);
 
   if (dealer->players[pid].action == START_BET) {
     dealer->current_bet = m_input;
