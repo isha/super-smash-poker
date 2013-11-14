@@ -311,14 +311,19 @@ public class Game extends Activity {
 	
 	// Actions
 	public void joinRequest(View view) {
-		sendData(new byte[] {
-			(byte) player.id,
-			(byte) ((player.bank >> 24) & 0xFF),
-			(byte) ((player.bank >> 16) & 0xFF),
-			(byte) ((player.bank >> 8) & 0xFF),
-			(byte) (player.bank & 0xFF),
-		});
-		enterState(Player.START);
+		try{
+			sendData(new byte[] {
+				(byte) player.id,
+				(byte) ((player.bank >> 24) & 0xFF),
+				(byte) ((player.bank >> 16) & 0xFF),
+				(byte) ((player.bank >> 8) & 0xFF),
+				(byte) (player.bank & 0xFF),
+			});
+			enterState(Player.START);
+		}catch(NullPointerException e){
+			Toast t = Toast.makeText(getApplicationContext(), "Could not join a game", Toast.LENGTH_LONG);
+			t.show();
+		}
 	}
 	
 	public void foldCheckClicked(View view){
