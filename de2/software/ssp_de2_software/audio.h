@@ -1,8 +1,8 @@
 /*
  * audio.h
  *
- *  Created on: 2013-11-10
- *      Author: n1v7
+ *  Created on: 2013-10-03
+ *      Author: Kevin
  */
 
 #ifndef AUDIO_H_
@@ -17,8 +17,14 @@ unsigned int *data;
 int globalInd = 0;
 int globalMaxInd = 0;
 
-alt_u32 handle_timer_interrupts(alt_up_audio_dev * device) {
+alt_u32 handle_timer_interrupts(alt_up_audio_dev * device)
+{
+	//int index;
+
 	if (alt_up_audio_write_fifo_space(device, ALT_UP_AUDIO_LEFT) > 33){
+//		for (index = 0; index < 96; index++){
+//			data[index] = sdcard_audio_read_little_end(fp);
+//		}
 		alt_up_audio_write_fifo (device, &(data[globalInd*32]), 32, ALT_UP_AUDIO_LEFT);
 		alt_up_audio_write_fifo (device, &(data[globalInd*32]), 32, ALT_UP_AUDIO_RIGHT);
 		globalInd++;
@@ -76,8 +82,10 @@ alt_up_audio_dev * start_audio(){
 	data = data2;
 
 	globalMaxInd = read/64;
+
 	// Start the interrupt
 	static alt_alarm alarm;
 	alt_alarm_start(&alarm, 1, handle_timer_interrupts, audio_device);
 }
+
 #endif /* AUDIO_H_ */

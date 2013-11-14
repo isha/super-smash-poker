@@ -18,6 +18,7 @@ void init() {
 	initialize_sdcard();
 	alt_timestamp_start();
 	initialize_audio();
+	start_audio();
 	initialize_messaging();
 }
 
