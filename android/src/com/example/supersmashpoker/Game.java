@@ -248,23 +248,18 @@ public class Game extends Activity {
 								
 								switch(next_state) {
 								case Player.DEALT:
-									Log.i("State", "Entered Dealt State");
 									dealtState((int) buf[2], (int) buf[1], (int) buf[4], (int) buf[3]);
 									break;
-								case Player.BET:
-									Log.i("State", "Entered Bet State");
-									enterState(Player.BET);
+								case Player.ACTION:
+									enterState(Player.ACTION);
 									break;
 								case Player.WIN:
-									Log.i("State", "Entered Win State");
 									endState(true);
 									break;
 								case Player.LOSE:
-									Log.i("State", "Entered Lose State");
 									endState(false);
 									break;
 								default:
-									Log.i("Invalid State", "What the fuck did you just send me?!");
 									return;
 								}
 							}
@@ -296,6 +291,7 @@ public class Game extends Activity {
 		card0.setImageAlpha(255);
 		card1.setImageAlpha(255);
 		
+		updateAll();
 		enterState(Player.DEALT);
 	}
 	
@@ -375,7 +371,7 @@ public class Game extends Activity {
 			gameplay.setVisibility(View.VISIBLE);
 			
 			boolean widgetState;
-			if (player.state == Player.BET)
+			if (player.state == Player.ACTION)
 				widgetState = true;
 			else
 				widgetState = false;
