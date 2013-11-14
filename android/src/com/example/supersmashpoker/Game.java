@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,7 +31,8 @@ public class Game extends Activity {
 	Player player;
 	SeekBar betBar;
 	TextView betText;
-	Button joinButton;
+	LinearLayout joinGame;
+	LinearLayout gameplay;
 	Button checkFoldBut;
 	Button callBut;
 	Button raiseBut;
@@ -81,7 +83,8 @@ public class Game extends Activity {
 	private void setWidgetIDs() {
 		betText = (TextView) findViewById(R.id.BetTextID);
         betBar = (SeekBar) findViewById(R.id.SeekBarID);
-        joinButton = (Button) findViewById(R.id.join_button);
+        joinGame = (LinearLayout) findViewById(R.id.join_game_layout);
+        gameplay = (LinearLayout) findViewById(R.id.gameplay_layout);
         checkFoldBut = (Button) findViewById(R.id.FoldCheckButID);
         callBut = (Button) findViewById(R.id.CallButID);
         raiseBut = (Button) findViewById(R.id.RaiseButID);
@@ -315,7 +318,6 @@ public class Game extends Activity {
 			(byte) ((player.bank >> 8) & 0xFF),
 			(byte) (player.bank & 0xFF),
 		});
-		enterState(Player.WAITING);
 	}
 	
 	public void foldCheckClicked(View view){
@@ -365,17 +367,11 @@ public class Game extends Activity {
 	// Enables or disables all the user controlled widgets
 	public void setButtonState() {
 		if(player.state == Player.START) {
-			joinButton.setVisibility(View.VISIBLE);
-			checkFoldBut.setVisibility(View.GONE);
-			callBut.setVisibility(View.GONE);
-			raiseBut.setVisibility(View.GONE);
-			betBar.setVisibility(View.GONE);
+			joinGame.setVisibility(View.VISIBLE);
+			gameplay.setVisibility(View.GONE);
 		} else {
-			joinButton.setVisibility(View.GONE);
-			checkFoldBut.setVisibility(View.VISIBLE);
-			callBut.setVisibility(View.VISIBLE);
-			raiseBut.setVisibility(View.VISIBLE);
-			betBar.setVisibility(View.VISIBLE);
+			joinGame.setVisibility(View.GONE);
+			gameplay.setVisibility(View.VISIBLE);
 			
 			boolean widgetState;
 			if (player.state == Player.BET)
