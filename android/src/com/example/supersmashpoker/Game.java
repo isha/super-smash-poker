@@ -66,7 +66,7 @@ public class Game extends Activity {
 		Timer tcp_timer = new Timer();
 		tcp_timer.schedule(tcp_task, 3000, 500);
 		
-		enterState(Player.START);
+		enterState(Player.JOIN);
 		openSocket();
 	}
 
@@ -318,6 +318,7 @@ public class Game extends Activity {
 			(byte) ((player.bank >> 8) & 0xFF),
 			(byte) (player.bank & 0xFF),
 		});
+		enterState(Player.START);
 	}
 	
 	public void foldCheckClicked(View view){
@@ -366,7 +367,7 @@ public class Game extends Activity {
 	
 	// Enables or disables all the user controlled widgets
 	public void setButtonState() {
-		if(player.state == Player.START) {
+		if(player.state == Player.JOIN) {
 			joinGame.setVisibility(View.VISIBLE);
 			gameplay.setVisibility(View.GONE);
 		} else {

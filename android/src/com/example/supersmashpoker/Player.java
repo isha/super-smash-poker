@@ -21,6 +21,8 @@ public class Player {
 	
 	public String getStateMessage() {
 		switch (this.state){
+		case JOIN:
+			return "Welcome to Super Smash Poker!";
 		case START:
 			return "Welcome to Super Smash Poker!";
 		case DEALT:
@@ -43,13 +45,14 @@ public class Player {
 
 	// Player States
 	public static final int
-		START = 0,
-		DEALT = 1,
-		WAITING = 2,
-		BET = 3,
-		WIN = 4,
-		LOSE = 5,
-		BROKE = 6;
+		JOIN = 0,
+		START = 1,
+		DEALT = 2,
+		WAITING = 3,
+		BET = 4,
+		WIN = 5,
+		LOSE = 6,
+		BROKE = 7;
 	
 	// Player Actions
 	public static final int
