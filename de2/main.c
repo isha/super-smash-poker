@@ -239,13 +239,15 @@ char * card_name(Card card) {
 }
 
 void split_pot() {
-  int i, j, k; 
+  int i, j, k, m; PokerHand ph[dealer->number_players];
 
   for (i=0; i<dealer->number_players; i++) {
-    /* Flush check */
+
+    /* Create hash maps */
     int suite_count[4]; Card by_suite[4][7];
     for (j=0; j<4; j++) suite_count[j]=0;
-
+    int value_count[13]; Card by_value[13][4];
+    for (j=0; j<13; j++) value_count[j]=0;
     by_suite[dealer->players[i].hand[0].suite][suite_count[dealer->players[i].hand[0].suite]] = dealer->players[i].hand[0];
     suite_count[dealer->players[i].hand[0].suite]++; 
     by_suite[dealer->players[i].hand[1].suite][suite_count[dealer->players[i].hand[1].suite]] = dealer->players[i].hand[1];
@@ -254,17 +256,6 @@ void split_pot() {
       by_suite[dealer->cards_on_table[j].suite][suite_count[dealer->cards_on_table[j].suite]] = dealer->cards_on_table[j];
       suite_count[dealer->cards_on_table[j].suite]++;
     }
-    for (j=0; j<4; j++) {
-      if (suite_count[j] >= 5) {
-        printf("\n Player %d: Flush with %s, %s, %s, %s and %s ", i, card_name(by_suite[j][0]), card_name(by_suite[j][1]), 
-          card_name(by_suite[j][2]), card_name(by_suite[j][3]), card_name(by_suite[j][4]) );
-      }
-    }
-
-    /* Full house, 4 of a kind, 3 of a kind, two pair, single pair */
-    int value_count[13]; Card by_value[13][4];
-    for (j=0; j<13; j++) value_count[j]=0;
-
     by_value[dealer->players[i].hand[0].value][value_count[dealer->players[i].hand[0].value]] = dealer->players[i].hand[0];
     value_count[dealer->players[i].hand[0].value]++; 
     by_value[dealer->players[i].hand[1].value][value_count[dealer->players[i].hand[1].value]] = dealer->players[i].hand[1];
@@ -274,26 +265,81 @@ void split_pot() {
       value_count[dealer->cards_on_table[j].value]++;
     }
 
+    /* Check for best hand */
+    for (j=0; j<4; j++) {
+      if (suite_count[j] >= 5) {
+        /* Flush */
+        if (ph[i].type < FLUSH) {
+          ph[i].type = FLUSH;
+          ph[i].hand[0] = by_suite[j][0];
+          ph[i].hand[1] = by_suite[j][1];
+          ph[i].hand[2] = by_suite[j][2];
+          ph[i].hand[3] = by_suite[j][3];
+          ph[i].hand[4] = by_suite[j][4];
+        }
+      }
+    }
+
+    /* Straight */
     for (j=0; j<13; j++) {
-      if (value_count[j] ==  4) {
-        printf("\nPlayer %d: 4 of a kind with %s, %s, %s and %s ", i, card_name(by_value[j][0]), card_name(by_value[j][1]), 
-          card_name(by_value[j][2]), card_name(by_value[j][3]) );
+      int l[5];
+      for (k=0; k<5; k++) l[k] = 0;
+      l[0] = j;
+      switch (j) {
+        case 12: l[1] = 0; l[2] = 1; l[3] = 2; l[4] = 3; break;
+        case 11: l[1] = 12; l[2] = 0; l[3] = 1; l[4] = 2; break;
+        case 10: l[1] = 11; l[2] = 12; l[3] = 0; l[4] = 1; break;
+        case 9: l[1] = 10; l[2] = 11; l[3] = 12; l[4] = 0; break;
+        default: l[1] = j+1; l[2] = j+2; l[3] = j+3; l[4] = j+4; break;
+      }
+      if (value_count[l[0]]>=1 && value_count[l[1]]>=1 && value_count[l[2]]>=1 
+        && value_count[l[3]]>=1 && value_count[l[4]]>=1 
+        && ph[i].type < STRAIGHT) {
+          ph[i].type = STRAIGHT;
+          ph[i].hand[0] = by_value[l[0]][0];
+          ph[i].hand[1] = by_value[l[1]][0];
+          ph[i].hand[2] = by_value[l[2]][0];
+          ph[i].hand[3] = by_value[l[3]][0];
+          ph[i].hand[4] = by_value[l[4]][0];
+        }
+    }
+
+    /* 4 of a kind */
+    for (j=0; j<13; j++) {
+      if (value_count[j] == 4 && (ph[i].type < FOUR_OF_A_KIND || (ph[i].type == FOUR_OF_A_KIND && ph[i].value < j))) {
+          ph[i].type = FOUR_OF_A_KIND;
+          ph[i].value = j;
+          ph[i].hand[0] = by_value[j][0];
+          ph[i].hand[1] = by_value[j][1];
+          ph[i].hand[2] = by_value[j][2];
+          ph[i].hand[3] = by_value[j][3];
       } 
     }
 
+    /* Full house and 3 of a kind */
     for (j=0; j<13; j++) {
       if (value_count[j] == 3) {
         /* Check for 3 of a kind */
         for (k=0; k<13 && k!=j; k++) {
-          if (value_count[k] == 2) {
-            printf("\nPlayer %d: Full House with %s, %s, %s, %s and %s ", i, card_name(by_value[j][0]), card_name(by_value[j][1]), 
-              card_name(by_value[j][2]), card_name(by_value[k][0]), card_name(by_value[k][1]) );
+          if (value_count[k] == 2 
+              && ph[i].type < FULL_HOUSE) {
+            ph[i].type = FULL_HOUSE;
+            ph[i].hand[0] = by_value[j][0];
+            ph[i].hand[0] = by_value[j][1];
+            ph[i].hand[0] = by_value[j][2];
+            ph[i].hand[0] = by_value[k][0];
+            ph[i].hand[0] = by_value[k][1];
           }
         }
 
         /* If not full house, is a 3 of a kind */
-        printf("\nPlayer %d: 3 of a kind with %s, %s and %s ",i, card_name(by_value[j][0]), card_name(by_value[j][1]), 
-          card_name(by_value[j][2]) );
+        if (ph[i].type < THREE_OF_A_KIND || (ph[i].type == THREE_OF_A_KIND && ph[i].value < j)) {
+          ph[i].type = THREE_OF_A_KIND;
+          ph[i].value = j;
+          ph[i].hand[0] = by_value[j][0];
+          ph[i].hand[1] = by_value[j][1];
+          ph[i].hand[2] = by_value[j][2];
+        }
       }
     }
 
@@ -302,14 +348,21 @@ void split_pot() {
       if (value_count[j] == 2) {
         /* Check for two pair */
         for (k=0; k<13 && k!=j; k++) {
-          if (value_count[k] == 2) {
-            printf("\nPlayer %d: Two pair with %s, %s, %s and %s ", i, card_name(by_value[j][0]), card_name(by_value[j][1]), 
-              card_name(by_value[k][0]), card_name(by_value[k][1]) );
+          if (value_count[k] == 2 && ph[i].type < TWO_PAIR) {
+            ph[i].type = TWO_PAIR;
+            ph[i].hand[0] = by_value[j][0];
+            ph[i].hand[1] = by_value[j][1];
+            ph[i].hand[2] = by_value[k][0];
+            ph[i].hand[2] = by_value[k][1];
           }
         }
 
         /* If not 2 pair, is a single pair */
-        printf("\nPlayer %d: Single pair with %s and %s ", i,card_name(by_value[j][0]), card_name(by_value[j][1]) );
+        if (ph[i].type < PAIR) {
+          ph[i].type = PAIR;
+          ph[i].hand[0] = by_value[j][0];
+          ph[i].hand[1] = by_value[j][1];
+        }
       }
     }
     
