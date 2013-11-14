@@ -30,6 +30,7 @@ public class Game extends Activity {
 	Player player;
 	SeekBar betBar;
 	TextView betText;
+	Button joinButton;
 	Button checkFoldBut;
 	Button callBut;
 	Button raiseBut;
@@ -65,8 +66,6 @@ public class Game extends Activity {
 		
 		enterState(Player.START);
 		openSocket();
-		
-		//TODO: find a way to call requestToJoin() without all hell breaking loose
 	}
 
 	private void setFonts(){
@@ -82,6 +81,7 @@ public class Game extends Activity {
 	private void setWidgetIDs() {
 		betText = (TextView) findViewById(R.id.BetTextID);
         betBar = (SeekBar) findViewById(R.id.SeekBarID);
+        joinButton = (Button) findViewById(R.id.join_button);
         checkFoldBut = (Button) findViewById(R.id.FoldCheckButID);
         callBut = (Button) findViewById(R.id.CallButID);
         raiseBut = (Button) findViewById(R.id.RaiseButID);
@@ -280,7 +280,7 @@ public class Game extends Activity {
 	//Handles start state
 	public void enterState(int state){
 		player.state = state;
-		setAllEnabled();
+		setButtonState();
 		updateAll();
 	}
 	
@@ -307,7 +307,7 @@ public class Game extends Activity {
 	}
 	
 	// Actions
-	public void requestToJoin() {
+	public void joinRequest(View view) {
 		sendData(new byte[] {
 			(byte) player.id,
 			(byte) ((player.bank >> 24) & 0xFF),
@@ -315,6 +315,7 @@ public class Game extends Activity {
 			(byte) ((player.bank >> 8) & 0xFF),
 			(byte) (player.bank & 0xFF),
 		});
+		enterState(Player.WAITING);
 	}
 	
 	public void foldCheckClicked(View view){
@@ -322,7 +323,7 @@ public class Game extends Activity {
 		card0.setImageAlpha(127);
 		card1.setImageAlpha(127);
 		
-		setAllEnabled();
+		setButtonState();
 		updateAll();
 		toCall = 0;
 		
@@ -336,7 +337,7 @@ public class Game extends Activity {
 			toCall = player.bank;
 		player.bank = player.bank - toCall;
 		
-		setAllEnabled();
+		setButtonState();
 		updateAll();
 		toCall = 0;
 		sendData(new byte[] {(byte) Player.CALL});
@@ -350,7 +351,7 @@ public class Game extends Activity {
 		int betAmount = toCall + betBar.getProgress();
 		player.bank = player.bank - betAmount;
 
-		setAllEnabled();
+		setButtonState();
 		updateAll();
 		toCall = 0;
 		
@@ -362,16 +363,30 @@ public class Game extends Activity {
 	}
 	
 	// Enables or disables all the user controlled widgets
-	public void setAllEnabled(){
-		boolean widgetState;
-		if (player.state == Player.BET)
-			widgetState = true;
-		else
-			widgetState = false;
-		checkFoldBut.setEnabled(widgetState);
-		callBut.setEnabled(widgetState);
-		raiseBut.setEnabled(widgetState);
-		betBar.setEnabled(widgetState);
+	public void setButtonState() {
+		if(player.state == Player.START) {
+			joinButton.setVisibility(View.VISIBLE);
+			checkFoldBut.setVisibility(View.GONE);
+			callBut.setVisibility(View.GONE);
+			raiseBut.setVisibility(View.GONE);
+			betBar.setVisibility(View.GONE);
+		} else {
+			joinButton.setVisibility(View.GONE);
+			checkFoldBut.setVisibility(View.VISIBLE);
+			callBut.setVisibility(View.VISIBLE);
+			raiseBut.setVisibility(View.VISIBLE);
+			betBar.setVisibility(View.VISIBLE);
+			
+			boolean widgetState;
+			if (player.state == Player.BET)
+				widgetState = true;
+			else
+				widgetState = false;
+			checkFoldBut.setEnabled(widgetState);
+			callBut.setEnabled(widgetState);
+			raiseBut.setEnabled(widgetState);
+			betBar.setEnabled(widgetState);
+		}
 	}
 	
 	public void updateAll(){

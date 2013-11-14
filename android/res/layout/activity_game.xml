@@ -64,7 +64,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.44" >
+                android:layout_weight="0.44"
+                android:paddingTop="10dp" >
 
                 <SeekBar
                     android:id="@+id/SeekBarID"
@@ -91,6 +92,16 @@
             android:layout_height="match_parent"
             android:layout_weight="2"
             android:orientation="vertical" >
+
+            <Button
+                android:id="@+id/join_button"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:onClick="@string/ssp_request_join"
+                android:text="@string/ssp_game_joinbutton"
+                android:textSize="30sp" />
 
             <Button
                 android:id="@+id/FoldCheckButID"

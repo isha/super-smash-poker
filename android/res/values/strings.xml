@@ -20,5 +20,7 @@
     <string name="ssp_settings_save">onSettingsSave</string>
     <string name="title_activity_connect">Connect</string>
     <string name="wait_for_connect">Waiting for players to connect</string>
+    <string name="ssp_request_join">joinRequest</string>
+    <string name="ssp_game_joinbutton">Join Game</string>
 
 </resources>
