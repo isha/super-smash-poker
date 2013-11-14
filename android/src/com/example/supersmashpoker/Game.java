@@ -63,10 +63,11 @@ public class Game extends Activity {
 		Timer tcp_timer = new Timer();
 		tcp_timer.schedule(tcp_task, 3000, 500);
 		
+		//TODO: Start player off at Player.START once all testing is done
 		enterState(Player.BET);
-		openSocket();
 		
-		Log.i("Game Start", "Game on!!!");
+		openSocket();
+		Log.i("Game_Start", "Game on!!!");
 	}
 
 	private void setFonts(){
@@ -233,39 +234,48 @@ public class Game extends Activity {
 					
 					int bytes_avail = in.available();
 					if (bytes_avail > 0) {
-						byte buf[] = new byte[bytes_avail];
+						final byte buf[] = new byte[bytes_avail];
 						in.read(buf);
 						
 						//Incomplete, committed to help testing!
 						
 						Log.i("Data", "Read Data!!! Yeaaa!");
 						
-						int next_state = (int) buf[0];
+						final int next_state = (int) buf[0];
 						
-						switch(next_state) {
-						case Player.DEALT:
-							Log.i("State", "Entered Dealt State");
-							Game.this.dealtState((int) buf[2], (int) buf[1], (int) buf[4], (int) buf[3]);
-							break;
-						case Player.WAITING:
-							Log.i("State", "Entered Waiting State");
-							break;
-						case Player.BET:
-							Log.i("State", "Entered Bet State");
-							break;
-						case Player.WIN:
-							Log.i("State", "Entered Win State");
-							break;
-						case Player.LOSE:
-							Log.i("State", "Entered Lose State");
-							break;
-						case Player.BROKE:
-							Log.i("State", "Entered Broke State");
-							break;
-						default:
-							Log.i("Invalid State", "What the fuck did you just send me?!");
-							return;
-						}
+						runOnUiThread(new Runnable() {
+							public void run() {
+								switch(next_state) {
+								case Player.DEALT:
+									Log.i("State", "Entered Dealt State");
+									dealtState((int) buf[2], (int) buf[1], (int) buf[4], (int) buf[3]);
+									break;
+								case Player.WAITING:
+									Log.i("State", "Entered Waiting State");
+									enterState(Player.WAITING);
+									break;
+								case Player.BET:
+									Log.i("State", "Entered Bet State");
+									enterState(Player.BET);
+									break;
+								case Player.WIN:
+									Log.i("State", "Entered Win State");
+									endState(true);
+									break;
+								case Player.LOSE:
+									Log.i("State", "Entered Lose State");
+									endState(false);
+									break;
+								case Player.BROKE:
+									Log.i("State", "Entered Broke State");
+									endState(false);
+									break;
+								default:
+									Log.i("Invalid State", "What the fuck did you just send me?!");
+									return;
+								}
+							}
+						});
 						
 					}
 				} catch (IOException e) {
@@ -306,6 +316,17 @@ public class Game extends Activity {
 			enterState(Player.LOSE);
 	}
 	
+	// Actions
+	public void requestToJoin() {
+		sendData(new byte[] {
+				(byte) player.id,
+				(byte) ((player.bank >> 24) & 0xFF),
+				(byte) ((player.bank >> 16) & 0xFF),
+				(byte) ((player.bank >> 8) & 0xFF),
+				(byte) (player.bank & 0xFF),
+		});
+	}
+	
 	public void foldCheckClicked(View view){
 		player.state = Player.LOSE;
 		card0.setImageAlpha(127);
@@ -319,7 +340,7 @@ public class Game extends Activity {
 	}
 	
 	public void callClicked(View view){
-//		player.state = Player.WAITING;
+		player.state = Player.WAITING;
 
 		if (toCall > player.bank)
 			toCall = player.bank;
@@ -332,7 +353,7 @@ public class Game extends Activity {
 	}
 	
 	public void raiseClicked(View view) {
-//		player.state = Player.WAITING;
+		player.state = Player.WAITING;
 		
 		if (toCall > player.bank)
 			toCall = player.bank;
