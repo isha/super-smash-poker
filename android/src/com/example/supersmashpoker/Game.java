@@ -55,19 +55,18 @@ public class Game extends Activity {
         setWidgetIDs();
         betBar.setOnSeekBarChangeListener(new SeekBarListener());
 		
-		player = new Player(0);
-		
 		setFonts();
+		
+		player = new Player(0);
 		
 		TCPReadTimerTask tcp_task = new TCPReadTimerTask();
 		Timer tcp_timer = new Timer();
 		tcp_timer.schedule(tcp_task, 3000, 500);
 		
-		//TODO: Start player off at Player.START once all testing is done
-		enterState(Player.BET);
-		
+		enterState(Player.START);
 		openSocket();
-		Log.i("Game_Start", "Game on!!!");
+		
+		//TODO: find a way to call requestToJoin() without all hell breaking loose
 	}
 
 	private void setFonts(){
@@ -184,6 +183,7 @@ public class Game extends Activity {
 		System.arraycopy(data, 0, buffer, 0, data.length);
 		
 		OutputStream out;
+		
 		try {
 			out = app.socket.getOutputStream();
 			try {
@@ -218,8 +218,7 @@ public class Game extends Activity {
 		}
 		
 		protected void onPostExecute(Socket s) {
-			SuperSmashPoker myApp = (SuperSmashPoker) Game.this
-					.getApplication();
+			SuperSmashPoker myApp = (SuperSmashPoker) Game.this.getApplication();
 			myApp.socket = s;
 		}
 	}
@@ -237,22 +236,17 @@ public class Game extends Activity {
 						final byte buf[] = new byte[bytes_avail];
 						in.read(buf);
 						
-						//Incomplete, committed to help testing!
-						
-						Log.i("Data", "Read Data!!! Yeaaa!");
-						
 						final int next_state = (int) buf[0];
 						
 						runOnUiThread(new Runnable() {
 							public void run() {
+								
+								// Take action based on DE2 Board Messages
+								
 								switch(next_state) {
 								case Player.DEALT:
 									Log.i("State", "Entered Dealt State");
 									dealtState((int) buf[2], (int) buf[1], (int) buf[4], (int) buf[3]);
-									break;
-								case Player.WAITING:
-									Log.i("State", "Entered Waiting State");
-									enterState(Player.WAITING);
 									break;
 								case Player.BET:
 									Log.i("State", "Entered Bet State");
@@ -264,10 +258,6 @@ public class Game extends Activity {
 									break;
 								case Player.LOSE:
 									Log.i("State", "Entered Lose State");
-									endState(false);
-									break;
-								case Player.BROKE:
-									Log.i("State", "Entered Broke State");
 									endState(false);
 									break;
 								default:
@@ -319,11 +309,11 @@ public class Game extends Activity {
 	// Actions
 	public void requestToJoin() {
 		sendData(new byte[] {
-				(byte) player.id,
-				(byte) ((player.bank >> 24) & 0xFF),
-				(byte) ((player.bank >> 16) & 0xFF),
-				(byte) ((player.bank >> 8) & 0xFF),
-				(byte) (player.bank & 0xFF),
+			(byte) player.id,
+			(byte) ((player.bank >> 24) & 0xFF),
+			(byte) ((player.bank >> 16) & 0xFF),
+			(byte) ((player.bank >> 8) & 0xFF),
+			(byte) (player.bank & 0xFF),
 		});
 	}
 	
