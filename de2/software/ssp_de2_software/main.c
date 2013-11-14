@@ -113,16 +113,10 @@ unsigned int get_bet_for_player(int pid) {
   printf("\nPlayer %d\n Enter your action (0 - Bet, 1 - Call, 2 - Check, 3 - Raise, 4 - Fold): ", pid);
 
   set_action_state(pid);
-  send_message();
+  //send_message();
 
   receive_message();
   m_input = read_player_action_and_value(pid);
-
-  if (dealer->players[pid].action == START_BET) {
-    dealer->current_bet = m_input;
-    dealer->players[pid].money = m_input;
-    dealer->players[pid].total_money -= dealer->players[pid].money;
-  }
 
   if (dealer->players[pid].action == CALL) {
     dealer->players[pid].total_money -= (dealer->current_bet - dealer->players[pid].money);
@@ -135,7 +129,7 @@ unsigned int get_bet_for_player(int pid) {
     dealer->players[pid].money += (dealer->current_bet - dealer->players[pid].money);
   }
 
-  if (dealer->players[pid].action == FOLD) {
+  if (dealer->players[pid].action == FOLD && dealer->current_bet > 0) {
     dealer->players[pid].active = false;
 
     int i, active_players = 0;
@@ -168,10 +162,32 @@ bool player_still_playing(int pid) {
   return false;
 }
 
+void test_case() {
+	init();
+
+	message_client_id = 0x01;
+	message_size = 5;
+	message[0] = 'A';
+	message[1] = 'B';
+	message[2] = 'C';
+	message[3] = 'D';
+	message[4] = 'E';
+
+	printf("\n\nCurrent contents of message: \n");
+	print_message();
+
+	printf("\n\nSending message...");
+	//send_message();
+
+	while(1) {};
+}
+
 int main()
 {
+	// test_case();
 
 	init();
+
  	srand(alt_timestamp()); // TODO change in de2 env
 	int i;
 	GameState state = SETUP;
@@ -200,6 +216,7 @@ int main()
 			dealer->players[i].hand[0].suite, dealer->players[i].hand[0].value,
 			dealer->players[i].hand[1].suite, dealer->players[i].hand[1].value);
 		}
+		while(1);
 
 		state = BET;
 		break;

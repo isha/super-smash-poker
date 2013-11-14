@@ -71,7 +71,7 @@ void receive_message() {
 }
 
 // Requires that message_client_id, message_size, and message are preset
-void send_message() {
+void send_message(unsigned char client, unsigned char size, unsigned char * msg) {
 	int i;
 	unsigned char parity;
 	unsigned char data;
@@ -82,11 +82,13 @@ void send_message() {
 	}
 
 	printf("Sending message: ");
-	alt_up_rs232_write_data(uart, message_client_id);
-	alt_up_rs232_write_data(uart, (unsigned char) message_size);
-	for (i = 0; i < message_size; i++) {
-		alt_up_rs232_write_data(uart, message[i]);
+	alt_up_rs232_write_data(uart, client);
+	alt_up_rs232_write_data(uart, (unsigned char) size);
+	for (i = 0; i < size; i++) {
+		alt_up_rs232_write_data(uart, msg[i]);
+		printf("%d ", msg[i]);
 	}
+	printf("\n");
 }
 
 // Converts four consecutive bytes (from MSB->LSB) into an int
@@ -167,16 +169,18 @@ void read_initial_player_data(int current_number_of_players) {
 void joining_period() {
 
 	int current_number_of_players = 0;
-	printf("Waiting for at least two players to connect...\n");
+	printf("\nWaiting for at least two players to connect...\n");
 	for(;;) {
 
 		// check if we should stop waiting for another player
 		if (current_number_of_players == NUMBER_OF_PLAYERS) break;
 
 		// store the data in current_message
+		current_number_of_players++;
 		receive_message();
 		read_initial_player_data(current_number_of_players);
-		current_number_of_players++;
+
+		printf("Player %d has joined, with client_id %x\n\n", current_number_of_players-1, message_client_id);
 	}
 	printf("Success! %d players are now connected.\n", current_number_of_players);
 
@@ -193,25 +197,33 @@ void set_action_state(int pid) {
  * Money to be sent is the money they started with (received in a message before minus antes)
  */
 void send_player_hands() {
-	int i;
+	int i,j;
 	for (i=0; i<dealer->number_players; i++) {
 
-		printf("Initializing values for player %d...\n", i);
+		printf("\nSEND PLAYER HANDS Initializing values for player %d...\n", i);
+
 		message_client_id = player_id_mapping[i]; // send client_id
-		message_size = 0x05; // size of message (following this byte)
-		message[0] = 0x01; // state of player = DEALT
+
+		unsigned char * msg = malloc(sizeof(unsigned char)*5);
+
+		msg[0] = 0x01; // state of player = DEALT
 
 		// current hand of the player.
 		// Need to add 1 to all values/suites to be compatible with Android side
-		message[1] = ++(dealer->players[i].hand[0].value);
-		message[2] = ++(dealer->players[i].hand[0].suite);
-		message[3] = ++(dealer->players[i].hand[1].value);
-		message[4] = ++(dealer->players[i].hand[1].suite);
+		msg[1] = dealer->players[i].hand[0].value+1;
+		msg[2] = dealer->players[i].hand[0].suite+1;
+		msg[3] = dealer->players[i].hand[1].value+1;
+		msg[4] = dealer->players[i].hand[1].suite+1;
 
 		// currently not sending money
 
-		send_message();
+		//print_message();
+
+		send_message(message_client_id, 5, msg);
+		free(msg);
 		printf("Completed initialization for player %d\n", i);
+
+
 	}
 }
 
