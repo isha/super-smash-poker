@@ -5,6 +5,7 @@ public class Player {
 	int state;
 	int bank;
 	Card[] hand;
+//	int bytes_to_read = 0;
 	
 	public Player(int id) {
 		this.id = id;

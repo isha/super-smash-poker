@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -228,6 +229,8 @@ public class Game extends Activity {
 
 	
 	public class TCPReadTimerTask extends TimerTask {
+
+		public int bytes_to_skip = 0;
 		public void run() {
 			SuperSmashPoker app = (SuperSmashPoker) getApplication();
 			if (app.socket != null && app.socket.isConnected() && !app.socket.isClosed()) {
@@ -236,15 +239,24 @@ public class Game extends Activity {
 					
 					int bytes_avail = in.available();
 					if (bytes_avail > 0) {
-						final byte buf[] = new byte[bytes_avail];
-						in.read(buf);
-						
-						final int next_state = (int) buf[0];
+						in.skip(this.bytes_to_skip);
+						final byte[] buffer = new byte[bytes_avail];
+						int bytes_read = in.read(buffer);
+						this.bytes_to_skip = bytes_avail;
 						
 						runOnUiThread(new Runnable() {
 							public void run() {
 								
-								// Take action based on DE2 Board Messages
+								byte[] buf = buffer;
+								int next_state = (int) buf[0];
+								
+								String s = "Received:";
+								for(byte b : buf) {
+									s += " " + Byte.toString(b);
+								}
+								
+								Toast t = Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT);
+								t.show();
 								
 								switch(next_state) {
 								case Player.DEALT:
