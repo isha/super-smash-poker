@@ -20,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -67,7 +68,7 @@ public class Game extends Activity {
 		tcp_timer.schedule(tcp_task, 3000, 500);
 		
 		enterState(Player.JOIN);
-		openSocket();
+		//openSocket();
 	}
 
 	private void setFonts(){
@@ -176,6 +177,11 @@ public class Game extends Activity {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	@Override
+	public void onStop(){
+		closeSocket();
 	}
 	
 	public void sendData(byte[] data) {
@@ -311,6 +317,9 @@ public class Game extends Activity {
 	
 	// Actions
 	public void joinRequest(View view) {
+		saveSettings();
+		openSocket();
+		
 		try{
 			sendData(new byte[] {
 				(byte) player.id,
@@ -324,6 +333,29 @@ public class Game extends Activity {
 			Toast t = Toast.makeText(getApplicationContext(), "Could not join a game", Toast.LENGTH_LONG);
 			t.show();
 		}
+	}
+	
+	public void saveSettings(){
+		SuperSmashPoker app = (SuperSmashPoker) getApplication();
+		
+		EditText text_ip;
+		EditText text_port;
+		
+		String addr = "";
+		
+		text_ip = (EditText) findViewById(R.id.ip1);
+		addr += text_ip.getText().toString();
+		text_ip = (EditText) findViewById(R.id.ip2);
+		addr += "." + text_ip.getText().toString();
+		text_ip = (EditText) findViewById(R.id.ip3);
+		addr += "." + text_ip.getText().toString();
+		text_ip = (EditText) findViewById(R.id.ip4);
+		addr += "." + text_ip.getText().toString();
+		
+		text_port = (EditText) findViewById(R.id.port);
+		
+		app.ip = addr;
+		app.port = Integer.parseInt(text_port.getText().toString());
 	}
 	
 	public void foldCheckClicked(View view){
