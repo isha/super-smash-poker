@@ -488,6 +488,8 @@ int main() {
           }
        }
 
+       HOTSTUFF:;
+       
         /* Put bet money into the pot */
         for (i=0; i<dealer->number_players; i++) {
           dealer->pot += dealer->players[i].money;
@@ -503,7 +505,7 @@ int main() {
           case 4: state = RIVER; break;
           case 5: state = GAME_OVER; break;
         }
-        HOTSTUFF: break;
+        break;
 
       case GAME_OVER:
         split_pot();
