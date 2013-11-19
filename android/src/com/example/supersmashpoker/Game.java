@@ -322,7 +322,6 @@ public class Game extends Activity {
 		
 		updateAll();
 		enterState(Player.DEALT);
-		sendData(new byte[] {(byte) 0x04});
 	}
 	
 	//State for when the ends and we need to declare a winner
