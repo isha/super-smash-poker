@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -21,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,7 +32,8 @@ public class Game extends Activity {
 	Player player;
 	SeekBar betBar;
 	TextView betText;
-	Button joinButton;
+	LinearLayout joinGame;
+	LinearLayout gameplay;
 	Button checkFoldBut;
 	Button callBut;
 	Button raiseBut;
@@ -64,7 +67,7 @@ public class Game extends Activity {
 		Timer tcp_timer = new Timer();
 		tcp_timer.schedule(tcp_task, 3000, 500);
 		
-		enterState(Player.START);
+		enterState(Player.JOIN);
 		openSocket();
 	}
 
@@ -81,7 +84,8 @@ public class Game extends Activity {
 	private void setWidgetIDs() {
 		betText = (TextView) findViewById(R.id.BetTextID);
         betBar = (SeekBar) findViewById(R.id.SeekBarID);
-        joinButton = (Button) findViewById(R.id.join_button);
+        joinGame = (LinearLayout) findViewById(R.id.join_game_layout);
+        gameplay = (LinearLayout) findViewById(R.id.gameplay_layout);
         checkFoldBut = (Button) findViewById(R.id.FoldCheckButID);
         callBut = (Button) findViewById(R.id.CallButID);
         raiseBut = (Button) findViewById(R.id.RaiseButID);
@@ -225,6 +229,8 @@ public class Game extends Activity {
 
 	
 	public class TCPReadTimerTask extends TimerTask {
+
+		public int bytes_to_skip = 0;
 		public void run() {
 			SuperSmashPoker app = (SuperSmashPoker) getApplication();
 			if (app.socket != null && app.socket.isConnected() && !app.socket.isClosed()) {
@@ -233,39 +239,60 @@ public class Game extends Activity {
 					
 					int bytes_avail = in.available();
 					if (bytes_avail > 0) {
-						final byte buf[] = new byte[bytes_avail];
-						in.read(buf);
+						final byte[] buffer = new byte[bytes_avail];
+						in.read(buffer);
 						
-						final int next_state = (int) buf[0];
+						String s = "";
+						for(byte b : buffer) {
+							s += " " + Byte.toString(b);
+						}
 						
-						runOnUiThread(new Runnable() {
-							public void run() {
-								
-								// Take action based on DE2 Board Messages
-								
-								switch(next_state) {
-								case Player.DEALT:
-									Log.i("State", "Entered Dealt State");
-									dealtState((int) buf[2], (int) buf[1], (int) buf[4], (int) buf[3]);
-									break;
-								case Player.BET:
-									Log.i("State", "Entered Bet State");
-									enterState(Player.BET);
-									break;
-								case Player.WIN:
-									Log.i("State", "Entered Win State");
-									endState(true);
-									break;
-								case Player.LOSE:
-									Log.i("State", "Entered Lose State");
-									endState(false);
-									break;
-								default:
-									Log.i("Invalid State", "What the fuck did you just send me?!");
-									return;
+						Log.i("Bytes_Received", "Got: " + s);
+						
+						int next_state = (int) buffer[0];
+						
+						switch(next_state) {
+						case Player.DEALT:
+							Log.i("Player_State", "Changed to Dealt State");
+							final int card0_rank = (int) buffer[1];
+							final int card0_suit = (int) buffer[2];
+							final int card1_rank = (int) buffer[3];
+							final int card1_suit = (int) buffer[4];
+							
+							runOnUiThread(new Runnable() {
+								public void run() {
+									dealtState(card0_suit, card0_rank, card1_suit, card1_rank);
 								}
-							}
-						});
+							});
+							break;
+						case Player.ACTION:
+							Log.i("Player_State", "Changed to Action State");
+							runOnUiThread(new Runnable() {
+								public void run() {
+									enterState(Player.ACTION);
+								}
+							});
+							break;
+						case Player.WIN:
+							Log.i("Player_State", "Changed to Win State");
+							runOnUiThread(new Runnable() {
+								public void run() {
+									endState(true);
+								}
+							});
+							break;
+						case Player.LOSE:
+							Log.i("Player_State", "Changed to Lost State");
+							runOnUiThread(new Runnable() {
+								public void run() {
+									endState(false);
+								}
+							});
+							break;
+						default:
+							Log.i("Player_State", "State Unrecognizable");
+							return;
+						}
 						
 					}
 				} catch (IOException e) {
@@ -293,6 +320,7 @@ public class Game extends Activity {
 		card0.setImageAlpha(255);
 		card1.setImageAlpha(255);
 		
+		updateAll();
 		enterState(Player.DEALT);
 	}
 	
@@ -315,7 +343,7 @@ public class Game extends Activity {
 			(byte) ((player.bank >> 8) & 0xFF),
 			(byte) (player.bank & 0xFF),
 		});
-		enterState(Player.WAITING);
+		enterState(Player.START);
 	}
 	
 	public void foldCheckClicked(View view){
@@ -364,21 +392,15 @@ public class Game extends Activity {
 	
 	// Enables or disables all the user controlled widgets
 	public void setButtonState() {
-		if(player.state == Player.START) {
-			joinButton.setVisibility(View.VISIBLE);
-			checkFoldBut.setVisibility(View.GONE);
-			callBut.setVisibility(View.GONE);
-			raiseBut.setVisibility(View.GONE);
-			betBar.setVisibility(View.GONE);
+		if(player.state == Player.JOIN) {
+			joinGame.setVisibility(View.VISIBLE);
+			gameplay.setVisibility(View.GONE);
 		} else {
-			joinButton.setVisibility(View.GONE);
-			checkFoldBut.setVisibility(View.VISIBLE);
-			callBut.setVisibility(View.VISIBLE);
-			raiseBut.setVisibility(View.VISIBLE);
-			betBar.setVisibility(View.VISIBLE);
+			joinGame.setVisibility(View.GONE);
+			gameplay.setVisibility(View.VISIBLE);
 			
 			boolean widgetState;
-			if (player.state == Player.BET)
+			if (player.state == Player.ACTION)
 				widgetState = true;
 			else
 				widgetState = false;

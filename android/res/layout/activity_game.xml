@@ -31,6 +31,27 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/join_game_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:baselineAligned="false"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/join_button"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="@string/ssp_request_join"
+            android:text="@string/ssp_game_joinbutton"
+            android:textSize="30sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/gameplay_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:baselineAligned="false"
@@ -92,16 +113,6 @@
             android:layout_height="match_parent"
             android:layout_weight="2"
             android:orientation="vertical" >
-
-            <Button
-                android:id="@+id/join_button"
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:onClick="@string/ssp_request_join"
-                android:text="@string/ssp_game_joinbutton"
-                android:textSize="30sp" />
 
             <Button
                 android:id="@+id/FoldCheckButID"
