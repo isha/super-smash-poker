@@ -239,43 +239,60 @@ public class Game extends Activity {
 					
 					int bytes_avail = in.available();
 					if (bytes_avail > 0) {
-						in.skip(this.bytes_to_skip);
 						final byte[] buffer = new byte[bytes_avail];
-						int bytes_read = in.read(buffer);
-						this.bytes_to_skip = bytes_avail;
+						in.read(buffer);
 						
-						runOnUiThread(new Runnable() {
-							public void run() {
-								
-								byte[] buf = buffer;
-								int next_state = (int) buf[0];
-								
-								String s = "Received:";
-								for(byte b : buf) {
-									s += " " + Byte.toString(b);
+						String s = "";
+						for(byte b : buffer) {
+							s += " " + Byte.toString(b);
+						}
+						
+						Log.i("Bytes_Received", "Got: " + s);
+						
+						int next_state = (int) buffer[0];
+						
+						switch(next_state) {
+						case Player.DEALT:
+							Log.i("Player_State", "Changed to Dealt State");
+							final int card0_rank = (int) buffer[1];
+							final int card0_suit = (int) buffer[2];
+							final int card1_rank = (int) buffer[3];
+							final int card1_suit = (int) buffer[4];
+							
+							runOnUiThread(new Runnable() {
+								public void run() {
+									dealtState(card0_suit, card0_rank, card1_suit, card1_rank);
 								}
-								
-								Toast t = Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT);
-								t.show();
-								
-								switch(next_state) {
-								case Player.DEALT:
-									dealtState((int) buf[2], (int) buf[1], (int) buf[4], (int) buf[3]);
-									break;
-								case Player.ACTION:
+							});
+							break;
+						case Player.ACTION:
+							Log.i("Player_State", "Changed to Action State");
+							runOnUiThread(new Runnable() {
+								public void run() {
 									enterState(Player.ACTION);
-									break;
-								case Player.WIN:
-									endState(true);
-									break;
-								case Player.LOSE:
-									endState(false);
-									break;
-								default:
-									return;
 								}
-							}
-						});
+							});
+							break;
+						case Player.WIN:
+							Log.i("Player_State", "Changed to Win State");
+							runOnUiThread(new Runnable() {
+								public void run() {
+									endState(true);
+								}
+							});
+							break;
+						case Player.LOSE:
+							Log.i("Player_State", "Changed to Lost State");
+							runOnUiThread(new Runnable() {
+								public void run() {
+									endState(false);
+								}
+							});
+							break;
+						default:
+							Log.i("Player_State", "State Unrecognizable");
+							return;
+						}
 						
 					}
 				} catch (IOException e) {
@@ -305,6 +322,7 @@ public class Game extends Activity {
 		
 		updateAll();
 		enterState(Player.DEALT);
+		sendData(new byte[] {(byte) 0x04});
 	}
 	
 	//State for when the ends and we need to declare a winner
