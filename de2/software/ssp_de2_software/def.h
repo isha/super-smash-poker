@@ -21,7 +21,6 @@ typedef struct {
   unsigned char suite;
 } Card;
 
-
 typedef enum {
   CALL = 1,
   RAISE = 2,

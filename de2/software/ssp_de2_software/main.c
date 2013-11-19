@@ -110,10 +110,10 @@ unsigned int get_bet_for_player(int pid) {
 
   printf("\n\n----------------------------------------");
   printf("\nYour total money %d and bet money %d", dealer->players[pid].total_money, dealer->players[pid].money);
-  printf("\nPlayer %d\n Enter your action (0 - Bet, 1 - Call, 2 - Check, 3 - Raise, 4 - Fold): ", pid);
+  printf("\nPlayer %d\n Enter your action (0 - Fold, 1 - Call, 2 - Raise): ", pid);
 
   set_action_state(pid);
-  //send_message();
+  send_message();
 
   receive_message();
   m_input = read_player_action_and_value(pid);
@@ -177,7 +177,7 @@ void test_case() {
 	print_message();
 
 	printf("\n\nSending message...");
-	//send_message();
+	send_message();
 
 	while(1) {};
 }
@@ -193,7 +193,7 @@ int main()
 	GameState state = SETUP;
 
 	for (;;) {
-	game_screen();
+
 	switch (state) {
 	  case SETUP:
 		initialize_dealer(2);
@@ -216,7 +216,6 @@ int main()
 			dealer->players[i].hand[0].suite, dealer->players[i].hand[0].value,
 			dealer->players[i].hand[1].suite, dealer->players[i].hand[1].value);
 		}
-		while(1);
 
 		state = BET;
 		break;
@@ -313,6 +312,7 @@ int main()
 
 		return 0;
 	}
+	game_screen();
 	}
 
 

@@ -13,6 +13,9 @@
 #define MAX_MESSAGE_LENGTH 30
 #define NUMBER_OF_PLAYERS 2
 
+#define DEALT 0x02
+#define ACTION 0x04
+
 // Hold the player id / client id mapping
 // index is player number, data inside is the client id
 unsigned char player_id_mapping[NUMBER_OF_PLAYERS];
@@ -71,7 +74,7 @@ void receive_message() {
 }
 
 // Requires that message_client_id, message_size, and message are preset
-void send_message(unsigned char client, unsigned char size, unsigned char * msg) {
+void send_message() {
 	int i;
 	unsigned char parity;
 	unsigned char data;
@@ -82,11 +85,11 @@ void send_message(unsigned char client, unsigned char size, unsigned char * msg)
 	}
 
 	printf("Sending message: ");
-	alt_up_rs232_write_data(uart, client);
-	alt_up_rs232_write_data(uart, (unsigned char) size);
-	for (i = 0; i < size; i++) {
-		alt_up_rs232_write_data(uart, msg[i]);
-		printf("%d ", msg[i]);
+	alt_up_rs232_write_data(uart, message_client_id);
+	alt_up_rs232_write_data(uart, (unsigned char) message_size);
+	for (i = 0; i < message_size; i++) {
+		alt_up_rs232_write_data(uart, message[i]);
+		printf("%d ", message[i]);
 	}
 	printf("\n");
 }
@@ -130,7 +133,7 @@ int read_player_action_and_value(int pid) {
 
 	// TODO Need to finalize what action enum values are between Android and DE2
 	// if (dealer->players[pid].action == START_BET|| dealer->players[pid].action == RAISE) {
-	if (dealer->players[pid].action == 2) { // 2 is RAISE in Android side
+	if (dealer->players[pid].action == RAISE) { // 2 is RAISE in Android side
 		m_value = convert_bytes_to_int(
 				message[1],
 				message[2],
@@ -187,10 +190,10 @@ void joining_period() {
 }
 
 void set_action_state(int pid) {
-	printf("Requesting action from player %d\n", pid);
+	printf("\nRequesting action from player %d\n", pid);
 	message_client_id = player_id_mapping[pid];
 	message_size = 0x01;	// set msg size = 1 byte
-	message[0] = 0x03; 		// set state = ACTION
+	message[0] = ACTION; 		// set state = ACTION
 }
 
 /* First message to the clients. Send hand information and state
@@ -204,23 +207,23 @@ void send_player_hands() {
 
 		message_client_id = player_id_mapping[i]; // send client_id
 
-		unsigned char * msg = malloc(sizeof(unsigned char)*5);
+		message_size = 5;
 
-		msg[0] = 0x01; // state of player = DEALT
+		message[0] = DEALT; // state of player = DEALT
 
 		// current hand of the player.
 		// Need to add 1 to all values/suites to be compatible with Android side
-		msg[1] = dealer->players[i].hand[0].value+1;
-		msg[2] = dealer->players[i].hand[0].suite+1;
-		msg[3] = dealer->players[i].hand[1].value+1;
-		msg[4] = dealer->players[i].hand[1].suite+1;
+		message[1] = dealer->players[i].hand[0].value+1;
+		message[2] = dealer->players[i].hand[0].suite+1;
+		message[3] = dealer->players[i].hand[1].value+1;
+		message[4] = dealer->players[i].hand[1].suite+1;
 
 		// currently not sending money
 
 		//print_message();
 
-		send_message(message_client_id, 5, msg);
-		free(msg);
+		send_message();
+
 		printf("Completed initialization for player %d\n", i);
 
 
