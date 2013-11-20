@@ -84,12 +84,12 @@ void send_message() {
 		alt_up_rs232_read_data(uart, &data, &parity);
 	}
 
-	printf("Sending message: ");
+	printf("Sending a %d-byte message to Client %d: ", message_size, message_client_id);
 	alt_up_rs232_write_data(uart, message_client_id);
 	alt_up_rs232_write_data(uart, (unsigned char) message_size);
 	for (i = 0; i < message_size; i++) {
 		alt_up_rs232_write_data(uart, message[i]);
-		printf("%d ", message[i]);
+		printf("%x ", message[i]);
 	}
 	printf("\n");
 }
@@ -192,8 +192,14 @@ void joining_period() {
 void set_action_state(int pid) {
 	printf("\nRequesting action from player %d\n", pid);
 	message_client_id = player_id_mapping[pid];
-	message_size = 0x01;	// set msg size = 1 byte
+	message_size = 0x05;	// set msg size = 5 bytes
 	message[0] = ACTION; 		// set state = ACTION
+
+	// also need to send the current_bet in the bytes following the action state
+	message[1] = (unsigned char) (dealer->current_bet >> 24);
+	message[2] = (unsigned char) (dealer->current_bet >> 16);
+	message[3] = (unsigned char) (dealer->current_bet >> 8);
+	message[4] = (unsigned char) (dealer->current_bet);
 }
 
 /* First message to the clients. Send hand information and state
