@@ -284,8 +284,7 @@ public class Game extends Activity {
 							});
 							break;
 						default:
-							Log.i("Player_State", "State Unrecognizable");
-							return;
+							Log.i("Player_State", "State unrecognizable, got " + next_state);
 						}
 						
 					}
