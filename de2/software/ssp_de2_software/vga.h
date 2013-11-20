@@ -21,7 +21,7 @@ int pixel_colors[RESOLUTION_X][RESOLUTION_Y];
 int old_pixel_colors[RESOLUTION_X][RESOLUTION_Y];
 int initial_pixel_colors[RESOLUTION_X][RESOLUTION_Y];
 
-
+extern char * card_name(Card card);
 alt_up_pixel_buffer_dma_dev* pixel_buffer;
 alt_up_char_buffer_dev *char_buffer;
 
