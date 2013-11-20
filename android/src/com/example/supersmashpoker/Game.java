@@ -236,28 +236,16 @@ public class Game extends Activity {
 			if (app.socket != null && app.socket.isConnected() && !app.socket.isClosed()) {
 				try {
 					InputStream in = app.socket.getInputStream();
-					
-					int bytes_avail = in.available();
-					if (bytes_avail > 0) {
-						final byte[] buffer = new byte[bytes_avail];
-						in.read(buffer);
-						
-						String s = "";
-						for(byte b : buffer) {
-							s += " " + Byte.toString(b);
-						}
-						
-						Log.i("Bytes_Received", "Got: " + s);
-						
-						int next_state = (int) buffer[0];
+					while(in.available() > 0) {
+						int next_state = in.read();
 						
 						switch(next_state) {
 						case Player.DEALT:
 							Log.i("Player_State", "Changed to Dealt State");
-							final int card0_rank = (int) buffer[1];
-							final int card0_suit = (int) buffer[2];
-							final int card1_rank = (int) buffer[3];
-							final int card1_suit = (int) buffer[4];
+							final int card0_rank = (int) in.read();
+							final int card0_suit = (int) in.read();
+							final int card1_rank = (int) in.read();
+							final int card1_suit = (int) in.read();
 							
 							runOnUiThread(new Runnable() {
 								public void run() {
@@ -267,9 +255,15 @@ public class Game extends Activity {
 							break;
 						case Player.ACTION:
 							Log.i("Player_State", "Changed to Action State");
+							final int newCallAmount = (
+									((int) in.read() << 24) +
+									((int) in.read() << 16) +
+									((int) in.read() << 8) +
+									((int) in.read())
+								);
 							runOnUiThread(new Runnable() {
 								public void run() {
-									enterState(Player.ACTION);
+									actionState(newCallAmount);
 								}
 							});
 							break;
@@ -295,6 +289,69 @@ public class Game extends Activity {
 						}
 						
 					}
+//					if (bytes_avail > 0) {
+//						final byte[] buffer = new byte[bytes_avail];
+//						in.read(buffer);
+//						
+//						String s = "";
+//						for(byte b : buffer) {
+//							s += " " + Byte.toString(b);
+//						}
+//						
+//						Log.i("Bytes_Received", "Got: " + s);
+//						
+//						int next_state = (int) buffer[0];
+//						
+//						switch(next_state) {
+//						case Player.DEALT:
+//							Log.i("Player_State", "Changed to Dealt State");
+//							final int card0_rank = (int) buffer[1];
+//							final int card0_suit = (int) buffer[2];
+//							final int card1_rank = (int) buffer[3];
+//							final int card1_suit = (int) buffer[4];
+//							
+//							runOnUiThread(new Runnable() {
+//								public void run() {
+//									dealtState(card0_suit, card0_rank, card1_suit, card1_rank);
+//								}
+//							});
+//							break;
+//						case Player.ACTION:
+//							Log.i("Player_State", "Changed to Action State");
+//							runOnUiThread(new Runnable() {
+//								final int newCallAmount = (
+//											((int) buffer[1] << 24) +
+//											((int) buffer[2] << 16) +
+//											((int) buffer[3] << 8) +
+//											((int) buffer[4])
+//										);
+//								public void run() {
+//									actionState(newCallAmount);
+//								}
+//							});
+//							break;
+//						case Player.WIN:
+//							Log.i("Player_State", "Changed to Win State");
+//							runOnUiThread(new Runnable() {
+//								public void run() {
+//									endState(true);
+//								}
+//							});
+//							break;
+//						case Player.LOSE:
+//							Log.i("Player_State", "Changed to Lost State");
+//							runOnUiThread(new Runnable() {
+//								public void run() {
+//									endState(false);
+//								}
+//							});
+//							break;
+//						default:
+//							Log.i("Player_State", "State Unrecognizable");
+//							return;
+//						}
+//						
+//					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -322,6 +379,11 @@ public class Game extends Activity {
 		
 		updateAll();
 		enterState(Player.DEALT);
+	}
+	
+	public void actionState(int toCall) {
+		this.toCall = toCall;
+		enterState(Player.ACTION);
 	}
 	
 	//State for when the ends and we need to declare a winner
