@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -37,6 +38,8 @@ public class Game extends Activity {
 	Button checkFoldBut;
 	Button callBut;
 	Button raiseBut;
+	Button joinBut;
+	Button connectBut;
 	TextView bankText;
 	TextView stateText;
 	ImageView card0;
@@ -57,6 +60,7 @@ public class Game extends Activity {
         getActionBar().hide();
         
         setWidgetIDs();
+		joinBut.setEnabled(false);
         betBar.setOnSeekBarChangeListener(new SeekBarListener());
 		
 		setFonts();
@@ -68,7 +72,7 @@ public class Game extends Activity {
 		tcp_timer.schedule(tcp_task, 3000, 500);
 		
 		enterState(Player.JOIN);
-		openSocket();
+
 	}
 
 	private void setFonts(){
@@ -89,6 +93,8 @@ public class Game extends Activity {
         checkFoldBut = (Button) findViewById(R.id.FoldCheckButID);
         callBut = (Button) findViewById(R.id.CallButID);
         raiseBut = (Button) findViewById(R.id.RaiseButID);
+        joinBut = (Button) findViewById(R.id.joinButID);
+        connectBut = (Button) findViewById(R.id.connectButID);
         stateText = (TextView) findViewById(R.id.StateTextID);
         bankText = (TextView) findViewById(R.id.BankTextID);
         card0 = (ImageView) findViewById(R.id.card0);
@@ -179,6 +185,11 @@ public class Game extends Activity {
 		}
 	}
 	
+	@Override
+	public void onStop(){
+		closeSocket();
+	}
+	
 	public void sendData(byte[] data) {
 		SuperSmashPoker app = (SuperSmashPoker) getApplication();
 		
@@ -213,11 +224,13 @@ public class Game extends Activity {
 
 			try {
 				s = new Socket(ip, port);
+				
 			} catch (UnknownHostException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			
 			return s;
 		}
 		
@@ -404,7 +417,38 @@ public class Game extends Activity {
 			(byte) ((player.bank >> 8) & 0xFF),
 			(byte) (player.bank & 0xFF),
 		});
+		
 		enterState(Player.START);
+	}
+	
+	// Actions
+	public void onConnectButton(View view) {
+		saveSettings();
+		openSocket();
+		joinBut.setEnabled(true);
+		connectBut.setEnabled(false);
+	}
+	
+	public void saveSettings() {
+		SuperSmashPoker app = (SuperSmashPoker) getApplication();
+		
+		EditText text_ip;
+		EditText text_port;
+		String addr = "";
+		
+		text_ip = (EditText) findViewById(R.id.ip1);
+		addr += text_ip.getText().toString();
+		text_ip = (EditText) findViewById(R.id.ip2);
+		addr += "." + text_ip.getText().toString();
+		text_ip = (EditText) findViewById(R.id.ip3);
+		addr += "." + text_ip.getText().toString();
+		text_ip = (EditText) findViewById(R.id.ip4);
+		addr += "." + text_ip.getText().toString();
+		
+		text_port = (EditText) findViewById(R.id.port);
+		
+		app.ip = addr;
+		app.port = Integer.parseInt(text_port.getText().toString());
 	}
 	
 	public void foldCheckClicked(View view){
