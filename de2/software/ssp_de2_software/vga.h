@@ -21,6 +21,7 @@ int pixel_colors[RESOLUTION_X][RESOLUTION_Y];
 int old_pixel_colors[RESOLUTION_X][RESOLUTION_Y];
 int initial_pixel_colors[RESOLUTION_X][RESOLUTION_Y];
 
+
 alt_up_pixel_buffer_dma_dev* pixel_buffer;
 alt_up_char_buffer_dev *char_buffer;
 
@@ -57,22 +58,39 @@ void draw_to_screen() {
 		}
 	}
 }
+char * card_name(Card card) {
+  char * c = malloc(sizeof(char)*20);
 
+  switch (card.value) {
+    case 0: strcpy(c, "Ace"); break;
+    case 12: strcpy(c, "King"); break;
+    case 11: strcpy(c, "Queen"); break;
+    case 10: strcpy(c, "Jack"); break;
+    default: sprintf(c, "%d", card.value+1); break;
+  }
+  strcat(c, " of ");
+  switch (card.suite) {
+    case 0: strcat(c, "Clubs"); break;
+    case 1: strcat(c, "Spades"); break;
+    case 2: strcat(c, "Diamonds"); break;
+    case 3: strcat(c, "Hearts"); break;
+  }
+  strcat(c, "\0");
+  return c;
+}
 void game_screen() {
 	alt_up_char_buffer_clear(char_buffer);
 
 	char str1[50], str2[30];
 
 	sprintf(str1, "P1: %d", dealer->players[0].total_money);
-	sprintf(str2, "%d of %d and %d of %d", dealer->players[0].hand[0].value, dealer->players[0].hand[0].suite,
-			dealer->players[0].hand[1].value, dealer->players[0].hand[1].suite);
+	sprintf(str2, "%s and %s", card_name(dealer->players[0].hand[0]), card_name(dealer->players[0].hand[1]));
 
 	alt_up_char_buffer_string(char_buffer, str1, 12, 50);
 	alt_up_char_buffer_string(char_buffer, str2, 12, 51);
 
 	sprintf(str1, "P2: %d", dealer->players[0].total_money);
-	sprintf(str2, "%d of %d and %d of %d", dealer->players[1].hand[0].value, dealer->players[1].hand[0].suite,
-			dealer->players[1].hand[1].value, dealer->players[1].hand[1].suite);
+	sprintf(str2, "%s and %s", card_name(dealer->players[1].hand[0]), card_name(dealer->players[1].hand[1]));
 
 	alt_up_char_buffer_string(char_buffer, str1, 49, 50);
 	alt_up_char_buffer_string(char_buffer, str2, 49, 51);

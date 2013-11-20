@@ -414,9 +414,9 @@ int main() {
         deal_hands();
 
         for (i=0; i<dealer->number_players; i++) {
-          printf("\n\nDealt cards for Player %d: Suite %d, Value %d & Suite %d, Value %d", i,
-            dealer->players[i].hand[0].suite, dealer->players[i].hand[0].value,
-            dealer->players[i].hand[1].suite, dealer->players[i].hand[1].value);
+          printf("\n\nDealt cards for Player %d: %s and %s", i,
+            card_name(dealer->players[i].hand[0]),
+            card_name(dealer->players[i].hand[1]));
         }
 
         state = BET;
@@ -425,10 +425,10 @@ int main() {
       case FLOP:
         flop();
         printf("\n\n----------------------------------------");
-        printf("\nFLOP (%d, %d), (%d, %d), (%d, %d)", 
-          dealer->cards_on_table[0].suite, dealer->cards_on_table[0].value,
-          dealer->cards_on_table[1].suite, dealer->cards_on_table[1].value,
-          dealer->cards_on_table[2].suite, dealer->cards_on_table[2].value);
+        printf("\nFLOP %s, %s and %s", 
+          card_name(dealer->cards_on_table[0]),
+          card_name(dealer->cards_on_table[1]),
+          card_name(dealer->cards_on_table[2]));
 
         state = BET;
         break;
@@ -436,8 +436,8 @@ int main() {
       case TURN:
         turn();
         printf("\n\n----------------------------------------");
-        printf("\nTURN (%d, %d)", 
-          dealer->cards_on_table[3].suite, dealer->cards_on_table[4].value);
+        printf("\nTURN %s", 
+          card_name(dealer->cards_on_table[3]));
 
         state = BET;
         break;
@@ -446,8 +446,8 @@ int main() {
         river();
 
         printf("\n\n----------------------------------------");
-        printf("\nRIVER (%d, %d)", 
-          dealer->cards_on_table[4].suite, dealer->cards_on_table[4].value);
+        printf("\nRIVER %s", 
+          card_name(dealer->cards_on_table[4]));
 
         state = BET;
         break;
@@ -488,6 +488,8 @@ int main() {
           }
        }
 
+       HOTSTUFF:;
+       
         /* Put bet money into the pot */
         for (i=0; i<dealer->number_players; i++) {
           dealer->pot += dealer->players[i].money;
@@ -503,11 +505,9 @@ int main() {
           case 4: state = RIVER; break;
           case 5: state = GAME_OVER; break;
         }
-        HOTSTUFF: break;
+        break;
 
       case GAME_OVER:
-        printf("\n\nGAME OVER\n\n");
-
         split_pot();
 
         free(dealer->deck);

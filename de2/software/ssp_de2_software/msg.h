@@ -13,6 +13,9 @@
 #define MAX_MESSAGE_LENGTH 30
 #define NUMBER_OF_PLAYERS 2
 
+#define DEALT 0x02
+#define ACTION 0x04
+
 // Hold the player id / client id mapping
 // index is player number, data inside is the client id
 unsigned char player_id_mapping[NUMBER_OF_PLAYERS];
@@ -81,12 +84,14 @@ void send_message() {
 		alt_up_rs232_read_data(uart, &data, &parity);
 	}
 
-	printf("Sending message: ");
+	printf("Sending a %d-byte message to Client %d: ", message_size, message_client_id);
 	alt_up_rs232_write_data(uart, message_client_id);
 	alt_up_rs232_write_data(uart, (unsigned char) message_size);
 	for (i = 0; i < message_size; i++) {
 		alt_up_rs232_write_data(uart, message[i]);
+		printf("%x ", message[i]);
 	}
+	printf("\n");
 }
 
 // Converts four consecutive bytes (from MSB->LSB) into an int
@@ -128,7 +133,7 @@ int read_player_action_and_value(int pid) {
 
 	// TODO Need to finalize what action enum values are between Android and DE2
 	// if (dealer->players[pid].action == START_BET|| dealer->players[pid].action == RAISE) {
-	if (dealer->players[pid].action == 2) { // 2 is RAISE in Android side
+	if (dealer->players[pid].action == RAISE) { // 2 is RAISE in Android side
 		m_value = convert_bytes_to_int(
 				message[1],
 				message[2],
@@ -167,51 +172,67 @@ void read_initial_player_data(int current_number_of_players) {
 void joining_period() {
 
 	int current_number_of_players = 0;
-	printf("Waiting for at least two players to connect...\n");
+	printf("\nWaiting for at least two players to connect...\n");
 	for(;;) {
 
 		// check if we should stop waiting for another player
 		if (current_number_of_players == NUMBER_OF_PLAYERS) break;
 
 		// store the data in current_message
+		current_number_of_players++;
 		receive_message();
 		read_initial_player_data(current_number_of_players);
-		current_number_of_players++;
+
+		printf("Player %d has joined, with client_id %x\n\n", current_number_of_players-1, message_client_id);
 	}
 	printf("Success! %d players are now connected.\n", current_number_of_players);
 
 }
 
 void set_action_state(int pid) {
-	printf("Requesting action from player %d\n", pid);
+	printf("\nRequesting action from player %d\n", pid);
 	message_client_id = player_id_mapping[pid];
-	message_size = 0x01;	// set msg size = 1 byte
-	message[0] = 0x03; 		// set state = ACTION
+	message_size = 0x05;	// set msg size = 5 bytes
+	message[0] = ACTION; 		// set state = ACTION
+
+	// also need to send the current_bet in the bytes following the action state
+	message[1] = (unsigned char) (dealer->current_bet >> 24);
+	message[2] = (unsigned char) (dealer->current_bet >> 16);
+	message[3] = (unsigned char) (dealer->current_bet >> 8);
+	message[4] = (unsigned char) (dealer->current_bet);
 }
 
 /* First message to the clients. Send hand information and state
  * Money to be sent is the money they started with (received in a message before minus antes)
  */
 void send_player_hands() {
-	int i;
+	int i,j;
 	for (i=0; i<dealer->number_players; i++) {
 
-		printf("Initializing values for player %d...\n", i);
+		printf("\nSEND PLAYER HANDS Initializing values for player %d...\n", i);
+
 		message_client_id = player_id_mapping[i]; // send client_id
-		message_size = 0x05; // size of message (following this byte)
-		message[0] = 0x01; // state of player = DEALT
+
+		message_size = 5;
+
+		message[0] = DEALT; // state of player = DEALT
 
 		// current hand of the player.
 		// Need to add 1 to all values/suites to be compatible with Android side
-		message[1] = ++(dealer->players[i].hand[0].value);
-		message[2] = ++(dealer->players[i].hand[0].suite);
-		message[3] = ++(dealer->players[i].hand[1].value);
-		message[4] = ++(dealer->players[i].hand[1].suite);
+		message[1] = dealer->players[i].hand[0].value+1;
+		message[2] = dealer->players[i].hand[0].suite+1;
+		message[3] = dealer->players[i].hand[1].value+1;
+		message[4] = dealer->players[i].hand[1].suite+1;
 
 		// currently not sending money
 
+		//print_message();
+
 		send_message();
+
 		printf("Completed initialization for player %d\n", i);
+
+
 	}
 }
 

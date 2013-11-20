@@ -63,7 +63,7 @@ void initialize_dealer(int number_players) {
   /* Cards on table, zero in the beginning */
   dealer->number_cards_on_table = 0;
   dealer->pot = 0;
-  dealer->current_bet = 0;
+  dealer->current_bet = 100;
 }
 
 /* Returns a random card from the deck */
@@ -110,19 +110,13 @@ unsigned int get_bet_for_player(int pid) {
 
   printf("\n\n----------------------------------------");
   printf("\nYour total money %d and bet money %d", dealer->players[pid].total_money, dealer->players[pid].money);
-  printf("\nPlayer %d\n Enter your action (0 - Bet, 1 - Call, 2 - Check, 3 - Raise, 4 - Fold): ", pid);
+  printf("\nPlayer %d\n Enter your action (0 - Fold, 1 - Call, 2 - Raise): ", pid);
 
   set_action_state(pid);
   send_message();
 
   receive_message();
   m_input = read_player_action_and_value(pid);
-
-  if (dealer->players[pid].action == START_BET) {
-    dealer->current_bet = m_input;
-    dealer->players[pid].money = m_input;
-    dealer->players[pid].total_money -= dealer->players[pid].money;
-  }
 
   if (dealer->players[pid].action == CALL) {
     dealer->players[pid].total_money -= (dealer->current_bet - dealer->players[pid].money);
@@ -135,7 +129,7 @@ unsigned int get_bet_for_player(int pid) {
     dealer->players[pid].money += (dealer->current_bet - dealer->players[pid].money);
   }
 
-  if (dealer->players[pid].action == FOLD) {
+  if (dealer->players[pid].action == FOLD && dealer->current_bet > 0) {
     dealer->players[pid].active = false;
 
     int i, active_players = 0;
@@ -168,16 +162,38 @@ bool player_still_playing(int pid) {
   return false;
 }
 
+void test_case() {
+	init();
+
+	message_client_id = 0x01;
+	message_size = 5;
+	message[0] = 'A';
+	message[1] = 'B';
+	message[2] = 'C';
+	message[3] = 'D';
+	message[4] = 'E';
+
+	printf("\n\nCurrent contents of message: \n");
+	print_message();
+
+	printf("\n\nSending message...");
+	send_message();
+
+	while(1) {};
+}
+
 int main()
 {
+	// test_case();
 
 	init();
+
  	srand(alt_timestamp()); // TODO change in de2 env
 	int i;
 	GameState state = SETUP;
 
 	for (;;) {
-	game_screen();
+
 	switch (state) {
 	  case SETUP:
 		initialize_dealer(2);
@@ -296,6 +312,7 @@ int main()
 
 		return 0;
 	}
+	game_screen();
 	}
 
 

@@ -5,6 +5,7 @@ public class Player {
 	int state;
 	int bank;
 	Card[] hand;
+//	int bytes_to_read = 0;
 	
 	public Player(int id) {
 		this.id = id;
@@ -29,7 +30,7 @@ public class Player {
 			return "Here are your cards!";
 		case WAITING:
 			return "Just chill, Dealer is busy!";
-		case BET:
+		case ACTION:
 			return "Your turn! Ready to up the Ante?";
 		case WIN:
 			return "YOU WON!";
@@ -49,7 +50,7 @@ public class Player {
 		START = 1,
 		DEALT = 2,
 		WAITING = 3,
-		BET = 4,
+		ACTION = 4,
 		WIN = 5,
 		LOSE = 6,
 		BROKE = 7;

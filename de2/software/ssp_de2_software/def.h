@@ -21,13 +21,10 @@ typedef struct {
   unsigned char suite;
 } Card;
 
-
 typedef enum {
-  START_BET = 0,
   CALL = 1,
-  CHECK = 2,
-  RAISE = 3,
-  FOLD = 4
+  RAISE = 2,
+  FOLD = 0
 } PlayerAction;
 
 typedef struct {
