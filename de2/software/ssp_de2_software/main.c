@@ -63,7 +63,7 @@ void initialize_dealer(int number_players) {
   /* Cards on table, zero in the beginning */
   dealer->number_cards_on_table = 0;
   dealer->pot = 0;
-  dealer->current_bet = 0;
+  dealer->current_bet = 100;
 }
 
 /* Returns a random card from the deck */
