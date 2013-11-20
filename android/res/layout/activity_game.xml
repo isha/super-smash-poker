@@ -41,8 +41,9 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="horizontal" >
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal"
+            android:paddingTop="16dp" >
 	
 	        <TextView
 	            android:layout_width="0dp"
@@ -50,6 +51,7 @@
 	            android:layout_marginRight="20dp"
 	            android:layout_weight="1"
 	            android:gravity="center"
+	            android:paddingRight="10dp"
 	            android:text="@string/ssp_settings_ip"
 	            android:textColor="#FFFFFF" />
 	
@@ -94,37 +96,47 @@
 	            android:text="100" />
 	
 	    </LinearLayout>
+	
+	    <LinearLayout
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginBottom="10dp"
+	        android:orientation="horizontal" >
+	
+	        <TextView
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_marginRight="20dp"
+	            android:layout_weight="1"
+	            android:gravity="center"
+	            android:text="@string/ssp_settings_port"
+	            android:textColor="#FFFFFF" />
+	
+	        <EditText
+	            android:id="@+id/port"
+	            android:layout_width="75dp"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="4"
+	            android:background="#FFFFFF"
+	            android:inputType="number"
+	            android:text="50002" />
+	
+	    </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="horizontal" >
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="20dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/ssp_settings_port"
-            android:textColor="#FFFFFF" />
-
-        <EditText
-            android:id="@+id/port"
-            android:layout_width="75dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:background="#FFFFFF"
-            android:inputType="number"
-            android:text="50002" />
-
-    </LinearLayout>
+	    <Button
+	        android:id="@+id/connectButID"
+	        style="?android:attr/buttonStyleSmall"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1"
+	        android:onClick="onConnectButton"
+	        android:text="@string/connect_button"
+	        android:textSize="30sp" />
         
         <Button
-            android:id="@+id/join_button"
+            android:id="@+id/joinButID"
             style="?android:attr/buttonStyleSmall"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="@string/ssp_request_join"

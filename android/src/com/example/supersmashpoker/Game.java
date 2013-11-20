@@ -38,6 +38,8 @@ public class Game extends Activity {
 	Button checkFoldBut;
 	Button callBut;
 	Button raiseBut;
+	Button joinBut;
+	Button connectBut;
 	TextView bankText;
 	TextView stateText;
 	ImageView card0;
@@ -58,6 +60,7 @@ public class Game extends Activity {
         getActionBar().hide();
         
         setWidgetIDs();
+		joinBut.setEnabled(false);
         betBar.setOnSeekBarChangeListener(new SeekBarListener());
 		
 		setFonts();
@@ -69,7 +72,7 @@ public class Game extends Activity {
 		tcp_timer.schedule(tcp_task, 3000, 500);
 		
 		enterState(Player.JOIN);
-		//openSocket();
+
 	}
 
 	private void setFonts(){
@@ -90,6 +93,8 @@ public class Game extends Activity {
         checkFoldBut = (Button) findViewById(R.id.FoldCheckButID);
         callBut = (Button) findViewById(R.id.CallButID);
         raiseBut = (Button) findViewById(R.id.RaiseButID);
+        joinBut = (Button) findViewById(R.id.joinButID);
+        connectBut = (Button) findViewById(R.id.connectButID);
         stateText = (TextView) findViewById(R.id.StateTextID);
         bankText = (TextView) findViewById(R.id.BankTextID);
         card0 = (ImageView) findViewById(R.id.card0);
@@ -219,11 +224,13 @@ public class Game extends Activity {
 
 			try {
 				s = new Socket(ip, port);
+				
 			} catch (UnknownHostException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			
 			return s;
 		}
 		
@@ -403,30 +410,30 @@ public class Game extends Activity {
 	
 	// Actions
 	public void joinRequest(View view) {
-		saveSettings();
-		openSocket();
+		sendData(new byte[] {
+			(byte) player.id,
+			(byte) ((player.bank >> 24) & 0xFF),
+			(byte) ((player.bank >> 16) & 0xFF),
+			(byte) ((player.bank >> 8) & 0xFF),
+			(byte) (player.bank & 0xFF),
+		});
 		
-		try{
-			sendData(new byte[] {
-				(byte) player.id,
-				(byte) ((player.bank >> 24) & 0xFF),
-				(byte) ((player.bank >> 16) & 0xFF),
-				(byte) ((player.bank >> 8) & 0xFF),
-				(byte) (player.bank & 0xFF),
-			});
-			enterState(Player.START);
-		}catch(NullPointerException e){
-			Toast t = Toast.makeText(getApplicationContext(), "Could not join a game", Toast.LENGTH_LONG);
-			t.show();
-		}
+		enterState(Player.START);
 	}
 	
-	public void saveSettings(){
+	// Actions
+	public void onConnectButton(View view) {
+		saveSettings();
+		openSocket();
+		joinBut.setEnabled(true);
+		connectBut.setEnabled(false);
+	}
+	
+	public void saveSettings() {
 		SuperSmashPoker app = (SuperSmashPoker) getApplication();
 		
 		EditText text_ip;
 		EditText text_port;
-		
 		String addr = "";
 		
 		text_ip = (EditText) findViewById(R.id.ip1);
