@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -44,9 +43,8 @@ public class Game extends Activity {
 	TextView stateText;
 	ImageView card0;
 	ImageView card1;
-	int toCall = 100;
 	
-	int MaxBet = 1000;
+	int toCall = 10;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -301,69 +299,6 @@ public class Game extends Activity {
 						}
 						
 					}
-//					if (bytes_avail > 0) {
-//						final byte[] buffer = new byte[bytes_avail];
-//						in.read(buffer);
-//						
-//						String s = "";
-//						for(byte b : buffer) {
-//							s += " " + Byte.toString(b);
-//						}
-//						
-//						Log.i("Bytes_Received", "Got: " + s);
-//						
-//						int next_state = (int) buffer[0];
-//						
-//						switch(next_state) {
-//						case Player.DEALT:
-//							Log.i("Player_State", "Changed to Dealt State");
-//							final int card0_rank = (int) buffer[1];
-//							final int card0_suit = (int) buffer[2];
-//							final int card1_rank = (int) buffer[3];
-//							final int card1_suit = (int) buffer[4];
-//							
-//							runOnUiThread(new Runnable() {
-//								public void run() {
-//									dealtState(card0_suit, card0_rank, card1_suit, card1_rank);
-//								}
-//							});
-//							break;
-//						case Player.ACTION:
-//							Log.i("Player_State", "Changed to Action State");
-//							runOnUiThread(new Runnable() {
-//								final int newCallAmount = (
-//											((int) buffer[1] << 24) +
-//											((int) buffer[2] << 16) +
-//											((int) buffer[3] << 8) +
-//											((int) buffer[4])
-//										);
-//								public void run() {
-//									actionState(newCallAmount);
-//								}
-//							});
-//							break;
-//						case Player.WIN:
-//							Log.i("Player_State", "Changed to Win State");
-//							runOnUiThread(new Runnable() {
-//								public void run() {
-//									endState(true);
-//								}
-//							});
-//							break;
-//						case Player.LOSE:
-//							Log.i("Player_State", "Changed to Lost State");
-//							runOnUiThread(new Runnable() {
-//								public void run() {
-//									endState(false);
-//								}
-//							});
-//							break;
-//						default:
-//							Log.i("Player_State", "State Unrecognizable");
-//							return;
-//						}
-//						
-//					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -411,7 +346,7 @@ public class Game extends Activity {
 	// Actions
 	public void joinRequest(View view) {
 		sendData(new byte[] {
-			(byte) player.id,
+			(byte) player.character_id,
 			(byte) ((player.bank >> 24) & 0xFF),
 			(byte) ((player.bank >> 16) & 0xFF),
 			(byte) ((player.bank >> 8) & 0xFF),
@@ -466,13 +401,11 @@ public class Game extends Activity {
 	public void callClicked(View view){
 		player.state = Player.WAITING;
 
-		if (toCall > player.bank)
-			toCall = player.bank;
-		player.bank = player.bank - toCall;
+		if (this.toCall > player.bank) this.toCall = player.bank;
+		player.bank -= this.toCall;
 		
 		setButtonState();
 		updateAll();
-		toCall = 0;
 		sendData(new byte[] {(byte) Player.CALL});
 	}
 	

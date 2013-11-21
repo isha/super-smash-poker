@@ -1,14 +1,13 @@
 package com.example.supersmashpoker;
 
 public class Player {
-	int id;
+	int character_id;
 	int state;
 	int bank;
 	Card[] hand;
-//	int bytes_to_read = 0;
 	
-	public Player(int id) {
-		this.id = id;
+	public Player(int character_id) {
+		this.character_id = character_id;
 		this.state = START;
 		this.bank = STARTING_BANKROLL;
 		this.hand = new Card[2];
@@ -62,5 +61,5 @@ public class Player {
 		RAISE = 2;
 	
 	public static final int
-		STARTING_BANKROLL = 1000;
+		STARTING_BANKROLL = 100;
 }
