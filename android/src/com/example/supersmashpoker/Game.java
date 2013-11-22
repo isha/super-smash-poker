@@ -15,11 +15,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.NavUtils;
-import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,7 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-public class Game extends Activity implements android.view.GestureDetector.OnDoubleTapListener, android.view.GestureDetector.OnGestureListener{
+public class Game extends Activity {
 	Player player;
 	SeekBar betBar;
 	TextView betText;
@@ -47,8 +45,6 @@ public class Game extends Activity implements android.view.GestureDetector.OnDou
 	ImageView card1;
 	
 	int toCall = 10;
-
-	private GestureDetectorCompat mDetector; 
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -72,9 +68,6 @@ public class Game extends Activity implements android.view.GestureDetector.OnDou
 		TCPReadTimerTask tcp_task = new TCPReadTimerTask();
 		Timer tcp_timer = new Timer();
 		tcp_timer.schedule(tcp_task, 3000, 500);
-		
-		mDetector = new GestureDetectorCompat(this, this);
-		mDetector.setOnDoubleTapListener(this);
 		
 		enterState(Player.JOIN);
 
@@ -398,6 +391,8 @@ public class Game extends Activity implements android.view.GestureDetector.OnDou
 	
 	public void foldCheckClicked(View view){
 		player.state = Player.WAITING;
+		setButtonState();
+		updateAll();
 		sendData(new byte[] {(byte) Player.FOLD});
 	}
 	
@@ -458,108 +453,4 @@ public class Game extends Activity implements android.view.GestureDetector.OnDou
 		updateBetBar();
 		updateHandView();
 	}
-	
-	@Override 
-    public boolean onTouchEvent(MotionEvent event){ 
-        this.mDetector.onTouchEvent(event);
-        // Be sure to call the superclass implementation
-        return super.onTouchEvent(event);
-    }
-
-    @Override
-    public boolean onFling(MotionEvent event1, MotionEvent event2, 
-            float velocityX, float velocityY) {
-    	if (player.state != player.LEAD && player.state != player.FOLLOW)
-    		return true;
-    	if (100 < event1.getY() - event2.getY()){
-    		Log.d("Gesture", "onFling up");
-    		raiseClicked(null);
-    	}
-        return true;
-    }
-
-    @Override
-    public boolean onDoubleTap(MotionEvent event) {
-    	if (player.state != player.LEAD){
-    		return true;
-    	}
-	    Log.d("Gesture", "onDoubleTap");
-		foldCheckClicked(null);
-    	
-        return true;
-    }
-
-    
-    
-    //Dont go down
-    
-    
-    
-    
-    
-    
-    
-    //Dont do it
-    
-    
-    
-    
-    
-    //TURN BACK NOW
-    
-    
-    
-    
-    
-    //These arent the methods you're looking for
-    
-    
-    
-    
-    
-    
-    //Last Chance
-    
-    
-    
-    
-    
-    //So be it
-    
-    
-    
-    //Useless crap we'll never use but that we need because we implement gesture listener
-    @Override
-    public boolean onDown(MotionEvent event) { 
-        return true;
-    }
-    
-    @Override
-    public void onLongPress(MotionEvent event) {
-    }
-
-    @Override
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
-            float distanceY) {
-        return true;
-    }
-
-    @Override
-    public void onShowPress(MotionEvent event) {
-    }
-
-    @Override
-    public boolean onSingleTapUp(MotionEvent event) {
-        return true;
-    }
-    
-    @Override
-    public boolean onDoubleTapEvent(MotionEvent event) {
-        return true;
-    }
-
-    @Override
-    public boolean onSingleTapConfirmed(MotionEvent event) {
-        return true;
-    }
 }
