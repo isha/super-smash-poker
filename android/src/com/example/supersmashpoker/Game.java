@@ -463,7 +463,7 @@ public class Game extends Activity implements android.view.GestureDetector.OnDou
     @Override
     public boolean onFling(MotionEvent event1, MotionEvent event2, 
             float velocityX, float velocityY) {
-    	if (player.state != player.LEAD && player.state != player.FOLLOW)
+    	if (player.state != Player.LEAD && player.state != Player.FOLLOW)
     		return true;
     	if (100 < event1.getY() - event2.getY()){
     		Log.d("Gesture", "onFling up");
@@ -474,7 +474,7 @@ public class Game extends Activity implements android.view.GestureDetector.OnDou
 
     @Override
     public boolean onDoubleTap(MotionEvent event) {
-    	if (player.state != player.LEAD){
+    	if (player.state != Player.LEAD){
     		return true;
     	}
 	    Log.d("Gesture", "onDoubleTap");
