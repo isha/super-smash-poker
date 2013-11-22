@@ -288,19 +288,20 @@ void rank_poker_hands() {
     card_name(dealer->cards_on_table[2]), card_name(dealer->cards_on_table[3]),
     card_name(dealer->cards_on_table[4]) );
   
-  for (i=0; i<dealer->number_players; i++) {
+  for (i=0; i<dealer->number_players && dealer->players[i].active; i++) {
     ph[i].type = UNDETERMINED;
     ph[i].value = -1;
     ph[i].value_secondary = -1;
     for (j=0; j<5; j++) ph[i].hand[j] = null_card;
+    ph[i].kicker = null_card;
     int num_filled = 0;
 
 
     /* Create hash maps */
     int suite_count[4]; Card by_suite[4][7];
     for (j=0; j<4; j++) suite_count[j]=0;
-    int value_count[13]; Card by_value[13][4];
-    for (j=0; j<13; j++) value_count[j]=0;
+    int value_count[13]; Card by_value[13][4]; // For value count, 0-12 represents Two to Ace
+    for (j=0; j<13; j++) value_count[j]=0;  
     by_suite[dealer->players[i].hand[0].suite][suite_count[dealer->players[i].hand[0].suite]] = dealer->players[i].hand[0];
     suite_count[dealer->players[i].hand[0].suite]++; 
     by_suite[dealer->players[i].hand[1].suite][suite_count[dealer->players[i].hand[1].suite]] = dealer->players[i].hand[1];
@@ -309,13 +310,17 @@ void rank_poker_hands() {
       by_suite[dealer->cards_on_table[j].suite][suite_count[dealer->cards_on_table[j].suite]] = dealer->cards_on_table[j];
       suite_count[dealer->cards_on_table[j].suite]++;
     }
-    by_value[dealer->players[i].hand[0].value][value_count[dealer->players[i].hand[0].value]] = dealer->players[i].hand[0];
-    value_count[dealer->players[i].hand[0].value]++; 
-    by_value[dealer->players[i].hand[1].value][value_count[dealer->players[i].hand[1].value]] = dealer->players[i].hand[1];
-    value_count[dealer->players[i].hand[1].value]++; 
+
+    int val = dealer->players[i].hand[0].value == 0 ? 12 : dealer->players[i].hand[0].value - 1;
+    by_value[val][value_count[val]] = dealer->players[i].hand[0];
+    value_count[val]++; 
+    val = dealer->players[i].hand[1].value == 0 ? 12 : dealer->players[i].hand[1].value - 1;
+    by_value[val][value_count[val]] = dealer->players[i].hand[1];
+    value_count[val]++; 
     for (j=0; j<dealer->number_cards_on_table; j++) {
-      by_value[dealer->cards_on_table[j].value][value_count[dealer->cards_on_table[j].value]] = dealer->cards_on_table[j];
-      value_count[dealer->cards_on_table[j].value]++;
+      val = dealer->cards_on_table[j].value == 0 ? 12 : dealer->cards_on_table[j].value - 1;
+      by_value[val][value_count[val]] = dealer->cards_on_table[j];
+      value_count[val]++;
     }
 
     /* Check for best hand */
@@ -329,6 +334,11 @@ void rank_poker_hands() {
           ph[i].hand[2] = by_suite[j][2];
           ph[i].hand[3] = by_suite[j][3];
           ph[i].hand[4] = by_suite[j][4];
+
+          ph[i].value = ph[i].hand[0].value;
+          for (k=0; k<5; k++) {
+            if (comp_value(ph[i].hand[k].value, ph[i].value) == 1) ph[i].value = ph[i].hand[k].value;
+          }
           num_filled = 5;
         }
       }
@@ -336,15 +346,15 @@ void rank_poker_hands() {
 
     /* Straight */
     for (j=12; j>=4; j--) {
-      if (j == 12 && value_count[0]>=1 && value_count[j]>=1 && value_count[j-1]>=1 && value_count[j-2]>=1 
+      if (j == 4 && value_count[12]>=1 && value_count[j]>=1 && value_count[j-1]>=1 && value_count[j-2]>=1 
         && value_count[j-3]>=1) {
           ph[i].type = STRAIGHT;
-          ph[i].value = ACE;
-          ph[i].hand[0] = by_value[0][0];
-          ph[i].hand[1] = by_value[j][0];
-          ph[i].hand[2] = by_value[j-1][0];
-          ph[i].hand[3] = by_value[j-2][0];
-          ph[i].hand[4] = by_value[j-3][0];
+          ph[i].value = j;
+          ph[i].hand[0] = by_value[j][0];
+          ph[i].hand[1] = by_value[j-1][0];
+          ph[i].hand[2] = by_value[j-2][0];
+          ph[i].hand[3] = by_value[j-3][0];
+          ph[i].hand[4] = by_value[12][0];
           num_filled = 5;
           break;
       } else if (value_count[j]>=1 && value_count[j-1]>=1 && value_count[j-2]>=1 
@@ -362,29 +372,19 @@ void rank_poker_hands() {
     }
 
     /* 4 of a kind */
-    if (value_count[0] == 4 && ph[i].type < FOUR_OF_A_KIND) {
+    for (j=12; j>=0; j--) {
+      if (value_count[j] == 4 && ph[i].type < FOUR_OF_A_KIND) {
           ph[i].type = FOUR_OF_A_KIND;
-          ph[i].value = ACE;
-          ph[i].hand[0] = by_value[0][0];
-          ph[i].hand[1] = by_value[0][1];
-          ph[i].hand[2] = by_value[0][2];
-          ph[i].hand[3] = by_value[0][3];
+          ph[i].value = j;
+          ph[i].hand[0] = by_value[j][0];
+          ph[i].hand[1] = by_value[j][1];
+          ph[i].hand[2] = by_value[j][2];
+          ph[i].hand[3] = by_value[j][3];
           num_filled = 4;
           break;
-    } else {
-        for (j=12; j>=1; j--) {
-          if (value_count[j] == 4 && ph[i].type < FOUR_OF_A_KIND) {
-              ph[i].type = FOUR_OF_A_KIND;
-              ph[i].value = j;
-              ph[i].hand[0] = by_value[j][0];
-              ph[i].hand[1] = by_value[j][1];
-              ph[i].hand[2] = by_value[j][2];
-              ph[i].hand[3] = by_value[j][3];
-              num_filled = 4;
-              break;
-          } 
-        }
+      } 
     }
+
 
     /* Full house and 3 of a kind */
     for (j=12; j>=0; j--) {
@@ -407,7 +407,7 @@ void rank_poker_hands() {
         }
 
         /* If not full house, is a 3 of a kind */
-        if (ph[i].type < THREE_OF_A_KIND || (ph[i].type == THREE_OF_A_KIND && ph[i].value < j)) {
+        if (ph[i].type < THREE_OF_A_KIND || (ph[i].type == THREE_OF_A_KIND && comp_value(ph[i].value, j) == -1)) {
           ph[i].type = THREE_OF_A_KIND;
           ph[i].value = j;
           ph[i].hand[0] = by_value[j][0];
@@ -447,22 +447,14 @@ void rank_poker_hands() {
       }
     }
 
-    if (ph[i].type < HIGH_CARD && value_count[0] >= 1) {
-      ph[i].type = HIGH_CARD;
-      ph[i].value = ACE;
-      ph[i].hand[0] = by_value[0][0]; 
-      num_filled = 1;
-      break;
-    } else {
-        for (j=12; j>=1; j--) {
-          if (value_count[j] >= 1 && ph[i].type < HIGH_CARD ) {
-              ph[i].type = HIGH_CARD;
-              ph[i].value = j;
-              ph[i].hand[0] = by_value[j][0];
-              num_filled = 1;
-              break;
-          }
-        }
+    for (j=12; j>=0; j--) {
+      if (value_count[j] >= 1 && ph[i].type < HIGH_CARD ) {
+          ph[i].type = HIGH_CARD;
+          ph[i].value = j;
+          ph[i].hand[0] = by_value[j][0];
+          num_filled = 1;
+          break;
+      }
     }
 
     /* Fill up remaining spots in best hand */
@@ -494,7 +486,7 @@ void rank_poker_hands() {
   }
 
   
-  for (i=0; i<dealer->number_players; i++) {
+  for (i=0; i<dealer->number_players && dealer->players[i].active; i++) {
     char *s;
     switch (ph[i].type) {
         case ROYAL_FLUSH: s = "Royal Flush"; 
@@ -528,35 +520,76 @@ void rank_poker_hands() {
 void split_pot() {
   if (ph == NULL) { printf("\nHand standing not determined yet!"); return; }
 
-  int i, best = 0;
-  for (i=1; i<dealer->number_players; i++) {
-    if (ph[i].type > ph[best].type) best = i;
-    else if (ph[i].type == ph[best].type && ph[i].value > ph[best].value) best = i;
-    else if (ph[i].type == ph[best].type && ph[i].value == ph[best].value 
-      && ph[i].value_secondary > ph[best].value_secondary) best = i;
-    else if (ph[i].type == ph[best].type) {
-      // Check remaining hand values
-    } else if (ph[i].type == ph[best].type) {
-      // Check kicker
-    } else {
-      // Split pot
+  int i = 0, j, winner_count = 1; int *winners = malloc(dealer->number_players*sizeof(int));
+
+  while (!dealer->players[i].active) i++;
+  winners[0] = i;
+
+  for (i=winners[0]+1; i<dealer->number_players && dealer->players[i].active; i++) {
+    int flag = 0;
+    if (ph[i].type > ph[winners[0]].type) { 
+      winners[0] = i; 
+      winner_count = winner_count > 1 ? 1 : winner_count; 
+    }
+    else if (ph[i].type == ph[winners[0]].type && comp_value(ph[i].value, ph[winners[0]].value) == 1) { 
+        winners[0] = i; 
+        winner_count = winner_count > 1 ? 1 : winner_count; 
+      }
+    else if (ph[i].type == ph[winners[0]].type && ph[i].value == ph[winners[0]].value 
+      && comp_value(ph[i].value_secondary, ph[winners[0]].value_secondary) == 1) {
+
+        winners[0] = i; 
+        winner_count = winner_count > 1 ? 1 : winner_count;
+      }
+    else if (ph[i].type == ph[winners[0]].type && ph[i].value == ph[winners[0]].value && 
+      ph[i].value_secondary == ph[winners[0]].value_secondary) {
+
+      for (j=0; j<5 && flag == 0; j++) {
+        if (comp_value(ph[i].hand[j].value, ph[winners[0]].hand[j].value) == 1) { 
+          winners[0] = i; flag = 1; 
+          winner_count = winner_count > 1 ? 1 : winner_count;
+        }
+      }
+      if (flag == 0 && ph[i].type == ph[winners[0]].type) {
+          if (comp_value(ph[i].kicker.value, ph[winners[0]].kicker.value) == 1) { 
+            winners[0] = i; flag = 1; 
+            winner_count = winner_count > 1 ? 1 : winner_count;
+          }
+      }  
+    } else if (ph[i].type == ph[winners[0]].type && ph[i].value == ph[winners[0]].value && 
+      ph[i].value_secondary == ph[winners[0]].value_secondary && flag == 0) {
+      winners[winner_count] = i;
+      winner_count++;
     }
   }
 
-  printf("\nCongrats on the win Player %d! You win pot of size %d.\n", best, dealer->pot);
-  dealer->players[best].total_money += dealer->pot;
+  printf("\nCongrats on the win ");
+  for (j=0; j<winner_count; j++) {
+    printf("Player %d, ", winners[j]);
+    dealer->players[winners[j]].total_money += dealer->pot/winner_count;
+  }
+  printf("You win pot of size %d.\n", dealer->pot/winner_count);
+  dealer->pot = 0;
+}
+
+void last_man_standing() {
+  int i=0;
+  while (!dealer->players[i].active) i++;
+
+  printf("\nCongrats on the win Player %d, You win pot of size %d.\n", i, dealer->pot);
+  dealer->players[i].total_money += dealer->pot;
   dealer->pot = 0;
 }
 
 
 void test_rank_poker_hands() {
   int i;
-  initialize_dealer(2);
+  initialize_dealer(8);
   deal_hands();
   flop();
   turn();
   river();
-
+  dealer->pot = 3000;
   // /* Testing data */
   // dealer->players[0].hand[0].value = JACK;
   // dealer->players[0].hand[0].suite = CLUBS;
@@ -594,7 +627,7 @@ int main() {
   srand(time(NULL)); int i; // TODO change in de2 env
   GameState state = SETUP;
 
-  test_rank_poker_hands(); return 0;
+  //test_rank_poker_hands(); return 0;
   
   for (;;) {
     switch (state) {
@@ -685,6 +718,13 @@ int main() {
             }
           }
        }
+        switch (dealer->number_cards_on_table) {
+          case 0: state = FLOP; break;
+          case 3: state = TURN; break;
+          case 4: state = RIVER; break;
+          case 5: state = GAME_OVER; break;
+        }
+
 
        HOTSTUFF:;
 
@@ -698,24 +738,28 @@ int main() {
         printf("\n----------------------------------------\n");
         printf("\nPOT %d", dealer->pot);
         printf("\n----------------------------------------\n");
-        switch (dealer->number_cards_on_table) {
-          case 0: state = FLOP; break;
-          case 3: state = TURN; break;
-          case 4: state = RIVER; break;
-          case 5: state = GAME_OVER; break;
-        }
+
         break;
 
       case GAME_OVER:
-        rank_poker_hands();
-        split_pot();
+        if (dealer->number_cards_on_table == 5) {
+          rank_poker_hands();
+          split_pot();
+        } else {
+          last_man_standing();
+        }
 
         free(dealer->deck);
         free(dealer->players);
         free(dealer);
         free(ph);
 
-        return 0;
+        printf("\n\nContinue play? (0 - No, 1 - Yes) ");
+        int m;
+        scanf("%d", &m);
+        if (m==0) return 0;
+        else state = SETUP;
+        break;
     }
   }
 
