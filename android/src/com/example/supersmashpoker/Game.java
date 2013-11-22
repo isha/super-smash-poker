@@ -142,9 +142,11 @@ public class Game extends Activity {
 		stateText.setText(this.player.getStateMessage());
 		if (player.state == Player.WIN)
 			stateText.setTextColor(Color.parseColor("#00FF00"));
-		else if (player.state == Player.LOSE)
+		else if (player.state == Player.LOSE) {
 			stateText.setTextColor(Color.parseColor("#FF0000"));
-		else
+			card0.setImageAlpha(127);
+			card1.setImageAlpha(127);
+		} else
 			stateText.setTextColor(Color.parseColor("#FFFFFF"));
 	}
 	
@@ -330,7 +332,8 @@ public class Game extends Activity {
 	
 	public void actionState(int toCall) {
 		this.toCall = toCall;
-		enterState(Player.ACTION);
+		if(toCall == 0) enterState(Player.LEAD);
+		else if(toCall > 0) enterState(Player.FOLLOW);
 	}
 	
 	//State for when the ends and we need to declare a winner
@@ -387,14 +390,6 @@ public class Game extends Activity {
 	}
 	
 	public void foldCheckClicked(View view){
-		player.state = Player.LOSE;
-		card0.setImageAlpha(127);
-		card1.setImageAlpha(127);
-		
-		setButtonState();
-		updateAll();
-		toCall = 0;
-		
 		sendData(new byte[] {(byte) Player.FOLD});
 	}
 	
@@ -419,7 +414,6 @@ public class Game extends Activity {
 
 		setButtonState();
 		updateAll();
-		toCall = 0;
 		
 		sendData(new byte[] {(byte) Player.RAISE,
 				(byte) (betAmount >> 24), 
@@ -437,15 +431,16 @@ public class Game extends Activity {
 			joinGame.setVisibility(View.GONE);
 			gameplay.setVisibility(View.VISIBLE);
 			
-			boolean widgetState;
-			if (player.state == Player.ACTION)
-				widgetState = true;
-			else
-				widgetState = false;
-			checkFoldBut.setEnabled(widgetState);
-			callBut.setEnabled(widgetState);
-			raiseBut.setEnabled(widgetState);
-			betBar.setEnabled(widgetState);
+			if(player.state == Player.LEAD) checkFoldBut.setText(R.string.Check);
+			else checkFoldBut.setText(R.string.Fold);
+			
+			boolean call_button_state = player.state == Player.FOLLOW;
+			boolean other_button_state = player.state == Player.LEAD || player.state == Player.FOLLOW;
+			
+			checkFoldBut.setEnabled(other_button_state);
+			callBut.setEnabled(call_button_state);
+			raiseBut.setEnabled(other_button_state);
+			betBar.setEnabled(other_button_state);
 		}
 	}
 	

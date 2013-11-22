@@ -29,7 +29,9 @@ public class Player {
 			return "Here are your cards!";
 		case WAITING:
 			return "Just chill, Dealer is busy!";
-		case ACTION:
+		case LEAD:
+			return "Your turn! Ready to up the Ante?";
+		case FOLLOW:
 			return "Your turn! Ready to up the Ante?";
 		case WIN:
 			return "YOU WON!";
@@ -45,20 +47,22 @@ public class Player {
 
 	// Player States
 	public static final int
-		JOIN = 0,
-		START = 1,
-		DEALT = 2,
-		WAITING = 3,
-		ACTION = 4,
-		WIN = 5,
-		LOSE = 6,
-		BROKE = 7;
+		JOIN 		= 0,
+		START 		= 1,
+		DEALT 		= 2,
+		WAITING 	= 3,
+		ACTION		= 4,
+		LEAD 		= 4,
+		FOLLOW		= 5,
+		WIN 		= 6,
+		LOSE 		= 7,
+		BROKE 		= 8;
 	
 	// Player Actions
 	public static final int
-		FOLD = 0,
-		CALL = 1,
-		RAISE = 2;
+		FOLD		= 0,
+		CALL		= 1,
+		RAISE		= 2;
 	
 	public static final int
 		STARTING_BANKROLL = 100;
