@@ -397,6 +397,7 @@ public class Game extends Activity implements android.view.GestureDetector.OnDou
 	}
 	
 	public void foldCheckClicked(View view){
+		player.state = Player.WAITING;
 		sendData(new byte[] {(byte) Player.FOLD});
 	}
 	
