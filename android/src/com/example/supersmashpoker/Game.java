@@ -390,34 +390,26 @@ public class Game extends Activity {
 	}
 	
 	public void foldCheckClicked(View view){
-		player.state = Player.WAITING;
-		setButtonState();
-		updateAll();
+		enterState(Player.WAITING);
 		sendData(new byte[] {(byte) Player.FOLD});
 	}
 	
 	public void callClicked(View view){
-		player.state = Player.WAITING;
-
 		if (this.toCall > player.bank) this.toCall = player.bank;
 		player.bank -= this.toCall;
 		
-		setButtonState();
-		updateAll();
+		enterState(Player.WAITING);
 		sendData(new byte[] {(byte) Player.CALL});
 	}
 	
 	public void raiseClicked(View view) {
-		player.state = Player.WAITING;
 		
 		if (toCall > player.bank)
 			toCall = player.bank;
 		int betAmount = toCall + betBar.getProgress();
 		player.bank = player.bank - betAmount;
-
-		setButtonState();
-		updateAll();
 		
+		enterState(Player.WAITING);
 		sendData(new byte[] {(byte) Player.RAISE,
 				(byte) (betAmount >> 24), 
 				(byte) ((betAmount >> 16) & 0xFF), 
