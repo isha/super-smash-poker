@@ -39,13 +39,13 @@ void receive_message() {
 	 unsigned char data;
 	 unsigned char parity;
 
-	 printf("Clearing read buffer to start\n");
+	 // printf("Clearing read buffer to start\n");
 	 while (alt_up_rs232_get_used_space_in_read_FIFO(uart)) {
 		 alt_up_rs232_read_data(uart, &data, &parity);
 	 }
 
 	 // wait for the client_id info
-	 printf("Waiting for some data from the Middleman\n");
+	//  printf("Waiting for some data from the Middleman\n");
 	 while (alt_up_rs232_get_used_space_in_read_FIFO(uart) == 0)
 		 ;
 
@@ -62,7 +62,7 @@ void receive_message() {
 	 message_size = (int)data;
 
 	 // read the rest of the information
-	 printf("About to receive %d characters:", message_size);
+	 printf("Receiving %d bytes: ", message_size);
 	 for (i = 0; i < message_size; i++) {
 		 while (alt_up_rs232_get_used_space_in_read_FIFO(uart) == 0)
 			 ;
@@ -79,7 +79,7 @@ void send_message() {
 	unsigned char parity;
 	unsigned char data;
 
-	printf("Clearing read buffer to start\n");
+	// printf("Clearing read buffer to start\n");
 	while (alt_up_rs232_get_used_space_in_read_FIFO(uart)) {
 		alt_up_rs232_read_data(uart, &data, &parity);
 	}
@@ -150,9 +150,6 @@ void read_initial_player_data(int current_number_of_players) {
 
 	// store the client_id
 	player_id_mapping[current_number_of_players-1] = message_client_id;
-	printf("The client_id of player %d is: %x\n", current_number_of_players-1, player_id_mapping[current_number_of_players-1]);
-
-	// TODO: why do we need player enum?
 
 	// convert 4 bytes from unsigned char to int
 	temp_money = convert_bytes_to_int(
@@ -172,20 +169,25 @@ void read_initial_player_data(int current_number_of_players) {
 void joining_period() {
 
 	int current_number_of_players = 0;
-	printf("\nWaiting for at least two players to connect...\n");
-	for(;;) {
+	printf("\nWaiting for at least %d players to connect...", NUMBER_OF_PLAYERS);
+	printf("\n\n");
 
+	for(;;) {
 		// check if we should stop waiting for another player
 		if (current_number_of_players == NUMBER_OF_PLAYERS) break;
 
 		// store the data in current_message
+		printf("\nPLAYER (%d) CONNECTION:");
 		current_number_of_players++;
 		receive_message();
 		read_initial_player_data(current_number_of_players);
 
-		printf("Player %d has joined, with client_id %x\n\n", current_number_of_players-1, message_client_id);
+		printf("Player %d has joined.", current_number_of_players-1);
+		printf("\nClient_id = %x", message_client_id);
+		printf("\nMoney = %d", dealer->players[current_number_of_players-1].total_money);
+		printf("\n");
 	}
-	printf("Success! %d players are now connected.\n", current_number_of_players);
+	printf("\nSuccess! %d players are now connected.", current_number_of_players);
 
 }
 
@@ -230,7 +232,7 @@ void send_player_hands() {
 
 		send_message();
 
-		printf("Completed initialization for player %d\n", i);
+		printf("Finished sending hands to player %d\n", i);
 
 
 	}

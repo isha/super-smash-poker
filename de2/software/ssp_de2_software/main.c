@@ -63,7 +63,7 @@ void initialize_dealer(int number_players) {
   /* Cards on table, zero in the beginning */
   dealer->number_cards_on_table = 0;
   dealer->pot = 0;
-  dealer->current_bet = 100;
+  dealer->current_bet = 0;
 }
 
 /* Returns a random card from the deck */
@@ -184,9 +184,9 @@ void test_case() {
 
 int main()
 {
-	// test_case();
-
+	printf("\n\n\n----- STARTING A NEW GAME -----");
 	init();
+	printf("\nInitialization complete.");
 
  	srand(alt_timestamp()); // TODO change in de2 env
 	int i;
@@ -196,7 +196,9 @@ int main()
 
 	switch (state) {
 	  case SETUP:
-		initialize_dealer(2);
+		printf("\n\n----- ENTERING SETUP STATE -----\n\n");
+		initialize_dealer(NUMBER_OF_PLAYERS);
+		printf("Initialized dealer.");
 
 		joining_period();
 
@@ -208,6 +210,9 @@ int main()
 		break;
 
 	  case DEAL_HANDS:
+
+		printf("\n\n ----- ENTERING DEAL_HANDS STATE -----\n\n");
+
 		deal_hands();
 		send_player_hands();
 
