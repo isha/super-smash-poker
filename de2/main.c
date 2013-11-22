@@ -262,6 +262,15 @@ char * card_name(Card card) {
 
 PokerHand *ph;
 
+/* Return 1 if a is greater than b, -1 if otherwise and 0 if they are equal */
+int comp_value(int a, int b) {
+  if (a == 0 && b == 0) return 0;
+  else if (a == 0) return 1;
+  else if (b == 0) return -1;
+  else if (a > b) return 1;
+  else return -1;
+}
+
 void rank_poker_hands() {
   int i, j, k, m, l; ph = malloc(sizeof(PokerHand)*dealer->number_players);
 
