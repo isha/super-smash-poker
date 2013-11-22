@@ -177,7 +177,7 @@ void joining_period() {
 		if (current_number_of_players == NUMBER_OF_PLAYERS) break;
 
 		// store the data in current_message
-		printf("\nPLAYER (%d) CONNECTION:");
+		printf("\nPLAYER (%d) CONNECTION:", current_number_of_players);
 		current_number_of_players++;
 		receive_message();
 		read_initial_player_data(current_number_of_players);
