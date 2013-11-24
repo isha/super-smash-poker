@@ -416,15 +416,21 @@ public class Game extends Activity implements android.view.GestureDetector.OnDou
 	
 	// Actions
 	public void joinRequest(View view) {
-		sendData(new byte[] {
-			(byte) player.character_id,
-			(byte) ((player.bank >> 24) & 0xFF),
-			(byte) ((player.bank >> 16) & 0xFF),
-			(byte) ((player.bank >> 8) & 0xFF),
-			(byte) (player.bank & 0xFF),
-		});
-		
-		enterState(Player.START);
+		try{
+			sendData(new byte[] {
+					(byte) player.character_id,
+					(byte) ((player.bank >> 24) & 0xFF),
+					(byte) ((player.bank >> 16) & 0xFF),
+					(byte) ((player.bank >> 8) & 0xFF),
+					(byte) (player.bank & 0xFF),
+				});
+			enterState(Player.START);
+		} catch(NullPointerException e) {
+			Toast t = Toast.makeText(getApplicationContext(), "Oops! Can't connect to that IP!", Toast.LENGTH_SHORT);
+			t.show();
+			joinBut.setEnabled(false);
+			connectBut.setEnabled(true);
+		}
 	}
 	
 	public void onConnectButton(View view) {
