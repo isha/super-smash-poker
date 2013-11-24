@@ -197,7 +197,7 @@ public class Game extends Activity implements android.view.GestureDetector.OnDou
 	
 	public void closeSocket() {
 		SuperSmashPoker app = (SuperSmashPoker) getApplication();
-		if(!app.socket.equals(null)) {
+		if(!(app.socket == null)) {
 			try {
 				Socket s = app.socket;
 				s.getOutputStream().close();
