@@ -9,8 +9,13 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -30,7 +35,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-public class Game extends Activity implements android.view.GestureDetector.OnDoubleTapListener, android.view.GestureDetector.OnGestureListener{
+public class Game extends Activity implements SensorEventListener, android.view.GestureDetector.OnDoubleTapListener, android.view.GestureDetector.OnGestureListener{
 	Player player;
 	SeekBar betBar;
 	TextView betText;
@@ -49,6 +54,13 @@ public class Game extends Activity implements android.view.GestureDetector.OnDou
 	int toCall = 10;
 
 	private GestureDetectorCompat mDetector; 
+	
+	private boolean mInitialized;
+	private SensorManager mSensorManager;
+	private Sensor mAccelerometer;
+	private final float NOISE = (float) 2.0;
+	private float mLastX, mLastY, mLastZ;
+	private float time = 0;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +87,14 @@ public class Game extends Activity implements android.view.GestureDetector.OnDou
 		
 		mDetector = new GestureDetectorCompat(this, this);
 		mDetector.setOnDoubleTapListener(this);
+		
+		mInitialized = false;
+		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+		mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+		
+		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+		mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+		mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 		
 		enterState(Player.JOIN);
 
@@ -483,6 +503,46 @@ public class Game extends Activity implements android.view.GestureDetector.OnDou
         return true;
     }
 
+    @Override
+	public void onSensorChanged(SensorEvent event) {
+    	if (player.state != Player.FOLLOW){
+    		return;
+    	}
+		
+		float x = event.values[0];
+		float y = event.values[1];
+		
+		if (!mInitialized) {
+			mLastX = x;
+			mLastY = y;
+			mInitialized = true;
+		} else {
+			float deltaX = Math.abs(mLastX - x);
+			float deltaY = Math.abs(mLastY - y);
+			
+			if (deltaX < NOISE)
+				deltaX = (float)0.0;
+			if (deltaY < NOISE)
+				deltaY = (float)0.0;
+			
+			if (deltaX > 3 && deltaY > 3){
+				if (System.nanoTime() - time > 1E9){
+					Log.d("Gesture", "time = " + (System.nanoTime() - time));
+					time = System.nanoTime();
+					foldCheckClicked(null);
+				}
+			}
+			
+			mLastX = x;
+			mLastY = y;
+		}
+	}
+    
+
+	protected void onPause() {
+		super.onPause();
+		mSensorManager.unregisterListener(this);
+	}
     
     
     //Dont go down
@@ -556,4 +616,14 @@ public class Game extends Activity implements android.view.GestureDetector.OnDou
     public boolean onSingleTapConfirmed(MotionEvent event) {
         return true;
     }
+
+	@Override
+	public void onAccuracyChanged(Sensor arg0, int arg1) {
+		// TODO Auto-generated method stub
+	}
+	
+	protected void onResume() {
+		super.onResume();
+		mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+	}
 }
