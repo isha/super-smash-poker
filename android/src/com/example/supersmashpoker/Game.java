@@ -2,13 +2,16 @@ package com.example.supersmashpoker;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -16,6 +19,8 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.GestureDetectorCompat;
+import android.util.JsonReader;
+import android.util.JsonWriter;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -69,6 +74,7 @@ public class Game extends Activity implements android.view.GestureDetector.OnDou
 		setFonts();
 		
 		player = new Player(0);
+		loadDataFile();
 		
 		TCPReadTimerTask tcp_task = new TCPReadTimerTask();
 		Timer tcp_timer = new Timer();
@@ -191,18 +197,65 @@ public class Game extends Activity implements android.view.GestureDetector.OnDou
 	
 	public void closeSocket() {
 		SuperSmashPoker app = (SuperSmashPoker) getApplication();
-		Socket s = app.socket;
-		try {
-			s.getOutputStream().close();
-			s.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+		if(!app.socket.equals(null)) {
+			try {
+				Socket s = app.socket;
+				s.getOutputStream().close();
+				s.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}	
 		}
 	}
 	
 	@Override
 	public void onStop(){
+		super.onStop();
+		saveDataFile();
 		closeSocket();
+		
+	}
+	
+	public void saveDataFile() {
+		OutputStream out;
+		try {
+			out = openFileOutput("player_data.json", Context.MODE_PRIVATE);
+			JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, "UTF-8"));
+		    writer.setIndent("  ");
+		    writer.beginArray();
+		    writer.beginObject();
+		    writer.name("bank").value(this.player.bank);
+		    writer.endObject();
+		    writer.endArray();
+		    writer.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void loadDataFile() {
+		InputStream in;
+		try {
+			in = openFileInput("player_data.json");
+			JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
+			reader.beginArray();
+			while(reader.hasNext()) {
+				reader.beginObject();
+				while(reader.hasNext()) {
+					String name = reader.nextName();
+					if(name.equals("bank")) {
+						this.player.bank = reader.nextInt();
+					} else {
+						reader.skipValue();
+					}
+				}
+				reader.endObject();
+			}
+			reader.endArray();
+			reader.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void sendData(byte[] data) {
@@ -374,7 +427,6 @@ public class Game extends Activity implements android.view.GestureDetector.OnDou
 		enterState(Player.START);
 	}
 	
-	// Actions
 	public void onConnectButton(View view) {
 		saveSettings();
 		openSocket();
