@@ -227,14 +227,6 @@ public class Game extends Activity implements SensorEventListener, android.view.
 		}
 	}
 	
-	@Override
-	public void onStop(){
-		super.onStop();
-		saveDataFile();
-		closeSocket();
-		
-	}
-	
 	public void saveDataFile() {
 		OutputStream out;
 		try {
@@ -603,11 +595,23 @@ public class Game extends Activity implements SensorEventListener, android.view.
 		}
 	}
     
-
 	protected void onPause() {
 		super.onPause();
 		mSensorManager.unregisterListener(this);
 	}
+
+	protected void onResume() {
+		super.onResume();
+		mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+	}
+    
+	@Override
+	public void onStop(){
+		super.onStop();
+		saveDataFile();
+		closeSocket();
+	}
+    
     
     
     //Dont go down
@@ -685,10 +689,5 @@ public class Game extends Activity implements SensorEventListener, android.view.
 	@Override
 	public void onAccuracyChanged(Sensor arg0, int arg1) {
 		// TODO Auto-generated method stub
-	}
-	
-	protected void onResume() {
-		super.onResume();
-		mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 	}
 }
