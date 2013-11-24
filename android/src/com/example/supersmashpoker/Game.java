@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -81,13 +82,20 @@ public class Game extends Activity implements android.view.GestureDetector.OnDou
 	}
 
 	private void setFonts(){
-		Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/odstemplikBold.otf");
-		stateText.setTypeface(tf);
-		bankText.setTypeface(tf);
-		betText.setTypeface(tf);
-		checkFoldBut.setTypeface(tf);
-		callBut.setTypeface(tf);
-		raiseBut.setTypeface(tf);
+		Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/ssp_game_font.ttf");
+		View root = findViewById(android.R.id.content);
+		applyFont((ViewGroup) root, tf);
+	}
+	
+	private void applyFont( ViewGroup list, Typeface tf) {
+		for (int i = 0; i < list.getChildCount(); i++) {
+            View view = list.getChildAt(i);
+            if (view instanceof ViewGroup) {
+                applyFont((ViewGroup) view, tf);
+            } else if (view instanceof TextView) {
+                ((TextView) view).setTypeface(tf);
+            }
+        }
 	}
 	
 	private void setWidgetIDs() {
