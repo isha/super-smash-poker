@@ -36,7 +36,7 @@ public class Player {
 		case WIN:
 			return "YOU WON!";
 		case LOSE:
-			return "You lost";
+			return "You lost...";
 		case BROKE:
 			return "You're broke and we don't take I-O-U's, get lost!";
 		default:

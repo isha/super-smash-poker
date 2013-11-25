@@ -14,6 +14,7 @@
 
 
 #define ANTY 100
+#define BLANK_CARD_VALUE 0x55
 
 /* Struct Definitions */
 typedef struct {

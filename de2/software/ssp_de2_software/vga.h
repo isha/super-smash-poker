@@ -60,40 +60,59 @@ void draw_to_screen() {
 }
 char * card_name(Card card) {
   char * c = malloc(sizeof(char)*20);
-
-  switch (card.value) {
-    case 0: strcpy(c, "Ace"); break;
-    case 12: strcpy(c, "King"); break;
-    case 11: strcpy(c, "Queen"); break;
-    case 10: strcpy(c, "Jack"); break;
-    default: sprintf(c, "%d", card.value+1); break;
+  if(card.value == BLANK_CARD_VALUE) {
+	  strcpy(c, "---");
+  } else {
+	  switch (card.value) {
+	      case 0: strcpy(c, "Ace"); break;
+	      case 12: strcpy(c, "King"); break;
+	      case 11: strcpy(c, "Queen"); break;
+	      case 10: strcpy(c, "Jack"); break;
+	      default: sprintf(c, "%d", card.value+1); break;
+	    }
+	    strcat(c, " of ");
+	    switch (card.suite) {
+	      case 0: strcat(c, "Clubs"); break;
+	      case 1: strcat(c, "Spades"); break;
+	      case 2: strcat(c, "Diamonds"); break;
+	      case 3: strcat(c, "Hearts"); break;
+	    }
+	    strcat(c, "\0");
   }
-  strcat(c, " of ");
-  switch (card.suite) {
-    case 0: strcat(c, "Clubs"); break;
-    case 1: strcat(c, "Spades"); break;
-    case 2: strcat(c, "Diamonds"); break;
-    case 3: strcat(c, "Hearts"); break;
-  }
-  strcat(c, "\0");
   return c;
 }
+
 void game_screen() {
 	alt_up_char_buffer_clear(char_buffer);
 
-	char str1[50], str2[30];
+	char str1[50], str2[30], str3[80], str4[50];
 
-	sprintf(str1, "P1: %d", dealer->players[0].total_money);
-	sprintf(str2, "%s and %s", card_name(dealer->players[0].hand[0]), card_name(dealer->players[0].hand[1]));
+	sprintf(str1, "Player 1: $%d", dealer->players[0].total_money);
+	sprintf(str2, "%s | %s", card_name(dealer->players[0].hand[0]), card_name(dealer->players[0].hand[1]));
 
-	alt_up_char_buffer_string(char_buffer, str1, 12, 50);
-	alt_up_char_buffer_string(char_buffer, str2, 12, 51);
+	alt_up_char_buffer_string(char_buffer, str1, 10, 5);
+	alt_up_char_buffer_string(char_buffer, str2, 10, 6);
 
-	sprintf(str1, "P2: %d", dealer->players[0].total_money);
-	sprintf(str2, "%s and %s", card_name(dealer->players[1].hand[0]), card_name(dealer->players[1].hand[1]));
+	sprintf(str1, "Player 2: $%d", dealer->players[1].total_money);
+	sprintf(str2, "%s | %s", card_name(dealer->players[1].hand[0]), card_name(dealer->players[1].hand[1]));
 
-	alt_up_char_buffer_string(char_buffer, str1, 49, 50);
-	alt_up_char_buffer_string(char_buffer, str2, 49, 51);
+	alt_up_char_buffer_string(char_buffer, str1, 10, 10);
+	alt_up_char_buffer_string(char_buffer, str2, 10, 11);
+
+	sprintf(str3, "%s | %s | %s | %s | %s",
+				card_name(dealer->cards_on_table[0]),
+				card_name(dealer->cards_on_table[1]),
+				card_name(dealer->cards_on_table[2]),
+				card_name(dealer->cards_on_table[3]),
+				card_name(dealer->cards_on_table[4]));
+
+	alt_up_char_buffer_string(char_buffer, str3, 5, 40);
+
+	sprintf(str4, "Pot: $%d", dealer->pot);
+	alt_up_char_buffer_string(char_buffer, str4, 5, 50);
+
+	sprintf(str4, "Current Bet: $%d", dealer->current_bet);
+	alt_up_char_buffer_string(char_buffer, str4, 5, 51);
 }
 
 /* Author : Jeff Goeders

@@ -15,10 +15,10 @@
 
 void init() {
 	initialize_vga();
-	initialize_sdcard();
+//	initialize_sdcard();
 	alt_timestamp_start();
-	initialize_audio();
-	start_audio();
+//	initialize_audio();
+//	start_audio();
 	initialize_messaging();
 }
 
@@ -58,6 +58,11 @@ void initialize_dealer(int number_players) {
     dealer->players[i].active = true;
     dealer->players[i].money = 0;
     dealer->players[i].total_money = 3000;
+  }
+
+  /* Initialize cards on table to blank */
+  for(i = 0; i < 5; i++) {
+	  dealer->cards_on_table[i].value = BLANK_CARD_VALUE;
   }
 
   /* Cards on table, zero in the beginning */
