@@ -342,9 +342,15 @@ public class Game extends Activity implements SensorEventListener, android.view.
 							break;
 						case Player.WIN:
 							Log.i("Player_State", "Changed to Win State");
+							final int winnings = (
+									((int) in.read() << 24) +
+									((int) in.read() << 16) +
+									((int) in.read() << 8) +
+									((int) in.read())
+								);
 							runOnUiThread(new Runnable() {
 								public void run() {
-									endState(true);
+									endState(true, winnings);
 								}
 							});
 							break;
@@ -352,7 +358,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
 							Log.i("Player_State", "Changed to Lost State");
 							runOnUiThread(new Runnable() {
 								public void run() {
-									endState(false);
+									endState(false, 0);
 								}
 							});
 							break;
@@ -398,7 +404,8 @@ public class Game extends Activity implements SensorEventListener, android.view.
 	}
 	
 	//State handling for when the game ends and we need to declare a winner
-	public void endState(boolean win){
+	public void endState(boolean win, int winnings){
+		player.bank += winnings;
 		if (win)
 			enterState(Player.WIN);
 		else if (player.bank <= 0)
@@ -511,15 +518,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
 					raiseBut.setEnabled(true);
 					betBar.setEnabled(true);
 					break;
-//				case Player.ALLIN:
-//					checkFoldBut.setText(R.string.Check);
-//					checkFoldBut.setEnabled(true);
-//					callBut.setEnabled(false);
-//					raiseBut.setEnabled(false);
-//					betBar.setEnabled(false);
-//					break;
 				default:
-					Log.i("Shitcakes", "Houston, we have a problem");
 					checkFoldBut.setEnabled(false);
 					callBut.setEnabled(false);
 					raiseBut.setEnabled(false);
