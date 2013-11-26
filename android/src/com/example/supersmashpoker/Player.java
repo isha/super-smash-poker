@@ -47,17 +47,17 @@ public class Player {
 
 	// Player States
 	public static final int
-		JOIN 		= 0,
-		START 		= 1,
-		DEALT 		= 2,
-		WAITING 	= 3,
-		ACTION		= 4,
-		LEAD 		= 4,
-		FOLLOW		= 5,
-		ALLIN		= 6,
-		WIN 		= 7,
-		LOSE 		= 8,
-		BROKE 		= 9;
+		JOIN 		= 0,	//State where we connect to DE2
+		START 		= 1,	//State where we joined game but show the back of cards
+		DEALT 		= 2,	//State where we first get our cards
+		WAITING 	= 3,	//State where its not your turn
+		ACTION		= 4,	//State where it is our turn
+		LEAD 		= 4,	//Sub state of action for when the player before you has not bet
+		FOLLOW		= 5,	//Sub state of action for when the player before you has bet
+		//ALLIN		= 6,	//Sub state of action for when you can't bet anything anymore
+		WIN 		= 6,	//State to say we won the game
+		LOSE 		= 7,	//State to say we lost the game
+		BROKE 		= 8;	//State for when you have no money
 	
 	// Player Actions
 	public static final int

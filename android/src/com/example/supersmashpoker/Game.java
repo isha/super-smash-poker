@@ -392,8 +392,8 @@ public class Game extends Activity implements SensorEventListener, android.view.
 	//State handling for when it's the players turn
 	public void actionState(int toCall) {
 		this.toCall = toCall;
-		if (player.bank == 0) enterState(Player.ALLIN);
-		else if(toCall == 0) enterState(Player.LEAD);
+		//if (player.bank == 0) enterState(Player.ALLIN);
+		if(toCall == 0) enterState(Player.LEAD);
 		else if(toCall > 0) enterState(Player.FOLLOW);
 	}
 	
@@ -511,13 +511,13 @@ public class Game extends Activity implements SensorEventListener, android.view.
 					raiseBut.setEnabled(true);
 					betBar.setEnabled(true);
 					break;
-				case Player.ALLIN:
-					checkFoldBut.setText(R.string.Check);
-					checkFoldBut.setEnabled(true);
-					callBut.setEnabled(false);
-					raiseBut.setEnabled(false);
-					betBar.setEnabled(false);
-					break;
+//				case Player.ALLIN:
+//					checkFoldBut.setText(R.string.Check);
+//					checkFoldBut.setEnabled(true);
+//					callBut.setEnabled(false);
+//					raiseBut.setEnabled(false);
+//					betBar.setEnabled(false);
+//					break;
 				default:
 					Log.i("Shitcakes", "Houston, we have a problem");
 					checkFoldBut.setEnabled(false);
@@ -667,8 +667,13 @@ public class Game extends Activity implements SensorEventListener, android.view.
         return true;
     }
     
+    //Hidden cheat code for developers, cuz we don't lose
     @Override
     public void onLongPress(MotionEvent event) {
+    	player.bank = Player.STARTING_BANKROLL;
+
+		Toast t = Toast.makeText(getApplicationContext(), "YOU MAGNIFICENT BASTARD!", Toast.LENGTH_LONG);
+		t.show();
     }
 
     @Override
