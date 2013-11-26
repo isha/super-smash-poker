@@ -392,7 +392,8 @@ public class Game extends Activity implements SensorEventListener, android.view.
 	//State handling for when it's the players turn
 	public void actionState(int toCall) {
 		this.toCall = toCall;
-		if(toCall == 0) enterState(Player.LEAD);
+		if (player.bank == 0) enterState(Player.ALLIN);
+		else if(toCall == 0) enterState(Player.LEAD);
 		else if(toCall > 0) enterState(Player.FOLLOW);
 	}
 	
@@ -495,16 +496,31 @@ public class Game extends Activity implements SensorEventListener, android.view.
 			joinGame.setVisibility(View.GONE);
 			gameplay.setVisibility(View.VISIBLE);
 			
-			if(player.state == Player.LEAD) checkFoldBut.setText(R.string.Check);
-			else checkFoldBut.setText(R.string.Fold);
-			
-			boolean call_button_state = player.state == Player.FOLLOW;
-			boolean other_button_state = player.state == Player.LEAD || player.state == Player.FOLLOW;
-			
-			checkFoldBut.setEnabled(other_button_state);
-			callBut.setEnabled(call_button_state);
-			raiseBut.setEnabled(other_button_state);
-			betBar.setEnabled(other_button_state);
+			switch( player.state ) {
+				case Player.FOLLOW:
+					checkFoldBut.setText(R.string.Fold);
+					checkFoldBut.setEnabled(true);
+					callBut.setEnabled(true);
+					raiseBut.setEnabled(true);
+					betBar.setEnabled(true);
+				case Player.LEAD:
+					checkFoldBut.setText(R.string.Check);
+					checkFoldBut.setEnabled(true);
+					callBut.setEnabled(false);
+					raiseBut.setEnabled(true);
+					betBar.setEnabled(true);
+				case Player.ALLIN:
+					checkFoldBut.setText(R.string.Check);
+					checkFoldBut.setEnabled(true);
+					callBut.setEnabled(false);
+					raiseBut.setEnabled(false);
+					betBar.setEnabled(false);
+				default:
+					checkFoldBut.setEnabled(false);
+					callBut.setEnabled(false);
+					raiseBut.setEnabled(false);
+					betBar.setEnabled(false);
+			}
 		}
 	}
 	

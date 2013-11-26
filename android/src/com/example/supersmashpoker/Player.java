@@ -54,9 +54,10 @@ public class Player {
 		ACTION		= 4,
 		LEAD 		= 4,
 		FOLLOW		= 5,
-		WIN 		= 6,
-		LOSE 		= 7,
-		BROKE 		= 8;
+		ALLIN		= 6,
+		WIN 		= 7,
+		LOSE 		= 8,
+		BROKE 		= 9;
 	
 	// Player Actions
 	public static final int
