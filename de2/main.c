@@ -40,6 +40,7 @@ typedef struct {
 
   int pot;
   int current_bet;
+  int number_active_players;
 } Dealer;
 
 /* Global variables */
@@ -94,6 +95,7 @@ void initialize_dealer(int number_players) {
   dealer->number_cards_on_table = 0;
   dealer->pot = 0;
   dealer->current_bet = 0;
+  dealer->number_active_players = dealer->number_players;
 }
 
 /* Returns a random card from the deck */
@@ -165,12 +167,7 @@ int get_bet_for_player(int pid) {
 
   if (dealer->players[pid].action == FOLD) {
     dealer->players[pid].active = false;
-
-    int i, active_players = 0;
-    for (i=0; i<dealer->number_players; i++) {
-      if (dealer->players[i].active) active_players++;
-    }
-    if (active_players == 1) return -1;
+    dealer->number_active_players--;
   }
   printf("\nYour total money %d and bet money %d", dealer->players[pid].total_money, dealer->players[pid].money);
   return 0;
@@ -689,18 +686,21 @@ int main() {
         if (dealer_chip == dealer->number_players-1) {
           for (i=0; i<dealer->number_players-1; i++) {
             if (dealer->players[i].active) {
-              if (get_bet_for_player(i) == -1) {state = GAME_OVER; goto HOTSTUFF;}
+              get_bet_for_player(i);
+              if (dealer->number_active_players == 1) {state = GAME_OVER; goto HOTSTUFF;}
             }
           }
         } else {
           for (i=dealer_chip+1; i<dealer->number_players; i++) {
             if (dealer->players[i].active) {
-              if (get_bet_for_player(i) == -1) {state = GAME_OVER; goto HOTSTUFF;}
+              get_bet_for_player(i);
+              if (dealer->number_active_players == 1) {state = GAME_OVER; goto HOTSTUFF;}
             }
           }
           for (i=0; i<dealer_chip; i++) {
             if (dealer->players[i].active) {
-              if (get_bet_for_player(i) == -1) {state = GAME_OVER; goto HOTSTUFF;}
+              get_bet_for_player(i);
+              if (dealer->number_active_players == 1) {state = GAME_OVER; goto HOTSTUFF;}
             }
           }
         }
@@ -709,12 +709,14 @@ int main() {
         while (still_betting()) {
           for (i=dealer_chip; i<dealer->number_players; i++) {
             if (player_still_playing(i)) {
-              if (get_bet_for_player(i) == -1) {state = GAME_OVER; goto HOTSTUFF;}
+              get_bet_for_player(i);
+              if (dealer->number_active_players == 1) {state = GAME_OVER; goto HOTSTUFF;}
             }
           }
           for (i=0; i<dealer_chip; i++) {
             if (player_still_playing(i)) {
-              if (get_bet_for_player(i) == -1) {state = GAME_OVER; goto HOTSTUFF;}
+              get_bet_for_player(i);
+              if (dealer->number_active_players == 1) {state = GAME_OVER; goto HOTSTUFF;}
             }
           }
        }
@@ -742,7 +744,7 @@ int main() {
         break;
 
       case GAME_OVER:
-        if (dealer->number_cards_on_table == 5) {
+        if (dealer->number_active_players > 1) {
           rank_poker_hands();
           split_pot();
         } else {
