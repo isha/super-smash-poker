@@ -503,19 +503,23 @@ public class Game extends Activity implements SensorEventListener, android.view.
 					callBut.setEnabled(true);
 					raiseBut.setEnabled(true);
 					betBar.setEnabled(true);
+					break;
 				case Player.LEAD:
 					checkFoldBut.setText(R.string.Check);
 					checkFoldBut.setEnabled(true);
 					callBut.setEnabled(false);
 					raiseBut.setEnabled(true);
 					betBar.setEnabled(true);
+					break;
 				case Player.ALLIN:
 					checkFoldBut.setText(R.string.Check);
 					checkFoldBut.setEnabled(true);
 					callBut.setEnabled(false);
 					raiseBut.setEnabled(false);
 					betBar.setEnabled(false);
+					break;
 				default:
+					Log.i("Shitcakes", "Houston, we have a problem");
 					checkFoldBut.setEnabled(false);
 					callBut.setEnabled(false);
 					raiseBut.setEnabled(false);
