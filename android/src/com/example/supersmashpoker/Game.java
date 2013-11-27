@@ -52,6 +52,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
 	TextView stateText;
 	ImageView card0;
 	ImageView card1;
+	int prevState;
 	
 	int toCall = 10;
 
@@ -342,9 +343,15 @@ public class Game extends Activity implements SensorEventListener, android.view.
 							break;
 						case Player.WIN:
 							Log.i("Player_State", "Changed to Win State");
+							final int winnings = (
+									((int) in.read() << 24) +
+									((int) in.read() << 16) +
+									((int) in.read() << 8) +
+									((int) in.read())
+								);
 							runOnUiThread(new Runnable() {
 								public void run() {
-									endState(true);
+									endState(true, winnings);
 								}
 							});
 							break;
@@ -352,7 +359,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
 							Log.i("Player_State", "Changed to Lost State");
 							runOnUiThread(new Runnable() {
 								public void run() {
-									endState(false);
+									endState(false, 0);
 								}
 							});
 							break;
@@ -398,7 +405,8 @@ public class Game extends Activity implements SensorEventListener, android.view.
 	}
 	
 	//State handling for when the game ends and we need to declare a winner
-	public void endState(boolean win){
+	public void endState(boolean win, int winnings){
+		player.bank += winnings;
 		if (win)
 			enterState(Player.WIN);
 		else if (player.bank <= 0)
@@ -476,15 +484,16 @@ public class Game extends Activity implements SensorEventListener, android.view.
 	public void raiseClicked(View view) {
 		if (toCall > player.bank)
 			toCall = player.bank;
-		int betAmount = toCall + betBar.getProgress();
+		int barBet = betBar.getProgress();
+		int betAmount = toCall + barBet;
 		player.bank = player.bank - betAmount;
 		
 		enterState(Player.WAITING);
 		sendData(new byte[] {(byte) Player.RAISE,
-				(byte) (betAmount >> 24), 
-				(byte) ((betAmount >> 16) & 0xFF), 
-				(byte) ((betAmount >> 8) & 0xFF),
-				(byte) (betAmount & 0xFF) });
+				(byte) (barBet >> 24), 
+				(byte) ((barBet >> 16) & 0xFF), 
+				(byte) ((barBet >> 8) & 0xFF),
+				(byte) (barBet & 0xFF) });
 	}
 	
 	// Enables or disables all the user controlled widgets
@@ -495,36 +504,37 @@ public class Game extends Activity implements SensorEventListener, android.view.
 		} else {
 			joinGame.setVisibility(View.GONE);
 			gameplay.setVisibility(View.VISIBLE);
-			
-			switch( player.state ) {
-				case Player.FOLLOW:
-					checkFoldBut.setText(R.string.Fold);
-					checkFoldBut.setEnabled(true);
-					callBut.setEnabled(true);
-					raiseBut.setEnabled(true);
-					betBar.setEnabled(true);
-					break;
-				case Player.LEAD:
-					checkFoldBut.setText(R.string.Check);
-					checkFoldBut.setEnabled(true);
-					callBut.setEnabled(false);
-					raiseBut.setEnabled(true);
-					betBar.setEnabled(true);
-					break;
-//				case Player.ALLIN:
-//					checkFoldBut.setText(R.string.Check);
-//					checkFoldBut.setEnabled(true);
-//					callBut.setEnabled(false);
-//					raiseBut.setEnabled(false);
-//					betBar.setEnabled(false);
-//					break;
-				default:
-					Log.i("Shitcakes", "Houston, we have a problem");
-					checkFoldBut.setEnabled(false);
-					callBut.setEnabled(false);
-					raiseBut.setEnabled(false);
-					betBar.setEnabled(false);
+
+			if (prevState == Player.DEALT && (player.state == Player.FOLLOW || player.state == Player.LEAD)){
+				checkFoldBut.setText(R.string.Fold);
+				checkFoldBut.setEnabled(false);
+				callBut.setEnabled(true);
+				raiseBut.setEnabled(false);
+				betBar.setEnabled(false);
+			}else{
+				switch( player.state ) {
+					case Player.FOLLOW:
+						checkFoldBut.setText(R.string.Fold);
+						checkFoldBut.setEnabled(true);
+						callBut.setEnabled(true);
+						raiseBut.setEnabled(true);
+						betBar.setEnabled(true);
+						break;
+					case Player.LEAD:
+						checkFoldBut.setText(R.string.Check);
+						checkFoldBut.setEnabled(true);
+						callBut.setEnabled(false);
+						raiseBut.setEnabled(true);
+						betBar.setEnabled(true);
+						break;
+					default:
+						checkFoldBut.setEnabled(false);
+						callBut.setEnabled(false);
+						raiseBut.setEnabled(false);
+						betBar.setEnabled(false);
+				}
 			}
+			prevState = player.state;
 		}
 	}
 	
