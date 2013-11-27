@@ -106,6 +106,24 @@ public class Game extends Activity implements SensorEventListener, android.view.
 		enterState(Player.JOIN);
 	}
 
+	//We got a lot of class variable, we should handle that shit
+	private void setWidgetIDs() {
+		betText = (TextView) findViewById(R.id.BetTextID);
+        betBar = (SeekBar) findViewById(R.id.SeekBarID);
+        joinGame = (LinearLayout) findViewById(R.id.join_game_layout);
+        gameplay = (LinearLayout) findViewById(R.id.gameplay_layout);
+        endGame = (LinearLayout) findViewById(R.id.end_game_layout);
+        checkFoldBut = (Button) findViewById(R.id.FoldCheckButID);
+        callBut = (Button) findViewById(R.id.CallButID);
+        raiseBut = (Button) findViewById(R.id.RaiseButID);
+        joinBut = (Button) findViewById(R.id.joinButID);
+        connectBut = (Button) findViewById(R.id.connectButID);
+        stateText = (TextView) findViewById(R.id.StateTextID);
+        bankText = (TextView) findViewById(R.id.BankTextID);
+        card0 = (ImageView) findViewById(R.id.card0);
+        card1 = (ImageView) findViewById(R.id.card1);
+	}
+	
 	//Lets not forget some cool fonts
 	private void setFonts(){
 		Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/ssp_game_font.ttf");
@@ -124,24 +142,6 @@ public class Game extends Activity implements SensorEventListener, android.view.
             }
         }
 	}
-	
-	//We got a lot of class variable, we should handle that shit
-	private void setWidgetIDs() {
-		betText = (TextView) findViewById(R.id.BetTextID);
-        betBar = (SeekBar) findViewById(R.id.SeekBarID);
-        joinGame = (LinearLayout) findViewById(R.id.join_game_layout);
-        gameplay = (LinearLayout) findViewById(R.id.gameplay_layout);
-        endGame = (LinearLayout) findViewById(R.id.end_game_layout);
-        checkFoldBut = (Button) findViewById(R.id.FoldCheckButID);
-        callBut = (Button) findViewById(R.id.CallButID);
-        raiseBut = (Button) findViewById(R.id.RaiseButID);
-        joinBut = (Button) findViewById(R.id.joinButID);
-        connectBut = (Button) findViewById(R.id.connectButID);
-        stateText = (TextView) findViewById(R.id.StateTextID);
-        bankText = (TextView) findViewById(R.id.BankTextID);
-        card0 = (ImageView) findViewById(R.id.card0);
-        card1 = (ImageView) findViewById(R.id.card1);
-	}
 
 	//Class which will listen for the seekbar to change and update the betText view accordingly
 	private class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
@@ -152,6 +152,14 @@ public class Game extends Activity implements SensorEventListener, android.view.
 	    public void onStartTrackingTouch(SeekBar seekBar) {}
 
 	    public void onStopTrackingTouch(SeekBar seekBar) {}
+	}
+	
+	//Updates all widgets
+	public void updateAll(){
+		updateStateView();
+		updateBankView();
+		updateBetBar();
+		updateHandView();
 	}
 	
 	public void updateHandView() {
@@ -499,8 +507,19 @@ public class Game extends Activity implements SensorEventListener, android.view.
 	}
 	
 	public void onContinueButton(View view) {
-		Toast t = Toast.makeText(getApplicationContext(), "CONTINUE", Toast.LENGTH_LONG);
-		t.show();
+		try{
+			sendData(new byte[] {
+					(byte) player.character_id,
+					(byte) ((player.bank >> 24) & 0xFF),
+					(byte) ((player.bank >> 16) & 0xFF),
+					(byte) ((player.bank >> 8) & 0xFF),
+					(byte) (player.bank & 0xFF),
+				});
+			enterState(Player.START);
+		} catch(NullPointerException e) {
+			Toast t = Toast.makeText(getApplicationContext(), "Try again", Toast.LENGTH_SHORT);
+			t.show();
+		}
 	}
 	
 	// Enables or disables all the user controlled widgets
@@ -549,14 +568,6 @@ public class Game extends Activity implements SensorEventListener, android.view.
 			}
 			prevState = player.state;
 		}
-	}
-	
-	//Updates all widgets
-	public void updateAll(){
-		updateStateView();
-		updateBankView();
-		updateBetBar();
-		updateHandView();
 	}
 	
 	//Gesture handler
