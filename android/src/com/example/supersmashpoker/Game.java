@@ -353,7 +353,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
 							break;
 						case Player.WIN:
 							Log.i("Player_State", "Changed to Win State");
-							final int final_bankroll = (
+							final int win_bankroll = (
 									((int) in.read() << 24) +
 									((int) in.read() << 16) +
 									((int) in.read() << 8) +
@@ -361,15 +361,21 @@ public class Game extends Activity implements SensorEventListener, android.view.
 								);
 							runOnUiThread(new Runnable() {
 								public void run() {
-									endState(true, final_bankroll);
+									endState(true, win_bankroll);
 								}
 							});
 							break;
 						case Player.LOSE:
 							Log.i("Player_State", "Changed to Lost State");
+							final int lose_bankroll = (
+									((int) in.read() << 24) +
+									((int) in.read() << 16) +
+									((int) in.read() << 8) +
+									((int) in.read())
+								);
 							runOnUiThread(new Runnable() {
 								public void run() {
-									endState(false, 0);
+									endState(false, lose_bankroll);
 								}
 							});
 							break;
