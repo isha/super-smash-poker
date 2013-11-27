@@ -253,5 +253,24 @@
         </LinearLayout>
 
     </LinearLayout>
+    
+    <LinearLayout
+        android:id="@+id/end_game_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:baselineAligned="false"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+	    <Button 
+	        android:id="@+id/continueButID" 
+	        style="?android:attr/buttonStyleSmall" 
+	        android:layout_width="fill_parent" 
+	        android:layout_height="wrap_content" 
+	        android:layout_weight="1" 
+	        android:onClick="onContinueButton" 
+	        android:text="@string/continue_button" 
+	        android:textSize="30sp" />
+    </LinearLayout>
 
 </LinearLayout>

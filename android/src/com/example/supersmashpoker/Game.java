@@ -43,6 +43,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
 	TextView betText;
 	LinearLayout joinGame;
 	LinearLayout gameplay;
+	LinearLayout endGame;
 	Button checkFoldBut;
 	Button callBut;
 	Button raiseBut;
@@ -130,6 +131,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
         betBar = (SeekBar) findViewById(R.id.SeekBarID);
         joinGame = (LinearLayout) findViewById(R.id.join_game_layout);
         gameplay = (LinearLayout) findViewById(R.id.gameplay_layout);
+        endGame = (LinearLayout) findViewById(R.id.end_game_layout);
         checkFoldBut = (Button) findViewById(R.id.FoldCheckButID);
         callBut = (Button) findViewById(R.id.CallButID);
         raiseBut = (Button) findViewById(R.id.RaiseButID);
@@ -496,14 +498,25 @@ public class Game extends Activity implements SensorEventListener, android.view.
 				(byte) (barBet & 0xFF) });
 	}
 	
+	public void onContinueButton(View view) {
+		Toast t = Toast.makeText(getApplicationContext(), "CONTINUE", Toast.LENGTH_LONG);
+		t.show();
+	}
+	
 	// Enables or disables all the user controlled widgets
 	public void setButtonState() {
 		if(player.state == Player.JOIN) {
 			joinGame.setVisibility(View.VISIBLE);
 			gameplay.setVisibility(View.GONE);
-		} else {
+			endGame.setVisibility(View.GONE);
+		} else if (player.state == Player.WIN || player.state == Player.LOSE || player.state == Player.BROKE){
+			joinGame.setVisibility(View.GONE);
+			gameplay.setVisibility(View.GONE);
+			endGame.setVisibility(View.VISIBLE);
+		}else {
 			joinGame.setVisibility(View.GONE);
 			gameplay.setVisibility(View.VISIBLE);
+			endGame.setVisibility(View.GONE);
 
 			if (prevState == Player.DEALT && (player.state == Player.FOLLOW || player.state == Player.LEAD)){
 				checkFoldBut.setText(R.string.Fold);

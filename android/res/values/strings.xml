@@ -14,6 +14,8 @@
     <string name="Check">Check</string>
     <string name="Call">Call</string>
     <string name="Raise">Raise</string>
+    <string name="quit_button">Quit</string>
+    <string name="continue_button">Next Hand</string>
     <string name="ssp_socket_connect">openSocket</string>
     <string name="ssp_socket_close">closeSocket</string>
     <string name="ssp_socket_send">sendMessage</string>
