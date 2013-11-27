@@ -351,9 +351,9 @@ public class Game extends Activity implements SensorEventListener, android.view.
 								}
 							});
 							break;
-						case Player.WIN:
-							Log.i("Player_State", "Changed to Win State");
-							final int win_bankroll = (
+						case Player.ENDGAME:
+							Log.i("Player_State", "Changed to Endgame State");
+							final int final_bankroll = (
 									((int) in.read() << 24) +
 									((int) in.read() << 16) +
 									((int) in.read() << 8) +
@@ -361,21 +361,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
 								);
 							runOnUiThread(new Runnable() {
 								public void run() {
-									endState(true, win_bankroll);
-								}
-							});
-							break;
-						case Player.LOSE:
-							Log.i("Player_State", "Changed to Lost State");
-							final int lose_bankroll = (
-									((int) in.read() << 24) +
-									((int) in.read() << 16) +
-									((int) in.read() << 8) +
-									((int) in.read())
-								);
-							runOnUiThread(new Runnable() {
-								public void run() {
-									endState(false, lose_bankroll);
+									endState(final_bankroll);
 								}
 							});
 							break;
@@ -421,14 +407,14 @@ public class Game extends Activity implements SensorEventListener, android.view.
 	}
 	
 	//State handling for when the game ends and we need to declare a winner
-	public void endState(boolean win, int winnings){
-		player.bank = winnings;
-		if (win)
+	public void endState(int winnings){
+		if (winnings > player.bank)
 			enterState(Player.WIN);
-		else if (player.bank <= 0)
-			enterState(Player.BROKE);
-		else
+		else if (winnings == player.bank)
 			enterState(Player.LOSE);
+		else
+			enterState(Player.BROKE);
+		player.bank = winnings;
 	}
 
 	//Join button event handler

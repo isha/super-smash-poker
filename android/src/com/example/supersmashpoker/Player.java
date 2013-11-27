@@ -54,7 +54,7 @@ public class Player {
 		ACTION		= 4,	//State where it is our turn
 		LEAD 		= 4,	//Sub state of action for when the player before you has not bet
 		FOLLOW		= 5,	//Sub state of action for when the player before you has bet
-		//ALLIN		= 6,	//Sub state of action for when you can't bet anything anymore
+		ENDGAME		= 6,
 		WIN 		= 6,	//State to say we won the game
 		LOSE 		= 7,	//State to say we lost the game
 		BROKE 		= 8;	//State for when you have no money
