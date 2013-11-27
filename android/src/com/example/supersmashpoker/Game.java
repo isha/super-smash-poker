@@ -52,6 +52,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
 	TextView stateText;
 	ImageView card0;
 	ImageView card1;
+	int prevState;
 	
 	int toCall = 10;
 
@@ -503,28 +504,37 @@ public class Game extends Activity implements SensorEventListener, android.view.
 		} else {
 			joinGame.setVisibility(View.GONE);
 			gameplay.setVisibility(View.VISIBLE);
-			
-			switch( player.state ) {
-				case Player.FOLLOW:
-					checkFoldBut.setText(R.string.Fold);
-					checkFoldBut.setEnabled(true);
-					callBut.setEnabled(true);
-					raiseBut.setEnabled(true);
-					betBar.setEnabled(true);
-					break;
-				case Player.LEAD:
-					checkFoldBut.setText(R.string.Check);
-					checkFoldBut.setEnabled(true);
-					callBut.setEnabled(false);
-					raiseBut.setEnabled(true);
-					betBar.setEnabled(true);
-					break;
-				default:
-					checkFoldBut.setEnabled(false);
-					callBut.setEnabled(false);
-					raiseBut.setEnabled(false);
-					betBar.setEnabled(false);
+
+			if (prevState == Player.DEALT && (player.state == Player.FOLLOW || player.state == Player.LEAD)){
+				checkFoldBut.setText(R.string.Fold);
+				checkFoldBut.setEnabled(false);
+				callBut.setEnabled(true);
+				raiseBut.setEnabled(false);
+				betBar.setEnabled(false);
+			}else{
+				switch( player.state ) {
+					case Player.FOLLOW:
+						checkFoldBut.setText(R.string.Fold);
+						checkFoldBut.setEnabled(true);
+						callBut.setEnabled(true);
+						raiseBut.setEnabled(true);
+						betBar.setEnabled(true);
+						break;
+					case Player.LEAD:
+						checkFoldBut.setText(R.string.Check);
+						checkFoldBut.setEnabled(true);
+						callBut.setEnabled(false);
+						raiseBut.setEnabled(true);
+						betBar.setEnabled(true);
+						break;
+					default:
+						checkFoldBut.setEnabled(false);
+						callBut.setEnabled(false);
+						raiseBut.setEnabled(false);
+						betBar.setEnabled(false);
+				}
 			}
+			prevState = player.state;
 		}
 	}
 	
