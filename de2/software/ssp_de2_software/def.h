@@ -53,6 +53,7 @@ typedef struct {
 
 /* Global variables */
 extern Dealer * dealer;
+extern int winner_count; extern int *winners;
 
 /* Different states that a game can be in */
 typedef enum {

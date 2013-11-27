@@ -27,6 +27,7 @@ void init() {
 Dealer * dealer;
 int dealer_chip = 0;
 PokerHand *ph;
+int winner_count; int *winners;
 
 /* Method definitions */
 void initialize_dealer(int number_players) {
@@ -460,8 +461,9 @@ void rank_poker_hands() {
 
 void split_pot() {
   if (ph == NULL) { printf("\nHand standing not determined yet!"); return; }
-
-  int i = 0, j, winner_count = 1; int *winners = malloc(dealer->number_players*sizeof(int));
+  winner_count = 1;
+  int i = 0, j;
+  winners = malloc(dealer->number_players*sizeof(int));
 
   while (!dealer->players[i].active) i++;
   winners[0] = i;
@@ -514,12 +516,16 @@ void split_pot() {
 }
 
 void last_man_standing() {
+  winners = malloc(sizeof(int));
   int i=0;
   while (!dealer->players[i].active) i++;
 
   printf("\nCongrats on the win Player %d, You win pot of size %d.\n", i, dealer->pot);
   dealer->players[i].total_money += dealer->pot;
   dealer->pot = 0;
+
+  winners_count = 1;
+  winners[0] = i;
 }
 
 // YOLOYOLO
@@ -531,6 +537,9 @@ int main()
 
  	srand(alt_timestamp()); // TODO change in de2 env
 	int i;
+	int new_player_count = 2;
+
+	bool first_game = true;
 	GameState state = SETUP;
 
 	for (;;) {
@@ -538,7 +547,7 @@ int main()
 	switch (state) {
 	  case SETUP:
 		printf("\n\n----- ENTERING SETUP STATE -----\n\n");
-		initialize_dealer(NUMBER_OF_PLAYERS);
+		initialize_dealer(new_player_count);
 		printf("Initialized dealer.");
 
 		joining_period();
@@ -674,16 +683,16 @@ int main()
 		  last_man_standing();
 		}
 
+		send_game_results();
+		printf("\n\nWaiting for response from all players.\n");
+		receive_replay_status();
+
+		state = SETUP;
+
 		free(dealer->deck);
 		free(dealer->players);
 		free(dealer);
 		free(ph);
-
-		printf("\n\nContinue play? (0 - No, 1 - Yes) ");
-		int m;
-		scanf("%d", &m);
-		if (m==0) return 0;
-		else state = SETUP;
 
 		break;
 	}

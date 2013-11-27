@@ -15,6 +15,9 @@
 
 #define DEALT 0x02
 #define ACTION 0x04
+#define WIN 0x06
+#define LOSE 0x07
+#define REPLAY 0x01
 
 // Hold the player id / client id mapping
 // index is player number, data inside is the client id
@@ -26,6 +29,7 @@ int message_size;
 unsigned char message_client_id;
 
 alt_up_rs232_dev* uart;
+
 
 void initialize_messaging() {
 	 printf("UART Initialization\n");
@@ -237,5 +241,81 @@ void send_player_hands() {
 
 	}
 }
+
+void send_win_state(int player_id) {
+
+	message_client_id = player_id_mapping[player_id]; // send client_id
+	message_size = 5;
+
+	message[0] = WIN;
+
+	message[1] = (unsigned char) (dealer->players[player_id].total_money >> 24);
+	message[2] = (unsigned char) (dealer->players[player_id].total_money >> 16);
+	message[3] = (unsigned char) (dealer->players[player_id].total_money >> 8);
+	message[4] = (unsigned char) (dealer->players[player_id].total_money);
+
+	send_message();
+
+}
+
+void send_lose_state(int player_id) {
+
+	message_client_id = player_id_mapping[player_id]; // send client_id
+	message_size = 1;
+
+	message[0] = LOSE;
+
+	message[1] = (unsigned char) (dealer->players[player_id].total_money >> 24);
+	message[2] = (unsigned char) (dealer->players[player_id].total_money >> 16);
+	message[3] = (unsigned char) (dealer->players[player_id].total_money >> 8);
+	message[4] = (unsigned char) (dealer->players[player_id].total_money);
+
+	send_message();
+}
+
+void send_game_results() {
+
+	bool is_winner = false;
+	int i,j;
+
+	printf("--- Sending game results to all players.");
+	for(i=0; i<dealer->number_players; i++) {
+
+		// check if player is a winner
+		for (j=0; j<winner_count; j++) {
+			if (winners[j] == i) {
+				is_winner = true;
+			}
+		}
+
+		if (is_winner == true) {
+			send_win_state(i);
+		} else {
+			send_lose_state(i);
+		}
+	}
+}
+
+void receive_replay_status() {
+	int response_count = 0;
+	int new_player_count = 0;
+
+	while(response_count < dealer->number_players) {
+
+		receive_message();
+		response_count++;
+
+		if (message[0] == REPLAY) {
+			printf("\nResponse received");
+		} else {
+			printf("\nInvalid state response received.");
+		}
+	}
+
+}
+
+
+
+
 
 #endif /* MSG_H_ */
