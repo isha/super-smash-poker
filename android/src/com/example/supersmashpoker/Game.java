@@ -322,7 +322,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
 					InputStream in = app.socket.getInputStream();
 					while(in.available() > 0) {
 						int next_state = in.read();
-						
+						Log.i("Data_Received", "Received " + Integer.toString(next_state));
 						switch(next_state) {
 						case Player.DEALT:
 							Log.i("Player_State", "Changed to Dealt State");
@@ -419,6 +419,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
 
 	//Join button event handler
 	public void joinRequest(View view) {
+		Log.i("Player_Action", "Player sent join request");
 		try{
 			sendData(new byte[] {
 					(byte) player.character_id,
@@ -438,6 +439,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
 
 	//Connect to DE2 button event handler
 	public void onConnectButton(View view) {
+		Log.i("Player_Action", "Player opened socket");
 		saveSettings();
 		openSocket();
 		joinBut.setEnabled(true);
@@ -469,12 +471,14 @@ public class Game extends Activity implements SensorEventListener, android.view.
 
 	//Fold/Check button event handler
 	public void foldCheckClicked(View view){
+		Log.i("Player_Action", "Player Folded/Checked");
 		enterState(Player.WAITING);
 		sendData(new byte[] {(byte) Player.FOLD});
 	}
 
 	//Call button event handler
 	public void callClicked(View view){
+		Log.i("Player_Action", "Player Called");
 		if (this.toCall > player.bank) this.toCall = player.bank;
 		player.bank -= this.toCall;
 		
@@ -484,6 +488,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
 
 	//Raise button event handler
 	public void raiseClicked(View view) {
+		Log.i("Player_Action", "Player Raised");
 		if (toCall > player.bank)
 			toCall = player.bank;
 		int barBet = betBar.getProgress();
