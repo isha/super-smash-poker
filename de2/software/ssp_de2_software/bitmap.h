@@ -87,4 +87,22 @@ void * load_bitmap(char *file) {
 	return bitmap;
 }
 
+void draw_bitmap(Bitmap* bitmap, int x, int y) {
+	int i, j;
+	for (i=0; i<bitmap->height; i++) {
+			for (j=0; j<bitmap->width; j++) {
+				if (!(x+j > RESOLUTION_X || x+j < 0 ||
+								y+i > RESOLUTION_Y || y+i < 0)){
+						pixel_colors[x+j][y+i] = 0;
+				}
+
+				if (!(x+j > RESOLUTION_X || x+j < 0 ||
+								y+i > RESOLUTION_Y || y+i < 0)){
+						if (bitmap->data[i*bitmap->width + j])
+								pixel_colors[x+j][y+i] = bitmap->data[i*bitmap->width + j];
+				}
+			}
+		}
+}
+
 #endif /* BITMAP_H_ */

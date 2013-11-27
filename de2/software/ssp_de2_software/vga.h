@@ -82,38 +82,34 @@ char * card_name(Card card) {
   return c;
 }
 
-void game_screen() {
-	alt_up_char_buffer_clear(char_buffer);
-
-	char str1[50], str2[30], str3[80], str4[50];
-
-	sprintf(str1, "Player 1: $%d", dealer->players[0].total_money);
-	sprintf(str2, "%s | %s", card_name(dealer->players[0].hand[0]), card_name(dealer->players[0].hand[1]));
-
-	alt_up_char_buffer_string(char_buffer, str1, 10, 5);
-	alt_up_char_buffer_string(char_buffer, str2, 10, 6);
-
-	sprintf(str1, "Player 2: $%d", dealer->players[1].total_money);
-	sprintf(str2, "%s | %s", card_name(dealer->players[1].hand[0]), card_name(dealer->players[1].hand[1]));
-
-	alt_up_char_buffer_string(char_buffer, str1, 10, 10);
-	alt_up_char_buffer_string(char_buffer, str2, 10, 11);
-
-	sprintf(str3, "%s | %s | %s | %s | %s",
-				card_name(dealer->cards_on_table[0]),
-				card_name(dealer->cards_on_table[1]),
-				card_name(dealer->cards_on_table[2]),
-				card_name(dealer->cards_on_table[3]),
-				card_name(dealer->cards_on_table[4]));
-
-	alt_up_char_buffer_string(char_buffer, str3, 5, 40);
-
-	sprintf(str4, "Pot: $%d", dealer->pot);
-	alt_up_char_buffer_string(char_buffer, str4, 5, 50);
-
-	sprintf(str4, "Current Bet: $%d", dealer->current_bet);
-	alt_up_char_buffer_string(char_buffer, str4, 5, 51);
+char * card_bitmap_name(Card card) {
+  char * c = malloc(sizeof(char)*20);
+  char * value_string = malloc(sizeof(char)*20);
+  if(card.value == BLANK_CARD_VALUE) {
+	  strcpy(c, "back.bmp");
+  } else {
+	  switch (card.suite) {
+		  case 0: strcpy(c, "c"); break;
+		  case 1: strcpy(c, "s"); break;
+		  case 2: strcpy(c, "d"); break;
+		  case 3: strcpy(c, "h"); break;
+		}
+	  switch (card.value) {
+	      case 0: strcat(c, "a"); break;
+	      case 12: strcat(c, "k"); break;
+	      case 11: strcat(c, "q"); break;
+	      case 10: strcat(c, "j"); break;
+	      default:
+	    	  sprintf(value_string, "%d", card.value+1);
+	    	  strcat(c, value_string);
+	    	  break;
+	    }
+	  strcat(c, ".bmp");
+  }
+  return c;
 }
+
+
 
 /* Author : Jeff Goeders
  *
