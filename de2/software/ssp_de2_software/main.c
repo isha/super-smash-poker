@@ -15,7 +15,7 @@
 
 void init() {
 	initialize_vga();
-//	initialize_sdcard();
+	initialize_sdcard();
 	alt_timestamp_start();
 //	initialize_audio();
 //	start_audio();
@@ -167,24 +167,41 @@ bool player_still_playing(int pid) {
   return false;
 }
 
+/* Update pixel buffer */
+
+void game_screen() {
+	alt_up_char_buffer_clear(char_buffer);
+
+	char str1[50], str2[30], str3[50];
+
+	sprintf(str1, "Player 1: $%d", dealer->players[0].total_money);
+	alt_up_char_buffer_string(char_buffer, str1, 5, 5);
+
+	sprintf(str1, "Player 2: $%d", dealer->players[1].total_money);
+	alt_up_char_buffer_string(char_buffer, str1, 5, 10);
+
+	Bitmap* flop_card0_bmp = load_bitmap(card_bitmap_name(dealer->cards_on_table[0]));
+	Bitmap* flop_card1_bmp = load_bitmap(card_bitmap_name(dealer->cards_on_table[1]));
+	Bitmap* flop_card2_bmp = load_bitmap(card_bitmap_name(dealer->cards_on_table[2]));
+	Bitmap* turn_card_bmp  = load_bitmap(card_bitmap_name(dealer->cards_on_table[3]));
+	Bitmap* river_card_bmp = load_bitmap(card_bitmap_name(dealer->cards_on_table[4]));
+
+	draw_bitmap(flop_card0_bmp, 25, 60);
+	draw_bitmap(flop_card1_bmp, 55, 60);
+	draw_bitmap(flop_card2_bmp, 85, 60);
+	draw_bitmap(turn_card_bmp, 115, 60);
+	draw_bitmap(river_card_bmp, 145, 60);
+
+	sprintf(str3, "Pot: $%d", dealer->pot);
+	alt_up_char_buffer_string(char_buffer, str3, 5, 50);
+
+	sprintf(str3, "Current Bet: $%d", dealer->current_bet);
+	alt_up_char_buffer_string(char_buffer, str3, 5, 51);
+	draw_to_screen();
+}
+
 void test_case() {
 	init();
-
-	message_client_id = 0x01;
-	message_size = 5;
-	message[0] = 'A';
-	message[1] = 'B';
-	message[2] = 'C';
-	message[3] = 'D';
-	message[4] = 'E';
-
-	printf("\n\nCurrent contents of message: \n");
-	print_message();
-
-	printf("\n\nSending message...");
-	send_message();
-
-	while(1) {};
 }
 
 int main()
