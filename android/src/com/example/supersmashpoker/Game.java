@@ -353,7 +353,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
 							break;
 						case Player.WIN:
 							Log.i("Player_State", "Changed to Win State");
-							final int winnings = (
+							final int final_bankroll = (
 									((int) in.read() << 24) +
 									((int) in.read() << 16) +
 									((int) in.read() << 8) +
@@ -361,7 +361,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
 								);
 							runOnUiThread(new Runnable() {
 								public void run() {
-									endState(true, winnings);
+									endState(true, final_bankroll);
 								}
 							});
 							break;
@@ -416,7 +416,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
 	
 	//State handling for when the game ends and we need to declare a winner
 	public void endState(boolean win, int winnings){
-		player.bank += winnings;
+		player.bank = winnings;
 		if (win)
 			enterState(Player.WIN);
 		else if (player.bank <= 0)
