@@ -524,7 +524,7 @@ void last_man_standing() {
   dealer->players[i].total_money += dealer->pot;
   dealer->pot = 0;
 
-  winners_count = 1;
+  winner_count = 1;
   winners[0] = i;
 }
 
@@ -572,7 +572,7 @@ int main()
 			dealer->players[i].hand[1].suite, dealer->players[i].hand[1].value);
 		}
 
-		state = BET;
+		state = ANTY_CALL;
 		break;
 
 	  case FLOP:
@@ -611,6 +611,45 @@ int main()
 
 		state = BET;
 		break;
+
+	  case ANTY_CALL:
+		printf("\nCalling anty from all players");
+
+		get_bet_for_player(dealer_chip);
+		if (dealer_chip == dealer->number_players-1) {
+		  for (i=0; i<dealer->number_players-1; i++) {
+			if (dealer->players[i].active) {
+			  get_bet_for_player(i);
+			  if (dealer->number_active_players == 1) {state = GAME_OVER; goto HOTSTUFF;}
+			}
+		  }
+		} else {
+		  for (i=dealer_chip+1; i<dealer->number_players; i++) {
+			if (dealer->players[i].active) {
+			  get_bet_for_player(i);
+			  if (dealer->number_active_players == 1) {state = GAME_OVER; goto HOTSTUFF;}
+			}
+		  }
+		  for (i=0; i<dealer_chip; i++) {
+			if (dealer->players[i].active) {
+			  get_bet_for_player(i);
+			  if (dealer->number_active_players == 1) {state = GAME_OVER; goto HOTSTUFF;}
+			}
+		  }
+		}
+		/* Put bet money into the pot */
+		for (i=0; i<dealer->number_players; i++) {
+		  dealer->pot += dealer->players[i].money;
+		  dealer->players[i].money = 0;
+		  dealer->current_bet = 0;
+		}
+
+		printf("\n----------------------------------------\n");
+		printf("\nPOT %d", dealer->pot);
+		printf("\n----------------------------------------\n");
+
+	  state = BET;
+	  break;
 
 	  case BET:
 	  /* Betting Round 1 */

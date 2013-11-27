@@ -202,10 +202,12 @@ void set_action_state(int pid) {
 	message[0] = ACTION; 		// set state = ACTION
 
 	// also need to send the current_bet in the bytes following the action state
-	message[1] = (unsigned char) (dealer->current_bet >> 24);
-	message[2] = (unsigned char) (dealer->current_bet >> 16);
-	message[3] = (unsigned char) (dealer->current_bet >> 8);
-	message[4] = (unsigned char) (dealer->current_bet);
+	int call_money = dealer->current_bet - dealer->players[pid].money;
+
+	message[1] = (unsigned char) (call_money >> 24);
+	message[2] = (unsigned char) (call_money >> 16);
+	message[3] = (unsigned char) (call_money >> 8);
+	message[4] = (unsigned char) (call_money);
 }
 
 /* First message to the clients. Send hand information and state

@@ -60,6 +60,7 @@ typedef enum {
   SETUP,
   DEAL_HANDS,
   FLOP,
+  ANTY_CALL,
   TURN,
   RIVER,
   BET,
