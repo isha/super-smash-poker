@@ -508,6 +508,8 @@ public class Game extends Activity implements SensorEventListener, android.view.
 	
 	public void onContinueButton(View view) {
 		try{
+			this.player.hand[0] = new Card(Card.BACK, 0);
+			this.player.hand[1] = new Card(Card.BACK, 0);
 			sendData(new byte[] {
 					(byte) player.character_id,
 					(byte) ((player.bank >> 24) & 0xFF),
@@ -524,6 +526,8 @@ public class Game extends Activity implements SensorEventListener, android.view.
 	
 	// Enables or disables all the user controlled widgets
 	public void setButtonState() {
+		Log.i("State", "current - " + Integer.toString(player.state));
+		Log.i("State", "prev - " + Integer.toString(prevState));
 		if(player.state == Player.JOIN) {
 			joinGame.setVisibility(View.VISIBLE);
 			gameplay.setVisibility(View.GONE);
