@@ -483,15 +483,16 @@ public class Game extends Activity implements SensorEventListener, android.view.
 	public void raiseClicked(View view) {
 		if (toCall > player.bank)
 			toCall = player.bank;
-		int betAmount = toCall + betBar.getProgress();
+		int barBet = betBar.getProgress();
+		int betAmount = toCall + barBet;
 		player.bank = player.bank - betAmount;
 		
 		enterState(Player.WAITING);
 		sendData(new byte[] {(byte) Player.RAISE,
-				(byte) (betAmount >> 24), 
-				(byte) ((betAmount >> 16) & 0xFF), 
-				(byte) ((betAmount >> 8) & 0xFF),
-				(byte) (betAmount & 0xFF) });
+				(byte) (barBet >> 24), 
+				(byte) ((barBet >> 16) & 0xFF), 
+				(byte) ((barBet >> 8) & 0xFF),
+				(byte) (barBet & 0xFF) });
 	}
 	
 	// Enables or disables all the user controlled widgets
