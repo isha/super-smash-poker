@@ -20,6 +20,7 @@ void init() {
 //	initialize_audio();
 //	start_audio();
 	initialize_messaging();
+	splash_screen();
 }
 
 /***************************************************************************/
@@ -28,6 +29,7 @@ Dealer * dealer;
 int dealer_chip = 0;
 PokerHand *ph;
 int winner_count; int *winners;
+bool game_on;
 
 /* Method definitions */
 void initialize_dealer(int number_players) {
@@ -60,6 +62,7 @@ void initialize_dealer(int number_players) {
     dealer->players[i].active = true;
     dealer->players[i].money = 0;
     dealer->players[i].total_money = 3000;
+    sprintf(dealer->players[i].message, " ");
   }
 
   /* Initialize cards on table to blank */
@@ -72,6 +75,8 @@ void initialize_dealer(int number_players) {
   dealer->pot = 0;
   dealer->current_bet = ANTY;
   dealer->number_active_players = dealer->number_players;
+
+  sprintf(dealer->message, " ");
 }
 
 /* Returns a random card from the deck */
@@ -126,33 +131,55 @@ unsigned int get_bet_for_player(int pid) {
   receive_message();
   m_input = read_player_action_and_value(pid);
 
+  sprintf(dealer->players[pid].message, "CHECK");
+
   if (dealer->players[pid].action == CALL) {
-    dealer->players[pid].total_money -= (dealer->current_bet - dealer->players[pid].money);
-    dealer->players[pid].money += (dealer->current_bet - dealer->players[pid].money);
+	  if ((dealer->players[pid].total_money - (dealer->current_bet - dealer->players[pid].money)) > 0) {
+		dealer->players[pid].total_money -= (dealer->current_bet - dealer->players[pid].money);
+		dealer->players[pid].money += (dealer->current_bet - dealer->players[pid].money);
+		sprintf(dealer->players[pid].message, "CALL %d", dealer->players[pid].money);
+	  } else {
+		dealer->players[pid].money += dealer->players[pid].total_money;
+		sprintf(dealer->players[pid].message, "ALL IN (BET %d)", dealer->players[pid].total_money);
+		dealer->players[pid].total_money = 0;
+	  }
   }
 
   if (dealer->players[pid].action == RAISE) {
     dealer->current_bet += m_input;
     dealer->players[pid].total_money -= (dealer->current_bet - dealer->players[pid].money);
     dealer->players[pid].money += (dealer->current_bet - dealer->players[pid].money);
+
+    sprintf(dealer->players[pid].message, "RAISE %d (BET %d)", m_input, dealer->players[pid].money);
   }
 
   if (dealer->players[pid].action == FOLD && dealer->current_bet > 0) {
 	dealer->players[pid].active = false;
 	dealer->number_active_players--;
+	sprintf(dealer->players[pid].message, "FOLD");
+	printf("\n....... Player %d FOLDED! Number active %d ", pid, dealer->number_active_players);
   }
   printf("\nYour total money %d and bet money %d", dealer->players[pid].total_money, dealer->players[pid].money);
-
+  game_screen();
   return 0;
 }
 
 /* Returns true if players are still in the process of betting */
 bool still_betting() {
-  int i;
+  if (dealer->number_active_players == 1) return false;
+
+  int i, num=0;
   for (i=0; i<dealer->number_players; i++) {
-    if (dealer->players[i].money < dealer->current_bet && dealer->players[i].total_money > 0)
+    if (dealer->players[i].total_money > 0) num++;
+  }
+
+  if (num <= 1) return false;
+
+  for (i=0; i<dealer->number_players; i++) {
+	if (dealer->players[i].money < dealer->current_bet && dealer->players[i].total_money > 0)
     return true;
   }
+
   return false;
 }
 
@@ -166,35 +193,43 @@ bool player_still_playing(int pid) {
 }
 
 /* Update pixel buffer */
-
 void game_screen() {
 	alt_up_char_buffer_clear(char_buffer);
 
-	char str1[50], str2[30], str3[50];
+	char str1[50], str3[50];
+	int i;
 
-	sprintf(str1, "Player 1: $%d", dealer->players[0].total_money);
-	alt_up_char_buffer_string(char_buffer, str1, 5, 5);
+	Bitmap *bmp;
 
-	sprintf(str1, "Player 2: $%d", dealer->players[1].total_money);
-	alt_up_char_buffer_string(char_buffer, str1, 5, 10);
+	for (i=0; i<dealer->number_players; i++) {
+		sprintf(str1, "Player %d: $%d", i+1, dealer->players[i].total_money);
+		alt_up_char_buffer_string(char_buffer, str1, 5, 15*i);
+		alt_up_char_buffer_string(char_buffer, dealer->players[i].message, 5, 15*i+2);
 
-	Bitmap* flop_card0_bmp = load_bitmap(card_bitmap_name(dealer->cards_on_table[0]));
-	Bitmap* flop_card1_bmp = load_bitmap(card_bitmap_name(dealer->cards_on_table[1]));
-	Bitmap* flop_card2_bmp = load_bitmap(card_bitmap_name(dealer->cards_on_table[2]));
-	Bitmap* turn_card_bmp  = load_bitmap(card_bitmap_name(dealer->cards_on_table[3]));
-	Bitmap* river_card_bmp = load_bitmap(card_bitmap_name(dealer->cards_on_table[4]));
+		if (game_on || !dealer->players[i].active) {
+			bmp = load_bitmap("back.bmp");
+			draw_bitmap(bmp, 20, (60*i)+18);
+			draw_bitmap(bmp, 50, (60*i)+18);
+		} else {
+			bmp = load_bitmap(card_bitmap_name(dealer->players[i].hand[0]));
+			draw_bitmap(bmp, 20, (60*i)+18);
+			bmp = load_bitmap(card_bitmap_name(dealer->players[i].hand[1]));
+			draw_bitmap(bmp, 50, (60*i)+18);
+		}
+	}
 
-	draw_bitmap(flop_card0_bmp, 25, 60);
-	draw_bitmap(flop_card1_bmp, 55, 60);
-	draw_bitmap(flop_card2_bmp, 85, 60);
-	draw_bitmap(turn_card_bmp, 115, 60);
-	draw_bitmap(river_card_bmp, 145, 60);
+	for (i=0; i<dealer->number_cards_on_table; i++) {
+		bmp = load_bitmap(card_bitmap_name(dealer->cards_on_table[i]));
+		draw_bitmap(bmp, (130+i*30), 60);
+	}
+
+	alt_up_char_buffer_string(char_buffer, dealer->message, 27, 32);
 
 	sprintf(str3, "Pot: $%d", dealer->pot);
-	alt_up_char_buffer_string(char_buffer, str3, 5, 50);
+	alt_up_char_buffer_string(char_buffer, str3, 42, 50);
 
 	sprintf(str3, "Current Bet: $%d", dealer->current_bet);
-	alt_up_char_buffer_string(char_buffer, str3, 5, 51);
+	alt_up_char_buffer_string(char_buffer, str3, 42, 51);
 	draw_to_screen();
 }
 
@@ -202,6 +237,11 @@ void test_case() {
 	init();
 }
 
+void splash_screen() {
+	Bitmap *b = load_bitmap("ssp_logo.bmp");
+	draw_bitmap(b, 0, 0);
+	draw_to_screen();
+}
 
 // YOLOYOLO
 /* Return 1 if a is greater than b, -1 if otherwise and 0 if they are equal */
@@ -230,205 +270,208 @@ void rank_poker_hands() {
     card_name(dealer->cards_on_table[2]), card_name(dealer->cards_on_table[3]),
     card_name(dealer->cards_on_table[4]) );
 
-  for (i=0; i<dealer->number_players && dealer->players[i].active; i++) {
-    ph[i].type = UNDETERMINED;
-    ph[i].value = -1;
-    ph[i].value_secondary = -1;
-    for (j=0; j<5; j++) ph[i].hand[j] = null_card;
-    ph[i].kicker = null_card;
-    int num_filled = 0;
+  for (i=0; i<dealer->number_players; i++) {
+	if (dealer->players[i].active) {
+		ph[i].type = UNDETERMINED;
+		ph[i].value = -1;
+		ph[i].value_secondary = -1;
+		for (j=0; j<5; j++) ph[i].hand[j] = null_card;
+		ph[i].kicker = null_card;
+		int num_filled = 0;
 
 
-    /* Create hash maps */
-    int suite_count[4]; Card by_suite[4][7];
-    for (j=0; j<4; j++) suite_count[j]=0;
-    int value_count[13]; Card by_value[13][4]; // For value count, 0-12 represents Two to Ace
-    for (j=0; j<13; j++) value_count[j]=0;
-    by_suite[dealer->players[i].hand[0].suite][suite_count[dealer->players[i].hand[0].suite]] = dealer->players[i].hand[0];
-    suite_count[dealer->players[i].hand[0].suite]++;
-    by_suite[dealer->players[i].hand[1].suite][suite_count[dealer->players[i].hand[1].suite]] = dealer->players[i].hand[1];
-    suite_count[dealer->players[i].hand[1].suite]++;
-    for (j=0; j<dealer->number_cards_on_table; j++) {
-      by_suite[dealer->cards_on_table[j].suite][suite_count[dealer->cards_on_table[j].suite]] = dealer->cards_on_table[j];
-      suite_count[dealer->cards_on_table[j].suite]++;
-    }
+		/* Create hash maps */
+		int suite_count[4]; Card by_suite[4][7];
+		for (j=0; j<4; j++) suite_count[j]=0;
+		int value_count[13]; Card by_value[13][4]; // For value count, 0-12 represents Two to Ace
+		for (j=0; j<13; j++) value_count[j]=0;
+		by_suite[dealer->players[i].hand[0].suite][suite_count[dealer->players[i].hand[0].suite]] = dealer->players[i].hand[0];
+		suite_count[dealer->players[i].hand[0].suite]++;
+		by_suite[dealer->players[i].hand[1].suite][suite_count[dealer->players[i].hand[1].suite]] = dealer->players[i].hand[1];
+		suite_count[dealer->players[i].hand[1].suite]++;
+		for (j=0; j<dealer->number_cards_on_table; j++) {
+		  by_suite[dealer->cards_on_table[j].suite][suite_count[dealer->cards_on_table[j].suite]] = dealer->cards_on_table[j];
+		  suite_count[dealer->cards_on_table[j].suite]++;
+		}
 
-    int val = dealer->players[i].hand[0].value == 0 ? 12 : dealer->players[i].hand[0].value - 1;
-    by_value[val][value_count[val]] = dealer->players[i].hand[0];
-    value_count[val]++;
-    val = dealer->players[i].hand[1].value == 0 ? 12 : dealer->players[i].hand[1].value - 1;
-    by_value[val][value_count[val]] = dealer->players[i].hand[1];
-    value_count[val]++;
-    for (j=0; j<dealer->number_cards_on_table; j++) {
-      val = dealer->cards_on_table[j].value == 0 ? 12 : dealer->cards_on_table[j].value - 1;
-      by_value[val][value_count[val]] = dealer->cards_on_table[j];
-      value_count[val]++;
-    }
+		int val = dealer->players[i].hand[0].value == 0 ? 12 : dealer->players[i].hand[0].value - 1;
+		by_value[val][value_count[val]] = dealer->players[i].hand[0];
+		value_count[val]++;
+		val = dealer->players[i].hand[1].value == 0 ? 12 : dealer->players[i].hand[1].value - 1;
+		by_value[val][value_count[val]] = dealer->players[i].hand[1];
+		value_count[val]++;
+		for (j=0; j<dealer->number_cards_on_table; j++) {
+		  val = dealer->cards_on_table[j].value == 0 ? 12 : dealer->cards_on_table[j].value - 1;
+		  by_value[val][value_count[val]] = dealer->cards_on_table[j];
+		  value_count[val]++;
+		}
 
-    /* Check for best hand */
-    for (j=0; j<4; j++) {
-      if (suite_count[j] >= 5) {
-        /* Flush */
-        if (ph[i].type < FLUSH) {
-          ph[i].type = FLUSH;
-          ph[i].hand[0] = by_suite[j][0];
-          ph[i].hand[1] = by_suite[j][1];
-          ph[i].hand[2] = by_suite[j][2];
-          ph[i].hand[3] = by_suite[j][3];
-          ph[i].hand[4] = by_suite[j][4];
+		/* Check for best hand */
+		for (j=0; j<4; j++) {
+		  if (suite_count[j] >= 5) {
+			/* Flush */
+			if (ph[i].type < FLUSH) {
+			  ph[i].type = FLUSH;
+			  ph[i].hand[0] = by_suite[j][0];
+			  ph[i].hand[1] = by_suite[j][1];
+			  ph[i].hand[2] = by_suite[j][2];
+			  ph[i].hand[3] = by_suite[j][3];
+			  ph[i].hand[4] = by_suite[j][4];
 
-          ph[i].value = ph[i].hand[0].value;
-          for (k=0; k<5; k++) {
-            if (comp_value(ph[i].hand[k].value, ph[i].value) == 1) ph[i].value = ph[i].hand[k].value;
-          }
-          num_filled = 5;
-        }
-      }
-    }
+			  ph[i].value = ph[i].hand[0].value;
+			  for (k=0; k<5; k++) {
+				if (comp_value(ph[i].hand[k].value, ph[i].value) == 1) ph[i].value = ph[i].hand[k].value;
+			  }
+			  num_filled = 5;
+			}
+		  }
+		}
 
-    /* Straight */
-    for (j=12; j>=4; j--) {
-      if (j == 4 && value_count[12]>=1 && value_count[j]>=1 && value_count[j-1]>=1 && value_count[j-2]>=1
-        && value_count[j-3]>=1) {
-          ph[i].type = STRAIGHT;
-          ph[i].value = j;
-          ph[i].hand[0] = by_value[j][0];
-          ph[i].hand[1] = by_value[j-1][0];
-          ph[i].hand[2] = by_value[j-2][0];
-          ph[i].hand[3] = by_value[j-3][0];
-          ph[i].hand[4] = by_value[12][0];
-          num_filled = 5;
-          break;
-      } else if (value_count[j]>=1 && value_count[j-1]>=1 && value_count[j-2]>=1
-        && value_count[j-3]>=1 && value_count[j-4]>=1) {
-          ph[i].type = STRAIGHT;
-          ph[i].value = j;
-          ph[i].hand[0] = by_value[j][0];
-          ph[i].hand[1] = by_value[j-1][0];
-          ph[i].hand[2] = by_value[j-2][0];
-          ph[i].hand[3] = by_value[j-3][0];
-          ph[i].hand[4] = by_value[j-4][0];
-          num_filled = 5;
-          break;
-      }
-    }
+		/* Straight */
+		for (j=12; j>=4; j--) {
+		  if (j == 4 && value_count[12]>=1 && value_count[j]>=1 && value_count[j-1]>=1 && value_count[j-2]>=1
+			&& value_count[j-3]>=1) {
+			  ph[i].type = STRAIGHT;
+			  ph[i].value = j;
+			  ph[i].hand[0] = by_value[j][0];
+			  ph[i].hand[1] = by_value[j-1][0];
+			  ph[i].hand[2] = by_value[j-2][0];
+			  ph[i].hand[3] = by_value[j-3][0];
+			  ph[i].hand[4] = by_value[12][0];
+			  num_filled = 5;
+			  break;
+		  } else if (value_count[j]>=1 && value_count[j-1]>=1 && value_count[j-2]>=1
+			&& value_count[j-3]>=1 && value_count[j-4]>=1) {
+			  ph[i].type = STRAIGHT;
+			  ph[i].value = j;
+			  ph[i].hand[0] = by_value[j][0];
+			  ph[i].hand[1] = by_value[j-1][0];
+			  ph[i].hand[2] = by_value[j-2][0];
+			  ph[i].hand[3] = by_value[j-3][0];
+			  ph[i].hand[4] = by_value[j-4][0];
+			  num_filled = 5;
+			  break;
+		  }
+		}
 
-    /* 4 of a kind */
-    for (j=12; j>=0; j--) {
-      if (value_count[j] == 4 && ph[i].type < FOUR_OF_A_KIND) {
-          ph[i].type = FOUR_OF_A_KIND;
-          ph[i].value = j;
-          ph[i].hand[0] = by_value[j][0];
-          ph[i].hand[1] = by_value[j][1];
-          ph[i].hand[2] = by_value[j][2];
-          ph[i].hand[3] = by_value[j][3];
-          num_filled = 4;
-          break;
-      }
-    }
+		/* 4 of a kind */
+		for (j=12; j>=0; j--) {
+		  if (value_count[j] == 4 && ph[i].type < FOUR_OF_A_KIND) {
+			  ph[i].type = FOUR_OF_A_KIND;
+			  ph[i].value = j;
+			  ph[i].hand[0] = by_value[j][0];
+			  ph[i].hand[1] = by_value[j][1];
+			  ph[i].hand[2] = by_value[j][2];
+			  ph[i].hand[3] = by_value[j][3];
+			  num_filled = 4;
+			  break;
+		  }
+		}
 
 
-    /* Full house and 3 of a kind */
-    for (j=12; j>=0; j--) {
-      if (value_count[j] == 3) {
-        /* Check for 3 of a kind */
-        for (k=12; k>=0 && k!=j; k--) {
-          if (value_count[k] == 2
-              && ph[i].type < FULL_HOUSE) {
-            ph[i].type = FULL_HOUSE;
-            ph[i].value = j;
-            ph[i].value_secondary = k;
-            ph[i].hand[0] = by_value[j][0];
-            ph[i].hand[1] = by_value[j][1];
-            ph[i].hand[2] = by_value[j][2];
-            ph[i].hand[3] = by_value[k][0];
-            ph[i].hand[4] = by_value[k][1];
-            num_filled = 5;
-            break;
-          }
-        }
+		/* Full house and 3 of a kind */
+		for (j=12; j>=0; j--) {
+		  if (value_count[j] == 3) {
+			/* Check for 3 of a kind */
+			for (k=12; k>=0 && k!=j; k--) {
+			  if (value_count[k] == 2
+				  && ph[i].type < FULL_HOUSE) {
+				ph[i].type = FULL_HOUSE;
+				ph[i].value = j;
+				ph[i].value_secondary = k;
+				ph[i].hand[0] = by_value[j][0];
+				ph[i].hand[1] = by_value[j][1];
+				ph[i].hand[2] = by_value[j][2];
+				ph[i].hand[3] = by_value[k][0];
+				ph[i].hand[4] = by_value[k][1];
+				num_filled = 5;
+				break;
+			  }
+			}
 
-        /* If not full house, is a 3 of a kind */
-        if (ph[i].type < THREE_OF_A_KIND || (ph[i].type == THREE_OF_A_KIND && comp_value(ph[i].value, j) == -1)) {
-          ph[i].type = THREE_OF_A_KIND;
-          ph[i].value = j;
-          ph[i].hand[0] = by_value[j][0];
-          ph[i].hand[1] = by_value[j][1];
-          ph[i].hand[2] = by_value[j][2];
-          num_filled = 3;
-        }
-      }
-    }
+			/* If not full house, is a 3 of a kind */
+			if (ph[i].type < THREE_OF_A_KIND || (ph[i].type == THREE_OF_A_KIND && comp_value(ph[i].value, j) == -1)) {
+			  ph[i].type = THREE_OF_A_KIND;
+			  ph[i].value = j;
+			  ph[i].hand[0] = by_value[j][0];
+			  ph[i].hand[1] = by_value[j][1];
+			  ph[i].hand[2] = by_value[j][2];
+			  num_filled = 3;
+			}
+		  }
+		}
 
-    for (j=12; j>=0; j--) {
-      if (value_count[j] == 2) {
-        /* Check for two pair */
-        for (k=12; k>=0 && k!=j; k--) {
-          if (value_count[k] == 2 && ph[i].type < TWO_PAIR) {
-            ph[i].type = TWO_PAIR;
-            ph[i].value = j;
-            ph[i].value_secondary = k;
-            ph[i].hand[0] = by_value[j][0];
-            ph[i].hand[1] = by_value[j][1];
-            ph[i].hand[2] = by_value[k][0];
-            ph[i].hand[3] = by_value[k][1];
-            num_filled = 4;
-            break;
-          }
-        }
+		for (j=12; j>=0; j--) {
+		  if (value_count[j] == 2) {
+			/* Check for two pair */
+			for (k=12; k>=0 && k!=j; k--) {
+			  if (value_count[k] == 2 && ph[i].type < TWO_PAIR) {
+				ph[i].type = TWO_PAIR;
+				ph[i].value = j;
+				ph[i].value_secondary = k;
+				ph[i].hand[0] = by_value[j][0];
+				ph[i].hand[1] = by_value[j][1];
+				ph[i].hand[2] = by_value[k][0];
+				ph[i].hand[3] = by_value[k][1];
+				num_filled = 4;
+				break;
+			  }
+			}
 
-        /* If not 2 pair, is a single pair */
-        if (ph[i].type < PAIR) {
-          ph[i].type = PAIR;
-          ph[i].value = j;
-          ph[i].hand[0] = by_value[j][0];
-          ph[i].hand[1] = by_value[j][1];
-          num_filled = 2;
-          break;
-        }
-      }
-    }
+			/* If not 2 pair, is a single pair */
+			if (ph[i].type < PAIR) {
+			  ph[i].type = PAIR;
+			  ph[i].value = j;
+			  ph[i].hand[0] = by_value[j][0];
+			  ph[i].hand[1] = by_value[j][1];
+			  num_filled = 2;
+			  break;
+			}
+		  }
+		}
 
-    for (j=12; j>=0; j--) {
-      if (value_count[j] >= 1 && ph[i].type < HIGH_CARD ) {
-          ph[i].type = HIGH_CARD;
-          ph[i].value = j;
-          ph[i].hand[0] = by_value[j][0];
-          num_filled = 1;
-          break;
-      }
-    }
+		for (j=12; j>=0; j--) {
+		  if (value_count[j] >= 1 && ph[i].type < HIGH_CARD ) {
+			  ph[i].type = HIGH_CARD;
+			  ph[i].value = j;
+			  ph[i].hand[0] = by_value[j][0];
+			  num_filled = 1;
+			  break;
+		  }
+		}
 
-    /* Fill up remaining spots in best hand */
-    for (j=12; j>=0 && num_filled<5; j--) {
-      for (k=0; k<value_count[j] && num_filled<5; k++) {
-        int flag = 0;
-        for (l=0; l<num_filled; l++) {
-          if (by_value[j][k].value == ph[i].hand[l].value && by_value[j][k].suite == ph[i].hand[l].suite) flag = 1;
-        }
-        if (flag == 0) {
-          ph[i].hand[num_filled] = by_value[j][k];
-          num_filled++;
-        }
-      }
-    }
+		/* Fill up remaining spots in best hand */
+		for (j=12; j>=0 && num_filled<5; j--) {
+		  for (k=0; k<value_count[j] && num_filled<5; k++) {
+			int flag = 0;
+			for (l=0; l<num_filled; l++) {
+			  if (by_value[j][k].value == ph[i].hand[l].value && by_value[j][k].suite == ph[i].hand[l].suite) flag = 1;
+			}
+			if (flag == 0) {
+			  ph[i].hand[num_filled] = by_value[j][k];
+			  num_filled++;
+			}
+		  }
+		}
 
-    /* Kicker */
-    for (j=12; j>=0; j--) {
-      for (k=0; k<value_count[j] && ph[i].kicker.value == -1; k++) {
-        int flag = 0;
-        for (l=0; l<num_filled; l++) {
-          if (by_value[j][k].value == ph[i].hand[l].value && by_value[j][k].suite == ph[i].hand[l].suite) flag = 1;
-        }
-        if (flag == 0) {
-          ph[i].kicker = by_value[j][k];
-        }
-      }
-    }
+		/* Kicker */
+		for (j=12; j>=0; j--) {
+		  for (k=0; k<value_count[j] && ph[i].kicker.value == -1; k++) {
+			int flag = 0;
+			for (l=0; l<num_filled; l++) {
+			  if (by_value[j][k].value == ph[i].hand[l].value && by_value[j][k].suite == ph[i].hand[l].suite) flag = 1;
+			}
+			if (flag == 0) {
+			  ph[i].kicker = by_value[j][k];
+			}
+		  }
+		}
+	  }
   }
 
 
-  for (i=0; i<dealer->number_players && dealer->players[i].active; i++) {
+  for (i=0; i<dealer->number_players; i++) {
+	if (dealer->players[i].active) {
     char *s;
     switch (ph[i].type) {
         case ROYAL_FLUSH: s = "Royal Flush";
@@ -457,6 +500,7 @@ void rank_poker_hands() {
       card_name(ph[i].hand[2]), card_name(ph[i].hand[3]), card_name(ph[i].hand[4]), card_name(ph[i].kicker));
   }
   printf("\n");
+  }
 }
 
 void split_pot() {
@@ -468,7 +512,8 @@ void split_pot() {
   while (!dealer->players[i].active) i++;
   winners[0] = i;
 
-  for (i=winners[0]+1; i<dealer->number_players && dealer->players[i].active; i++) {
+  for (i=winners[0]+1; i<dealer->number_players; i++) {
+	if (dealer->players[i].active) {
     int flag = 0;
     if (ph[i].type > ph[winners[0]].type) {
       winners[0] = i;
@@ -504,14 +549,20 @@ void split_pot() {
       winners[winner_count] = i;
       winner_count++;
     }
+	}
   }
+
+  sprintf(dealer->message, "Congrats on the win");
 
   printf("\nCongrats on the win ");
   for (j=0; j<winner_count; j++) {
     printf("Player %d, ", winners[j]);
+    sprintf(dealer->message, "%s Player %d,", dealer->message, winners[j]+1);
     dealer->players[winners[j]].total_money += dealer->pot/winner_count;
   }
   printf("You win pot of size %d.\n", dealer->pot/winner_count);
+  sprintf(dealer->message, "%s You win pot of size %d", dealer->message, dealer->pot/winner_count);
+
   dealer->pot = 0;
 }
 
@@ -520,7 +571,7 @@ void last_man_standing() {
   int i=0;
   while (!dealer->players[i].active) i++;
 
-  printf("\nCongrats on the win Player %d, You win pot of size %d.\n", i, dealer->pot);
+  sprintf(dealer->message, "\nCongrats on the win Player %d, You win pot of size %d.\n", i+1, dealer->pot);
   dealer->players[i].total_money += dealer->pot;
   dealer->pot = 0;
 
@@ -546,6 +597,15 @@ int main()
 
 	switch (state) {
 	  case SETUP:
+
+		if (dealer->deck) free(dealer->deck);
+		if (dealer->players) free(dealer->players);
+		if (dealer) free(dealer);
+		if (ph) free(ph);
+
+
+		game_on = true;
+
 		printf("\n\n----- ENTERING SETUP STATE -----\n\n");
 		initialize_dealer(new_player_count);
 		printf("Initialized dealer.");
@@ -556,6 +616,7 @@ int main()
 		if (dealer_chip == dealer->number_players-1) dealer_chip = 0;
 		else dealer_chip++;
 
+		clear_screen();
 		state = DEAL_HANDS;
 		break;
 
@@ -613,25 +674,28 @@ int main()
 		break;
 
 	  case ANTY_CALL:
+		sprintf(dealer->message, "ALL PLAYERS CALL ANTY");
+		game_screen();
 		printf("\nCalling anty from all players");
 
-		get_bet_for_player(dealer_chip);
+		if (dealer->players[dealer_chip].active && dealer->players[dealer_chip].total_money > 0) get_bet_for_player(dealer_chip);
+
 		if (dealer_chip == dealer->number_players-1) {
 		  for (i=0; i<dealer->number_players-1; i++) {
-			if (dealer->players[i].active) {
+			if (dealer->players[i].active && dealer->players[i].total_money > 0) {
 			  get_bet_for_player(i);
 			  if (dealer->number_active_players == 1) {state = GAME_OVER; goto HOTSTUFF;}
 			}
 		  }
 		} else {
 		  for (i=dealer_chip+1; i<dealer->number_players; i++) {
-			if (dealer->players[i].active) {
+			if (dealer->players[i].active && dealer->players[i].total_money > 0) {
 			  get_bet_for_player(i);
 			  if (dealer->number_active_players == 1) {state = GAME_OVER; goto HOTSTUFF;}
 			}
 		  }
 		  for (i=0; i<dealer_chip; i++) {
-			if (dealer->players[i].active) {
+			if (dealer->players[i].active && dealer->players[i].total_money > 0) {
 			  get_bet_for_player(i);
 			  if (dealer->number_active_players == 1) {state = GAME_OVER; goto HOTSTUFF;}
 			}
@@ -647,29 +711,35 @@ int main()
 		printf("\n----------------------------------------\n");
 		printf("\nPOT %d", dealer->pot);
 		printf("\n----------------------------------------\n");
-
+	  sprintf(dealer->message, " ");
 	  state = BET;
 	  break;
 
 	  case BET:
+		  for (i=0; i<dealer->number_players; i++) {
+			  if (dealer->players[i].active)
+			  sprintf(dealer->players[i].message, " ");
+		  }
+
 	  /* Betting Round 1 */
-		get_bet_for_player(dealer_chip);
+		if (dealer->players[dealer_chip].active && dealer->players[dealer_chip].total_money > 0) get_bet_for_player(dealer_chip);
+
 		if (dealer_chip == dealer->number_players-1) {
 		  for (i=0; i<dealer->number_players-1; i++) {
-			if (dealer->players[i].active) {
+			if (dealer->players[i].active && dealer->players[i].total_money > 0) {
 			  get_bet_for_player(i);
 			  if (dealer->number_active_players == 1) {state = GAME_OVER; goto HOTSTUFF;}
 			}
 		  }
 		} else {
 		  for (i=dealer_chip+1; i<dealer->number_players; i++) {
-			if (dealer->players[i].active) {
+			if (dealer->players[i].active && dealer->players[i].total_money > 0) {
 			  get_bet_for_player(i);
 			  if (dealer->number_active_players == 1) {state = GAME_OVER; goto HOTSTUFF;}
 			}
 		  }
 		  for (i=0; i<dealer_chip; i++) {
-			if (dealer->players[i].active) {
+			if (dealer->players[i].active && dealer->players[i].total_money > 0) {
 			  get_bet_for_player(i);
 			  if (dealer->number_active_players == 1) {state = GAME_OVER; goto HOTSTUFF;}
 			}
@@ -715,6 +785,9 @@ int main()
 		break;
 
 	  case GAME_OVER:
+		game_on = false;
+		game_screen();
+
 		if (dealer->number_active_players > 1) {
 		  rank_poker_hands();
 		  split_pot();
@@ -722,17 +795,18 @@ int main()
 		  last_man_standing();
 		}
 
+		printf("\n----------------------------------------\n");
+		printf("\nWinner count is %d", winner_count);
+	    for (i=0; i<winner_count; i++) {
+	    	printf("Winner: %d, ", winners[i]);
+	    }
+	    printf("\n----------------------------------------\n");
+
 		send_game_results();
 		printf("\n\nWaiting for response from all players.\n");
-		receive_replay_status();
+
 
 		state = SETUP;
-
-		free(dealer->deck);
-		free(dealer->players);
-		free(dealer);
-		free(ph);
-
 		break;
 	}
 	game_screen();
