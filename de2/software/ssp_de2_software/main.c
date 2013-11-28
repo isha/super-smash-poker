@@ -176,7 +176,7 @@ bool still_betting() {
   if (num <= 1) return false;
 
   for (i=0; i<dealer->number_players; i++) {
-	if (dealer->players[i].money < dealer->current_bet && dealer->players[i].total_money > 0)
+	if (dealer->players[i].money < dealer->current_bet && dealer->players[i].total_money > 0 && dealer->players[i].active)
     return true;
   }
 
