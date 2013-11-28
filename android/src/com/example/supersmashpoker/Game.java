@@ -406,7 +406,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
 		player.dealHand(hand);
 		card0.setImageAlpha(255);
 		card1.setImageAlpha(255);
-		playerId.setText("Player " + Integer.toString(player_id));
+		playerId.setText("Player " + Integer.toString(player_id + 1));
 		updateAll();
 		enterState(Player.DEALT);
 	}
