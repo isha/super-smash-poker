@@ -493,7 +493,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
 			mediaPlayer = MediaPlayer.create(this, R.raw.fold);
 	        mediaPlayer.start();
 		}else{
-			mediaPlayer = MediaPlayer.create(this, R.raw.check);
+			mediaPlayer = MediaPlayer.create(this, R.raw.knock);
 	        mediaPlayer.start();
 		}
 		enterState(Player.WAITING);
