@@ -43,6 +43,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
 	Player player;
 	SeekBar betBar;
 	TextView betText;
+	TextView playerId;
 	LinearLayout joinGame;
 	LinearLayout gameplay;
 	LinearLayout endGame;
@@ -117,6 +118,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
 	//We got a lot of class variable, we should handle that shit
 	private void setWidgetIDs() {
 		betText = (TextView) findViewById(R.id.BetTextID);
+		playerId = (TextView) findViewById(R.id.player_id);
         betBar = (SeekBar) findViewById(R.id.SeekBarID);
         joinGame = (LinearLayout) findViewById(R.id.join_game_layout);
         gameplay = (LinearLayout) findViewById(R.id.gameplay_layout);
@@ -338,15 +340,17 @@ public class Game extends Activity implements SensorEventListener, android.view.
 							final int card0_suit = (int) in.read();
 							final int card1_rank = (int) in.read();
 							final int card1_suit = (int) in.read();
+							final int player_id  = (int) in.read();
 							
 							Log.i("Data_Received", "Received " + Integer.toString(card0_rank) + " "
 									+ Integer.toString(card0_suit) + " "
 									+ Integer.toString(card1_rank) + " "
-									+ Integer.toString(card1_suit) + " ");
+									+ Integer.toString(card1_suit) + " "
+									+ Integer.toString(player_id) + " ");
 							
 							runOnUiThread(new Runnable() {
 								public void run() {
-									dealtState(card0_suit, card0_rank, card1_suit, card1_rank);
+									dealtState(card0_suit, card0_rank, card1_suit, card1_rank, player_id);
 								}
 							});
 							break;
@@ -398,7 +402,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
 	}
 	
 	//State handling for dealing cards
-	public void dealtState(int suit1, int rank1, int suit2, int rank2){
+	public void dealtState(int suit1, int rank1, int suit2, int rank2, int player_id){
 		//Create cards
 		Card[] hand = new Card[2];
 		hand[0] = new Card(suit1, rank1);
@@ -406,7 +410,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
 		player.dealHand(hand);
 		card0.setImageAlpha(255);
 		card1.setImageAlpha(255);
-		
+		playerId.setText("Player " + Integer.toString(player_id));
 		updateAll();
 		enterState(Player.DEALT);
 	}
