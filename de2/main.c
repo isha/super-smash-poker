@@ -88,7 +88,7 @@ void initialize_dealer(int number_players) {
   for (i=0; i<number_players; i++) {
     dealer->players[i].active = true;
     dealer->players[i].money = 0;
-    dealer->players[i].total_money = 3000;
+    dealer->players[i].total_money = rand()%100+50;
   }
 
   /* Cards on table, zero in the beginning */
@@ -150,10 +150,14 @@ int get_bet_for_player(int pid) {
     dealer->players[pid].money = m;
     dealer->players[pid].total_money -= dealer->players[pid].money;
   }
-
   if (dealer->players[pid].action == CALL) {
+    if ((dealer->players[pid].total_money - (dealer->current_bet - dealer->players[pid].money)) > 0) {
     dealer->players[pid].total_money -= (dealer->current_bet - dealer->players[pid].money);
     dealer->players[pid].money += (dealer->current_bet - dealer->players[pid].money);
+    } else {
+    dealer->players[pid].money += dealer->players[pid].total_money;
+    dealer->players[pid].total_money = 0;
+    }
   }
 
   if (dealer->players[pid].action == RAISE) {
@@ -177,7 +181,7 @@ int get_bet_for_player(int pid) {
 bool still_betting() {
   int i;
   for (i=0; i<dealer->number_players; i++) {
-    if (dealer->players[i].money < dealer->current_bet && dealer->players[i].total_money > 0)
+    if (dealer->players[i].money < dealer->current_bet && dealer->players[i].total_money > 0 && dealer->players[i].active)
     return true; 
   }
   return false;
@@ -188,6 +192,7 @@ bool player_still_playing(int pid) {
   if (!dealer->players[pid].active) return false;
   else if (dealer->players[pid].money < dealer->current_bet && dealer->players[pid].total_money > 0)
   return true;
+
 
   return false;
 }
@@ -629,7 +634,7 @@ int main() {
   for (;;) {
     switch (state) {
       case SETUP:
-        initialize_dealer(2);
+        initialize_dealer(4);
 
         /* Move dealer chip to the next player */
         if (dealer_chip == dealer->number_players-1) dealer_chip = 0;
@@ -682,23 +687,24 @@ int main() {
 
       case BET:
         /* Betting Round 1 */
-        get_bet_for_player(dealer_chip);
+        if (dealer->players[dealer_chip].active && dealer->players[dealer_chip].total_money > 0) get_bet_for_player(dealer_chip);
+
         if (dealer_chip == dealer->number_players-1) {
           for (i=0; i<dealer->number_players-1; i++) {
-            if (dealer->players[i].active) {
+            if (dealer->players[i].active && dealer->players[i].total_money > 0) {
               get_bet_for_player(i);
               if (dealer->number_active_players == 1) {state = GAME_OVER; goto HOTSTUFF;}
             }
           }
         } else {
           for (i=dealer_chip+1; i<dealer->number_players; i++) {
-            if (dealer->players[i].active) {
+            if (dealer->players[i].active && dealer->players[i].total_money > 0) {
               get_bet_for_player(i);
               if (dealer->number_active_players == 1) {state = GAME_OVER; goto HOTSTUFF;}
             }
           }
           for (i=0; i<dealer_chip; i++) {
-            if (dealer->players[i].active) {
+            if (dealer->players[i].active && dealer->players[i].total_money > 0) {
               get_bet_for_player(i);
               if (dealer->number_active_players == 1) {state = GAME_OVER; goto HOTSTUFF;}
             }
@@ -719,7 +725,8 @@ int main() {
               if (dealer->number_active_players == 1) {state = GAME_OVER; goto HOTSTUFF;}
             }
           }
-       }
+         }        
+
         switch (dealer->number_cards_on_table) {
           case 0: state = FLOP; break;
           case 3: state = TURN; break;

@@ -35,6 +35,8 @@ typedef struct {
   bool active;
   PlayerAction action;
   unsigned int money;
+
+  char message[50];
 } Player;
 
 typedef struct {
@@ -49,6 +51,8 @@ typedef struct {
   int pot;
   int current_bet;
   int number_active_players;
+
+  char message[60];
 } Dealer;
 
 /* Global variables */
