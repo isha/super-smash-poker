@@ -21,6 +21,7 @@ import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.os.Vibrator;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.JsonReader;
 import android.util.JsonWriter;
@@ -53,6 +54,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
 	TextView stateText;
 	ImageView card0;
 	ImageView card1;
+	Vibrator vibrate;
 	int prevState;
 	
 	int toCall = 10;
@@ -101,6 +103,8 @@ public class Game extends Activity implements SensorEventListener, android.view.
 		mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 		
         betBar.setOnSeekBarChangeListener(new SeekBarListener());
+        
+        vibrate = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 		
         //Set start state
 		enterState(Player.JOIN);
@@ -331,6 +335,11 @@ public class Game extends Activity implements SensorEventListener, android.view.
 							final int card1_rank = (int) in.read();
 							final int card1_suit = (int) in.read();
 							
+							Log.i("Data_Received", "Received " + Integer.toString(card0_rank) + " "
+									+ Integer.toString(card0_suit) + " "
+									+ Integer.toString(card1_rank) + " "
+									+ Integer.toString(card1_suit) + " ");
+							
 							runOnUiThread(new Runnable() {
 								public void run() {
 									dealtState(card0_suit, card0_rank, card1_suit, card1_rank);
@@ -544,6 +553,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
 				callBut.setEnabled(true);
 				raiseBut.setEnabled(false);
 				betBar.setEnabled(false);
+		        vibrate.vibrate(500);
 			}else{
 				switch( player.state ) {
 					case Player.FOLLOW:
@@ -552,6 +562,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
 						callBut.setEnabled(true);
 						raiseBut.setEnabled(true);
 						betBar.setEnabled(true);
+				        vibrate.vibrate(500);
 						break;
 					case Player.LEAD:
 						checkFoldBut.setText(R.string.Check);
@@ -559,6 +570,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
 						callBut.setEnabled(false);
 						raiseBut.setEnabled(true);
 						betBar.setEnabled(true);
+				        vibrate.vibrate(500);
 						break;
 					default:
 						checkFoldBut.setEnabled(false);
