@@ -429,14 +429,10 @@ public class Game extends Activity implements SensorEventListener, android.view.
 	
 	//State handling for when the game ends and we need to declare a winner
 	public void endState(int winnings){
-		if (winnings > player.bank){
+		if (winnings > player.bank)
 			enterState(Player.WIN);
-        	vibrate.vibrate(500);
-		}
-		else if (winnings == player.bank){
+		else if (winnings == player.bank)
 			enterState(Player.LOSE);
-    		vibrate.vibrate(500);
-		}
 		else
 			enterState(Player.BROKE);
 		player.bank = winnings;
