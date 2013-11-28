@@ -193,6 +193,7 @@ bool player_still_playing(int pid) {
   else if (dealer->players[pid].money < dealer->current_bet && dealer->players[pid].total_money > 0)
   return true;
 
+
   return false;
 }
 
