@@ -2,6 +2,7 @@ package com.example.supersmashpoker;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,6 +18,9 @@ public class TitleScreen extends Activity {
 		super.onCreate(savedInstanceState);
         getActionBar().hide();
 		setContentView(R.layout.activity_title_screen);
+		
+		MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.song);
+        mediaPlayer.start();
 	}
 	
 	public void onPlayPress(View view) {

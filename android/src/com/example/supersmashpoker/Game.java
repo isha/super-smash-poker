@@ -18,6 +18,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -106,6 +107,9 @@ public class Game extends Activity implements SensorEventListener, android.view.
         
         vibrate = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 		
+//        MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.song);
+//        mediaPlayer.start();
+        
         //Set start state
 		enterState(Player.JOIN);
 	}
