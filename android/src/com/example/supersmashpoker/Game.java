@@ -58,7 +58,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
 	ImageView card1;
 	Vibrator vibrate;
 	MediaPlayer mediaPlayer;
-	int prevState;
+	int prevState = Player.JOIN;
 	
 	int toCall = 10;
 
@@ -638,7 +638,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
     @Override
 	public void onSensorChanged(SensorEvent event) {
     	//It's not even you're turn, you're not allowed to fold
-    	if (!(prevState == Player.DEALT) && player.state == Player.FOLLOW){
+    	if (!(prevState == Player.DEALT) && !(player.state == Player.FOLLOW)){
     		return;
     	}
 		
