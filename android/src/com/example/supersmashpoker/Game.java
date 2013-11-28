@@ -57,6 +57,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
 	ImageView card0;
 	ImageView card1;
 	Vibrator vibrate;
+	MediaPlayer mediaPlayer;
 	int prevState;
 	
 	int toCall = 10;
@@ -107,9 +108,6 @@ public class Game extends Activity implements SensorEventListener, android.view.
         betBar.setOnSeekBarChangeListener(new SeekBarListener());
         
         vibrate = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-		
-//        MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.song);
-//        mediaPlayer.start();
         
         //Set start state
 		enterState(Player.JOIN);
@@ -411,6 +409,8 @@ public class Game extends Activity implements SensorEventListener, android.view.
 		card0.setImageAlpha(255);
 		card1.setImageAlpha(255);
 		playerId.setText("Player " + Integer.toString(player_id + 1));
+		mediaPlayer = MediaPlayer.create(this, R.raw.deal);
+        mediaPlayer.start();
 		updateAll();
 		enterState(Player.DEALT);
 	}
@@ -489,6 +489,13 @@ public class Game extends Activity implements SensorEventListener, android.view.
 	//Fold/Check button event handler
 	public void foldCheckClicked(View view){
 		Log.i("Player_Action", "Player Folded/Checked");
+		if (player.state == Player.FOLLOW){
+			mediaPlayer = MediaPlayer.create(this, R.raw.fold);
+	        mediaPlayer.start();
+		}else{
+			mediaPlayer = MediaPlayer.create(this, R.raw.check);
+	        mediaPlayer.start();
+		}
 		enterState(Player.WAITING);
 		sendData(new byte[] {(byte) Player.FOLD});
 	}
@@ -496,6 +503,8 @@ public class Game extends Activity implements SensorEventListener, android.view.
 	//Call button event handler
 	public void callClicked(View view){
 		Log.i("Player_Action", "Player Called");
+		mediaPlayer = MediaPlayer.create(this, R.raw.chips);
+        mediaPlayer.start();
 		if (this.toCall > player.bank) this.toCall = player.bank;
 		player.bank -= this.toCall;
 		
@@ -506,6 +515,8 @@ public class Game extends Activity implements SensorEventListener, android.view.
 	//Raise button event handler
 	public void raiseClicked(View view) {
 		Log.i("Player_Action", "Player Raised");
+		mediaPlayer = MediaPlayer.create(this, R.raw.chips);
+        mediaPlayer.start();
 		if (toCall > player.bank)
 			toCall = player.bank;
 		int barBet = betBar.getProgress();
