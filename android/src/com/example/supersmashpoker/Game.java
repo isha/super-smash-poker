@@ -607,7 +607,7 @@ public class Game extends Activity implements SensorEventListener, android.view.
     @Override
 	public void onSensorChanged(SensorEvent event) {
     	//It's not even you're turn, you're not allowed to fold
-    	if (player.state != Player.FOLLOW){
+    	if (!(prevState == Player.DEALT && (player.state == Player.FOLLOW || player.state == Player.LEAD))){
     		return;
     	}
 		
