@@ -717,8 +717,8 @@ int main()
 
 	  case BET:
 		  for (i=0; i<dealer->number_players; i++) {
-			  if (dealer->players[i].active)
-			  sprintf(dealer->players[i].message, " ");
+			  if (dealer->players[i].active && dealer->players[i].total_money > 0)
+			  	sprintf(dealer->players[i].message, " ");
 		  }
 
 	  /* Betting Round 1 */
