@@ -140,7 +140,7 @@ unsigned int get_bet_for_player(int pid) {
 		sprintf(dealer->players[pid].message, "CALL %d", dealer->players[pid].money);
 	  } else {
 		dealer->players[pid].money += dealer->players[pid].total_money;
-		sprintf(dealer->players[pid].message, "ALL IN (BET %d)", dealer->players[pid].total_money);
+		sprintf(dealer->players[pid].message, "ALL IN", dealer->players[pid].total_money);
 		dealer->players[pid].total_money = 0;
 	  }
   }
@@ -150,7 +150,10 @@ unsigned int get_bet_for_player(int pid) {
     dealer->players[pid].total_money -= (dealer->current_bet - dealer->players[pid].money);
     dealer->players[pid].money += (dealer->current_bet - dealer->players[pid].money);
 
-    sprintf(dealer->players[pid].message, "RAISE %d (BET %d)", m_input, dealer->players[pid].money);
+    if (dealer->players[pid].total_money == 0)
+		sprintf(dealer->players[pid].message, "ALL IN", m_input, dealer->players[pid].money);
+    else
+    	sprintf(dealer->players[pid].message, "RAISE %d (BET %d)", m_input, dealer->players[pid].money);
   }
 
   if (dealer->players[pid].action == FOLD && dealer->current_bet > 0) {
