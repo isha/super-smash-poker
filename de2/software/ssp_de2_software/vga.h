@@ -109,14 +109,7 @@ char * card_bitmap_name(Card card) {
   return c;
 }
 
-void clear_screen() {
-	int i, j;
-	for (i=0; i<RESOLUTION_X; i++) {
-		for (j=0; j<RESOLUTION_Y; j++) {
-			pixel_colors[i][j] = 0;
-		}
-	}
-}
+
 
 /* Author : Jeff Goeders
  *

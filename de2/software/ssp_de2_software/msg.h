@@ -221,7 +221,7 @@ void send_player_hands() {
 
 		message_client_id = player_id_mapping[i]; // send client_id
 
-		message_size = 6;
+		message_size = 5;
 
 		message[0] = DEALT; // state of player = DEALT
 
@@ -231,7 +231,6 @@ void send_player_hands() {
 		message[2] = dealer->players[i].hand[0].suite+1;
 		message[3] = dealer->players[i].hand[1].value+1;
 		message[4] = dealer->players[i].hand[1].suite+1;
-		message[5] = (unsigned char) i;
 
 		// currently not sending money
 
@@ -291,15 +290,11 @@ void send_game_results() {
 			}
 		}
 
-		send_win_state(i);
-		/*
 		if (is_winner == true) {
 			send_win_state(i);
 		} else {
 			send_lose_state(i);
 		}
-		*/
-
 	}
 }
 
@@ -320,6 +315,7 @@ void receive_replay_status() {
 	}
 
 }
+
 
 
 

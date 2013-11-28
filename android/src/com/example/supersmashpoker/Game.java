@@ -212,7 +212,6 @@ public class Game extends Activity implements SensorEventListener, android.view.
 		}
 		
 		new SocketConnect().execute((Void) null);
-		Log.i("System", "Socket has been opened");
 	}
 	
 	public void closeSocket() {
@@ -226,7 +225,6 @@ public class Game extends Activity implements SensorEventListener, android.view.
 				e.printStackTrace();
 			}	
 		}
-		Log.i("System", "Socket has been closed");
 	}
 	
 	public void saveDataFile() {
@@ -244,7 +242,6 @@ public class Game extends Activity implements SensorEventListener, android.view.
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		Log.i("System", "Saved Player Data to File");
 	}
 	
 	public void loadDataFile() {
@@ -270,7 +267,6 @@ public class Game extends Activity implements SensorEventListener, android.view.
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		Log.i("System", "Loaded Player Data to File");
 	}
 	
 	public void sendData(byte[] data) {
@@ -455,13 +451,12 @@ public class Game extends Activity implements SensorEventListener, android.view.
 			t.show();
 			joinBut.setEnabled(false);
 			connectBut.setEnabled(true);
-			closeSocket();
 		}
 	}
 
 	//Connect to DE2 button event handler
 	public void onConnectButton(View view) {
-		Log.i("Player_Action", "Player connected to DE2");
+		Log.i("Player_Action", "Player opened socket");
 		saveSettings();
 		openSocket();
 		joinBut.setEnabled(true);
